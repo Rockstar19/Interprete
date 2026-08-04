@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mesa de Guiones · Intérprete SNAP / WIC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Lato:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0E1F35; --ink-2:#17304F; --ink-3:#26445F;
+  --paper:#F4F1E9; --card:#FFFFFF;
+  --signal:#E0A02F;      /* canal EN → REP */
+  --canal-es:#1B7A72;    /* canal ES → LEP */
+  --alert:#B8472F;
+  --muted:#63788F;
+  --line:rgba(14,31,53,.13);
+  --display:'Montserrat','Century Gothic','Lato',sans-serif;
+  --body:'Lato','Century Gothic','Montserrat',sans-serif;
+  --r:3px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:var(--body); font-size:16px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+
+/* ── Consola superior ───────────────────────────── */
+.console{
+  position:sticky;top:0;z-index:40;
+  background:var(--ink); color:#EDF1F6;
+  border-bottom:3px solid var(--signal);
+}
+.console-top{
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  padding:14px 22px 12px;
+  max-width:1240px;margin:0 auto;
+}
+.brand{display:flex;align-items:center;gap:12px;margin-right:auto}
+.lamp{
+  width:11px;height:11px;border-radius:50%;
+  background:var(--signal);box-shadow:0 0 0 0 rgba(224,160,47,.6);
+  flex:none;
+}
+body.live .lamp{animation:pulse 1.9s ease-out infinite}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(224,160,47,.55)}
+  70%{box-shadow:0 0 0 12px rgba(224,160,47,0)}
+  100%{box-shadow:0 0 0 0 rgba(224,160,47,0)}
+}
+.brand h1{
+  font-family:var(--display);font-weight:800;font-size:15px;
+  letter-spacing:.14em;text-transform:uppercase;margin:0;
+}
+.brand span{display:block;font-family:var(--body);font-weight:400;font-size:11.5px;letter-spacing:.06em;color:#9DB2C9;text-transform:none}
+.search{
+  position:relative;flex:1 1 260px;max-width:380px;
+}
+.search input{
+  width:100%;padding:9px 12px 9px 34px;
+  background:var(--ink-2);border:1px solid #2E4E70;border-radius:var(--r);
+  color:#EDF1F6;font-family:var(--body);font-size:14.5px;
+}
+.search input::placeholder{color:#7E93AC}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:.65}
+.tools{display:flex;gap:8px;align-items:center}
+.tbtn{
+  background:transparent;border:1px solid #35577B;color:#C9D7E6;
+  border-radius:var(--r);padding:8px 13px;font-size:12.5px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;font-family:var(--display);
+}
+.tbtn:hover{background:var(--ink-2);color:#fff}
+.tbtn.on{background:var(--signal);border-color:var(--signal);color:#1A1206}
+.tbtn.count{background:var(--signal);border-color:var(--signal);color:#1A1206}
+.tbtn.count[data-n="0"]{background:transparent;border-color:#35577B;color:#C9D7E6}
+
+/* pestañas */
+.tabs{
+  display:flex;gap:0;max-width:1240px;margin:0 auto;padding:0 22px;
+  overflow-x:auto;scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  background:none;border:0;border-bottom:3px solid transparent;
+  color:#93AAC4;padding:9px 0;margin-right:26px;white-space:nowrap;
+  font-family:var(--display);font-weight:700;font-size:12.5px;
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:-3px;
+}
+.tab:hover{color:#fff}
+.tab[aria-selected="true"]{color:#fff;border-bottom-color:var(--signal)}
+
+/* ── Cuerpo ─────────────────────────────────────── */
+.shell{max-width:1240px;margin:0 auto;padding:26px 22px 120px;display:grid;grid-template-columns:206px 1fr;gap:30px}
+@media(max-width:860px){.shell{grid-template-columns:1fr;gap:18px}}
+
+.rail{position:sticky;top:112px;align-self:start}
+@media(max-width:860px){
+  .rail{position:static;display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+  .rail::-webkit-scrollbar{display:none}
+}
+.rail-h{
+  font-family:var(--display);font-size:10.5px;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 10px;
+}
+@media(max-width:860px){.rail-h{display:none}}
+.cat{
+  display:block;width:100%;text-align:left;background:none;border:0;
+  border-left:2px solid var(--line);padding:7px 0 7px 12px;
+  font-size:14px;color:var(--ink-3);white-space:nowrap;
+}
+.cat b{display:block;font-weight:700;font-size:14px}
+.cat i{font-style:normal;font-size:11.5px;color:var(--muted)}
+.cat:hover{border-left-color:var(--ink-3);color:var(--ink)}
+.cat[aria-pressed="true"]{border-left:2px solid var(--signal);color:var(--ink);background:rgba(224,160,47,.09)}
+@media(max-width:860px){
+  .cat{width:auto;border:1px solid var(--line);border-radius:var(--r);padding:7px 12px}
+  .cat i{display:none}
+  .cat[aria-pressed="true"]{border-color:var(--signal)}
+}
+
+.meta{font-size:13px;color:var(--muted);margin:0 0 16px}
+
+/* ── Tarjeta de guion (elemento firma) ──────────── */
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  margin-bottom:16px;overflow:hidden;
+}
+.card-head{padding:15px 18px 12px;border-bottom:1px dashed var(--line)}
+.eyebrow{
+  font-family:var(--display);font-size:10px;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+}
+.eyebrow .sens{color:var(--alert)}
+.card-head h3{
+  font-family:var(--display);font-weight:700;font-size:17px;line-height:1.3;
+  margin:7px 0 0;letter-spacing:-.01em;
+}
+.note{font-size:13.5px;color:var(--ink-3);margin:7px 0 0;font-style:italic}
+body.live .note{display:none}
+
+.lane{display:flex;gap:0;border-top:1px solid var(--line)}
+.lane:first-of-type{border-top:0}
+.lane-rail{width:6px;flex:none}
+.lane.en .lane-rail{background:var(--signal)}
+.lane.es .lane-rail{background:var(--canal-es)}
+.lane-body{padding:13px 18px 15px;flex:1;min-width:0}
+.chip{
+  font-family:var(--display);font-size:10px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;display:inline-block;margin-bottom:7px;
+}
+.lane.en .chip{color:#9A6B12}
+.lane.es .chip{color:var(--canal-es)}
+.say{font-size:17px;line-height:1.62;margin:0;color:#0B1A2C}
+body.live .say{font-size:19.5px;line-height:1.7}
+.say em{font-style:italic;color:var(--ink-3)}
+
+.card-foot{display:flex;gap:8px;padding:11px 18px 14px;background:#FBFAF7;border-top:1px solid var(--line)}
+.abtn{
+  background:none;border:1px solid var(--line);border-radius:var(--r);
+  padding:6px 11px;font-size:12px;font-weight:700;letter-spacing:.05em;
+  text-transform:uppercase;font-family:var(--display);color:var(--ink-3);
+}
+.abtn:hover{border-color:var(--ink-3);color:var(--ink)}
+.abtn.added{background:var(--ink);border-color:var(--ink);color:#fff}
+
+.empty{
+  border:1px dashed var(--line);border-radius:var(--r);padding:34px 20px;
+  text-align:center;color:var(--muted);font-size:15px;
+}
+
+/* ── Glosario ───────────────────────────────────── */
+table.gloss{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line)}
+table.gloss th{
+  font-family:var(--display);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
+  text-align:left;padding:11px 14px;background:var(--ink);color:#DCE6F1;font-weight:700;
+}
+table.gloss td{padding:11px 14px;border-top:1px solid var(--line);font-size:15px;vertical-align:top}
+table.gloss td:first-child{font-weight:700;width:27%}
+table.gloss td:nth-child(2){color:var(--canal-es);font-weight:700;width:28%}
+table.gloss td:last-child{font-size:13.5px;color:var(--ink-3)}
+.trap{color:var(--alert);font-weight:700}
+@media(max-width:660px){
+  table.gloss,table.gloss tbody,table.gloss tr,table.gloss td{display:block;width:100%}
+  table.gloss thead{display:none}
+  table.gloss tr{border-top:1px solid var(--line);padding:6px 0}
+  table.gloss td{border:0;padding:3px 14px}
+  table.gloss td:first-child,table.gloss td:nth-child(2){width:auto}
+}
+
+/* ── Bandeja del guion ──────────────────────────── */
+.tray{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;
+  background:var(--ink);color:#E8EEF5;border-top:3px solid var(--signal);
+  transform:translateY(calc(100% - 46px));transition:transform .28s ease;
+  max-height:74vh;display:flex;flex-direction:column;
+}
+.tray.open{transform:translateY(0)}
+.tray-bar{
+  display:flex;align-items:center;gap:14px;padding:0 22px;height:46px;flex:none;
+  max-width:1240px;margin:0 auto;width:100%;
+}
+.tray-bar button.grab{
+  background:none;border:0;color:#E8EEF5;font-family:var(--display);
+  font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  margin-right:auto;display:flex;align-items:center;gap:10px;padding:0;height:46px;
+}
+.tray-scroll{overflow-y:auto;padding:6px 22px 24px;max-width:1240px;margin:0 auto;width:100%}
+.tline{border-top:1px solid #2B4A6B;padding:13px 0;display:flex;gap:14px;align-items:flex-start}
+.tline .n{font-family:var(--display);font-weight:800;font-size:12px;color:var(--signal);padding-top:3px;flex:none;width:22px}
+.tline .txt{flex:1;min-width:0}
+.tline h4{margin:0 0 6px;font-family:var(--display);font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:#9DB2C9;font-weight:700}
+.tline p{margin:0 0 5px;font-size:15.5px;line-height:1.55}
+.tline p.p-en{color:#FBE3B8}
+.tline p.p-es{color:#A9DBD5}
+.tline .rm{background:none;border:1px solid #35577B;color:#9DB2C9;border-radius:var(--r);font-size:11px;padding:3px 8px;font-family:var(--display);font-weight:700;flex:none}
+.tline .rm:hover{border-color:var(--alert);color:#F0A292}
+.tray-actions{display:flex;gap:8px;padding:14px 0 0;flex-wrap:wrap}
+
+.toast{
+  position:fixed;bottom:64px;left:50%;transform:translateX(-50%) translateY(14px);
+  background:var(--ink-2);color:#fff;border:1px solid var(--signal);
+  padding:9px 17px;border-radius:var(--r);font-size:13.5px;z-index:70;
+  opacity:0;pointer-events:none;transition:all .22s ease;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+@media print{
+  .console,.rail,.card-foot,.tray-bar,.tray-actions,.toast,.meta{display:none!important}
+  body{background:#fff}
+  .tray{position:static;transform:none;max-height:none;background:#fff;color:#000;border:0}
+  .tline p.p-en,.tline p.p-es{color:#000}
+  .tline{border-top:1px solid #999}
+  .shell{display:block}
+}
+</style>
+</head>
+<body>
+
+<header class="console">
+  <div class="console-top">
+    <div class="brand">
+      <span class="lamp" aria-hidden="true"></span>
+      <div>
+        <h1>Mesa de Guiones</h1>
+        <span>Intérprete remoto · SNAP / Food Stamps / WIC · ES ⇄ EN</span>
+      </div>
+    </div>
+    <div class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9DB2C9" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <input id="q" type="search" placeholder="Buscar situación, término o frase…  ( / )" aria-label="Buscar">
+    </div>
+    <div class="tools">
+      <button class="tbtn" id="liveBtn" aria-pressed="false">Modo llamada</button>
+      <button class="tbtn count" id="trayBtn" data-n="0">Guion · 0</button>
+    </div>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-view="disclosures">Aclaratorias</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="statement">Declaración grabada</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="gloss">Glosario y trampas</button>
+  </nav>
+</header>
+
+<main class="shell">
+  <aside class="rail" id="rail"></aside>
+  <section id="stage"></section>
+</main>
+
+<div class="tray" id="tray">
+  <div class="tray-bar">
+    <button class="grab" id="grabBtn" aria-expanded="false">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E0A02F" stroke-width="3"><path d="M6 15l6-6 6 6"/></svg>
+      Guion armado · <span id="trayN">0</span>
+    </button>
+    <button class="tbtn" id="copyAll">Copiar todo</button>
+    <button class="tbtn" id="printAll">Imprimir</button>
+    <button class="tbtn" id="clearAll">Vaciar</button>
+  </div>
+  <div class="tray-scroll" id="trayScroll"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ─────────────────────────────────────────────────────────────
+   BIBLIOTECA DE ACLARATORIAS
+   en  = lo que el intérprete dice al REP (tercera persona)
+   es  = lo que el intérprete dice al beneficiario (LEP)
+   ───────────────────────────────────────────────────────────── */
+const CATS = [
+  {id:'protocolo', name:'Protocolo',      sub:'Apertura y cierre'},
+  {id:'audio',     name:'Audio',          sub:'Repetición y ruido'},
+  {id:'termino',   name:'Terminología',   sub:'Palabras y siglas'},
+  {id:'flujo',     name:'Flujo',          sub:'Terceros y turnos'},
+  {id:'snap',      name:'Contenido SNAP', sub:'Trámite y derechos'},
+  {id:'wic',       name:'Contenido WIC',  sub:'Clínica y eWIC'},
+  {id:'etica',     name:'Límites éticos', sub:'Lo que no se hace'}
+];
+
+const D = [
+/* ── PROTOCOLO ─────────────────────────────────── */
+{c:'protocolo', t:'Entras a la llamada',
+ n:'Identifícate una sola vez y cede el turno. No preguntes de qué se trata la llamada.',
+ en:'Thank you for holding. This is Spanish interpreter ID number [____]. How may I assist you today?'},
+
+{c:'protocolo', t:'Antes de la primera intervención del beneficiario',
+ n:'Aviso breve al REP de que vas a presentarte con el beneficiario; luego lo haces en español.',
+ en:'The interpreter will now briefly introduce herself/himself to the Spanish-speaking party.',
+ es:'Buenos días, le habla el intérprete de español, identificación [____]. Todo lo que se diga será interpretado y es confidencial. Por favor hable directamente con la representante.'},
+
+{c:'protocolo', t:'El REP y el beneficiario se hablan en tercera persona',
+ n:'Recordatorio de primera persona. Una sola vez por llamada, salvo reincidencia clara.',
+ en:'The interpreter would like to remind both parties to please address each other directly, in the first person.'},
+
+{c:'protocolo', t:'Termina la llamada',
+ n:'No agregues despedidas propias ni deseos de buena suerte al beneficiario.',
+ en:'This concludes the interpretation. Thank you for using our services.'},
+
+{c:'protocolo', t:'Te piden esperar en línea o transferir',
+ n:'Confirma que sigues en línea para que no te den por desconectado.',
+ en:'Understood. The interpreter will remain on the line.',
+ es:'Vamos a esperar en la línea, no cuelgue por favor.'},
+
+/* ── AUDIO ─────────────────────────────────────── */
+{c:'audio', t:'No escuchaste la última frase',
+ n:'Pide repetición sin justificar de más. Especifica a qué parte le hablas.',
+ en:'The interpreter would like the representative to please repeat the last statement.'},
+
+{c:'audio', t:'No escuchaste al beneficiario',
+ n:'Mismo pedido pero sobre el LEP; el REP debe saber que la pausa es tuya y no del sistema.',
+ en:'The interpreter would like to ask the client to repeat; the interpreter did not hear the last statement.',
+ es:'Disculpe, ¿podría repetir lo último que dijo? No lo escuché bien.'},
+
+{c:'audio', t:'El REP habla demasiado largo sin pausar',
+ n:'Pide segmentación antes de perder contenido, no después de un error.',
+ en:'The interpreter would like to ask the representative to please pause after each sentence so the message can be rendered accurately and completely.'},
+
+{c:'audio', t:'Ruido de fondo del lado del beneficiario',
+ n:'Reporta la causa; la solución la decide el REP.',
+ en:'The interpreter is having difficulty hearing the client due to background noise on the client\'s line. May the interpreter ask the client to move to a quieter area?',
+ es:'Hay mucho ruido de fondo y no la escucho bien. ¿Podría moverse a un lugar más silencioso?'},
+
+{c:'audio', t:'Necesitas deletreo de un nombre',
+ n:'Siempre pide deletreo para nombres, apellidos compuestos y direcciones. No adivines.',
+ en:'The interpreter would like to request the spelling of that name for the record.',
+ es:'Por favor, deletree su apellido letra por letra.'},
+
+{c:'audio', t:'Necesitas confirmar una cifra o una fecha',
+ n:'Montos, SSN, números de caso y fechas se repiten dígito por dígito.',
+ en:'The interpreter would like to verify the figure that was just stated.',
+ es:'Voy a repetir el número para confirmarlo, dígito por dígito.'},
+
+{c:'audio', t:'Ambas partes hablan al mismo tiempo',
+ n:'Corta el traslape apenas ocurre; después ya perdiste las dos versiones.',
+ en:'The interpreter would like to ask that only one party speak at a time so that everything can be rendered.'},
+
+{c:'audio', t:'El beneficiario no responde',
+ n:'Reporta el hecho tras dos intentos, sin especular sobre por qué.',
+ en:'The interpreter has rendered the question twice and there is no response from the client.'},
+
+{c:'audio', t:'Se cortó la línea del beneficiario',
+ n:'Reporta la caída; no cuelgues por tu cuenta.',
+ en:'The interpreter can no longer hear the client. The line appears to have disconnected.'},
+
+/* ── TERMINOLOGÍA ──────────────────────────────── */
+{c:'termino', t:'El beneficiario no entiende un término del programa',
+ n:'Clave: interpretaste bien, no expliques tú. Devuelve la explicación al REP.',
+ en:'The interpreter has rendered the term accurately. The client states that he/she does not understand the term. Could the representative please explain it?'},
+
+{c:'termino', t:'El REP usa un término que no te queda claro',
+ n:'Pedir aclaración es correcto; inventar un equivalente no lo es.',
+ en:'The interpreter would like to request clarification of the term "____" before rendering it.'},
+
+{c:'termino', t:'El REP usa una sigla',
+ n:'Frecuentes en esta cola: EBT, IPV, ABAWD, SUA, LIHEAP, IEVS, SAVE, TANF, QC.',
+ en:'The interpreter would like to request the meaning of the acronym "____" so it can be rendered accurately.'},
+
+{c:'termino', t:'No existe equivalente directo en español',
+ n:'Ej. spenddown, ABAWD, expedited processing. Se dice el término y se describe.',
+ en:'The interpreter would like to inform the parties that there is no direct equivalent for that term in Spanish. The interpreter will state the term and render a brief description.'},
+
+{c:'termino', t:'Variación regional del beneficiario',
+ n:'Ej. «estampillas», «bonos», «cupones», «la tarjeta». Reporta, no corrijas al beneficiario.',
+ en:'The interpreter notes a regional variation in the client\'s term. The interpreter will render the term and its meaning.'},
+
+{c:'termino', t:'Te equivocaste y lo notaste',
+ n:'La autocorrección inmediata es obligatoria y no es una falta. Ocultarla sí lo es.',
+ en:'Correction by the interpreter: the previous rendition should have been "____".'},
+
+{c:'termino', t:'El beneficiario no habla español como lengua materna',
+ n:'Quechua, aymara, mam, k\'iche\', mixteco, náhuatl. Reporta pronto, no fuerces la llamada.',
+ en:'The interpreter would like to inform the representative that the client does not appear to be a native Spanish speaker and may require an interpreter of another language. Comprehension is limited.'},
+
+/* ── FLUJO ─────────────────────────────────────── */
+{c:'flujo', t:'El beneficiario te habla a ti directamente',
+ n:'Redirige en español primero; si insiste, reporta al REP.',
+ en:'The interpreter would like to inform the representative that the client is addressing the interpreter directly. The interpreter has reminded the client to speak to the representative.',
+ es:'Le recuerdo que soy el intérprete. Por favor dirija su pregunta a la representante y yo la interpreto.'},
+
+{c:'flujo', t:'El beneficiario te pide consejo sobre qué contestar',
+ n:'Situación muy común en solicitudes. Nunca orientes, ni con buena intención.',
+ en:'The interpreter would like to inform the representative that the client is asking the interpreter for advice. The interpreter has explained that the interpreter cannot advise and has referred the question to the representative.',
+ es:'No puedo aconsejarle ni responder por usted. Le voy a trasladar su pregunta a la representante.'},
+
+{c:'flujo', t:'Hay un tercero hablando del lado del beneficiario',
+ n:'El REP decide si esa persona puede participar o si es representante autorizado.',
+ en:'The interpreter would like to inform the representative that there is a third party speaking on the client\'s side.'},
+
+{c:'flujo', t:'Hay conversación paralela en la línea del beneficiario',
+ n:'Reporta que existe, no reportes su contenido salvo que se dirija a la llamada.',
+ en:'The interpreter would like to inform the representative that there is a side conversation on the client\'s line.'},
+
+{c:'flujo', t:'El REP te pregunta algo a ti («¿entendió?», «¿qué cree usted?»)',
+ n:'No respondas por el beneficiario ni des tu lectura de su estado.',
+ en:'The interpreter is not able to answer on the client\'s behalf. The interpreter will render the question to the client.'},
+
+{c:'flujo', t:'El beneficiario pide un trabajador que hable español',
+ n:'Traslada el pedido tal cual; no evalúes si procede.',
+ en:'The client is requesting to speak with a Spanish-speaking representative.'},
+
+{c:'flujo', t:'El beneficiario pide recibir sus avisos en español',
+ n:'Es una casilla real de la solicitud (avisos en español e inglés o solo inglés).',
+ en:'The client is requesting to receive written notices in Spanish.'},
+
+{c:'flujo', t:'El beneficiario está angustiado o llorando',
+ n:'Describe el hecho observable, sin diagnosticar ni consolar por tu cuenta.',
+ en:'The interpreter would like to inform the representative that the client appears distressed.'},
+
+{c:'flujo', t:'Hay un menor de edad interpretando o respondiendo',
+ n:'Reporta y deja que el REP decida el procedimiento.',
+ en:'The interpreter would like to inform the representative that a minor appears to be responding on the client\'s behalf.'},
+
+/* ── CONTENIDO SNAP ────────────────────────────── */
+{c:'snap', t:'Verificación de identidad al inicio',
+ n:'Tríada estándar antes de cualquier dato del caso: nombre, fecha de nacimiento, dirección.',
+ en:'Please say your full name. · Please say your date of birth. · Please say your full residential and mailing address, including city and ZIP code.',
+ es:'Por favor, diga su nombre completo. · Por favor, diga su fecha de nacimiento. · Por favor, diga su dirección residencial y postal completa, incluyendo ciudad y código postal.'},
+
+{c:'snap', t:'Le explican el procesamiento acelerado',
+ n:'«Expedited» es acelerado, nunca «expedido». Plazos según estado: 5 o 7 días.',
+ en:'You may be eligible to receive SNAP benefits within [5 / 7] days of your application date. This is called expedited processing.',
+ es:'Usted podría recibir sus beneficios de SNAP dentro de [5 / 7] días a partir de la fecha de su solicitud. A esto se le llama procesamiento acelerado.'},
+
+{c:'snap', t:'Le piden el número de Seguro Social',
+ n:'Interpreta la pregunta completa incluyendo la parte voluntaria; no la resumas.',
+ en:'You may choose to give us the Social Security number of each person in your household. Benefits can only be provided to persons who give a Social Security number or proof that they have applied for one.',
+ es:'Usted puede optar por darnos el número de Seguro Social de cada persona en su hogar. Solo podemos otorgar beneficios a las personas que den su número de Seguro Social o un comprobante de que lo han solicitado.'},
+
+{c:'snap', t:'Preguntan por estatus migratorio del hogar',
+ n:'Tema sensible: interpreta literal, sin suavizar ni añadir tranquilizadores propios.', sens:1,
+ en:'You can apply for SNAP for eligible household members even if you or others in the household are not eligible because of immigration status. You do not have to give immigration documents for people who are not applying.',
+ es:'Usted puede solicitar SNAP para los miembros elegibles de su hogar aunque usted u otras personas no sean elegibles por su estatus migratorio. No tiene que entregar documentos de inmigración de las personas que no están solicitando beneficios.'},
+
+{c:'snap', t:'Advertencia de sanciones e IPV',
+ n:'Bloque penal: se interpreta completo y sin abreviar, aunque el beneficiario interrumpa.', sens:1,
+ en:'Any information you provide will be subject to verification. If you knowingly give incorrect information you may be subject to criminal prosecution, and you may be disqualified from SNAP for twelve months, twenty-four months, or permanently, depending on the violation.',
+ es:'Toda la información que usted proporcione está sujeta a verificación. Si a sabiendas da información incorrecta, puede ser procesado penalmente y puede quedar descalificado de SNAP por doce meses, veinticuatro meses o de por vida, según la infracción.'},
+
+{c:'snap', t:'Le explican el derecho a audiencia imparcial',
+ n:'«Fair hearing» = audiencia imparcial o audiencia justa. Plazo típico: 90 días.',
+ en:'You have the right to request a fair hearing, in writing, in person or by telephone, if you disagree with any action taken on your case. You may bring a friend, relative or attorney to speak for you.',
+ es:'Usted tiene derecho a solicitar una audiencia imparcial, por escrito, en persona o por teléfono, si no está de acuerdo con alguna acción tomada en su caso. Puede traer a un amigo, familiar o abogado para que hable por usted.'},
+
+{c:'snap', t:'Obligación de reportar cambios',
+ n:'Frase que casi siempre se malentiende: aclara «hogar», no «casa».',
+ en:'You must promptly report any change in your income, household members, address, or living arrangements, in accordance with your reporting requirements.',
+ es:'Usted debe informar de inmediato cualquier cambio en sus ingresos, en los miembros de su hogar, en su dirección o en su situación de vivienda, conforme a sus requisitos de reporte.'},
+
+{c:'snap', t:'Le explican el sobrepago',
+ n:'«Overpayment» es sobrepago; «claim» aquí es reclamo de cobro, no reclamación del usuario.',
+ en:'If you receive more SNAP benefits than you should have, you must pay them back. The amount may be taken from future benefits, from federal benefits, or from your tax refund.',
+ es:'Si usted recibe más beneficios de SNAP de los que le corresponden, debe devolverlos. El monto puede descontarse de beneficios futuros, de beneficios federales o de su reembolso de impuestos.'},
+
+{c:'snap', t:'Le explican qué se puede comprar con la EBT',
+ n:'No traduzcas «EBT»; se dice la sigla y se describe la tarjeta.',
+ en:'SNAP benefits may only be used to buy eligible food items. They may not be used for alcohol, tobacco, or nonfood items, and they may not be sold, traded or given away.',
+ es:'Los beneficios de SNAP solo pueden usarse para comprar alimentos elegibles. No pueden usarse para alcohol, tabaco ni artículos que no sean comida, y no pueden venderse, intercambiarse ni regalarse.'},
+
+{c:'snap', t:'Le programan la entrevista',
+ n:'Ofrece el dato de entrevista telefónica solo si el REP lo menciona.',
+ en:'You must complete an interview for your eligibility to be determined. If it is difficult for you to come in, you may be eligible for a telephone interview.',
+ es:'Usted debe completar una entrevista para que se determine su elegibilidad. Si se le dificulta acudir en persona, podría calificar para una entrevista por teléfono.'},
+
+{c:'snap', t:'Le explican qué documentos traer',
+ n:'Lista de verificación estándar de la entrevista.',
+ en:'Please bring proof of identity, proof of who lives in your household, proof of residence, proof of child care or child support paid, proof of your living expenses, and proof of any money received in the last sixty days.',
+ es:'Por favor traiga comprobante de identidad, comprobante de quiénes viven en su hogar, comprobante de residencia, comprobante de gastos de cuidado infantil o manutención pagada, comprobante de sus gastos de subsistencia y comprobante de todo dinero recibido en los últimos sesenta días.'},
+
+/* ── CONTENIDO WIC ─────────────────────────────── */
+{c:'wic', t:'Derechos y obligaciones de WIC (apertura)',
+ n:'Se lee completo antes de la firma; el beneficiario puede pedir explicación en cualquier momento.',
+ en:'The interpreter will now render the WIC Participant Rights and Obligations.',
+ es:'Ahora voy a interpretar los Derechos y Obligaciones de los Participantes de WIC.'},
+
+{c:'wic', t:'Compromiso de WIC con el participante',
+ n:'Bloque de derechos: salud, alimentos, trato justo, privacidad.',
+ en:'WIC offers nutrition and active lifestyle advice, supports breastfeeding, and provides benefits to buy healthy foods. WIC rules are the same for everyone, and you have the right to appeal decisions about your eligibility.',
+ es:'WIC ofrece consejos sobre nutrición y estilo de vida activo, apoya la lactancia y otorga beneficios para comprar alimentos saludables. Las reglas de WIC son iguales para todos, y usted tiene derecho a apelar las decisiones sobre su elegibilidad.'},
+
+{c:'wic', t:'Compromiso del participante con WIC',
+ n:'Bloque de obligaciones: honestidad, buen uso, protección de la tarjeta.',
+ en:'You may not sell, trade or give away your eWIC card, the foods, the formula or the breast pumps. Buy only WIC-approved foods, only at WIC-authorized stores, and keep your eWIC card secure.',
+ es:'Usted no puede vender, intercambiar ni regalar su tarjeta eWIC, los alimentos, la fórmula ni las bombas de extracción de leche. Compre solo alimentos aprobados por WIC, solo en tiendas autorizadas por WIC, y mantenga segura su tarjeta eWIC.'},
+
+{c:'wic', t:'Autorización de mediciones y muestra de sangre',
+ n:'Cada línea se inicializa por separado; interpreta las tres aunque suenen repetitivas.', sens:1,
+ en:'I agree to allow WIC staff to: take height and weight measurements for me and/or my child; take a small blood sample to check my iron level and/or my child\'s; and physically touch me or my child during breastfeeding instruction.',
+ es:'Estoy de acuerdo en permitir que el personal de WIC: tome medidas de estatura y peso para mí y/o mi niño; tome una pequeña muestra de sangre para revisar mi nivel de hierro y/o el de mi niño; y toque físicamente a mi niño o a mí durante las instrucciones de lactancia.'},
+
+{c:'wic', t:'Aviso de no discriminación del USDA',
+ n:'Se lee íntegro cuando el REP lo indica; no se resume.',
+ en:'In accordance with federal civil rights law and USDA civil rights regulations and policies, this institution is prohibited from discriminating on the basis of race, color, national origin, sex, disability, age, or reprisal for prior civil rights activity. This institution is an equal opportunity provider.',
+ es:'De conformidad con la ley federal de derechos civiles y los reglamentos y políticas de derechos civiles del USDA, esta institución tiene prohibido discriminar por motivos de raza, color, origen nacional, sexo, discapacidad, edad, o represalia por actividades previas de derechos civiles. Esta institución ofrece igualdad de oportunidades.'},
+
+/* ── ÉTICA ─────────────────────────────────────── */
+{c:'etica', t:'El beneficiario te pide que no traduzcas algo',
+ n:'«No le diga eso», «esto es entre nosotros». Se avisa a ambas partes y se interpreta todo.', sens:1,
+ en:'The interpreter must inform the parties that everything said on this line will be interpreted, including the statement just made.',
+ es:'Le aclaro que todo lo que se diga en esta llamada se interpreta. No puedo omitir nada.'},
+
+{c:'etica', t:'Te piden que llenes o revises la solicitud',
+ n:'El intérprete no completa formularios ni verifica respuestas.', sens:1,
+ en:'The interpreter is not able to complete forms or review documents on the client\'s behalf. The interpreter can only render what is said.'},
+
+{c:'etica', t:'El REP te pide que expliques una regla del programa',
+ n:'Ocurre cuando el REP está apurado. Devuelve la explicación sin negociar.', sens:1,
+ en:'The interpreter is only able to render what is said and cannot explain program rules on the representative\'s behalf.'},
+
+{c:'etica', t:'Conoces al beneficiario o hay conflicto de interés',
+ n:'Se declara de inmediato, antes de escuchar datos del caso.', sens:1,
+ en:'The interpreter has a potential conflict of interest in this call and requests to be replaced by another interpreter.'},
+
+{c:'etica', t:'El beneficiario declara algo que podría ser una infracción',
+ n:'Interpreta fiel y completo. No adviertas, no suavices, no omitas.', sens:1,
+ en:'The interpreter will continue to render everything that is said, without addition or omission.'},
+
+{c:'etica', t:'El beneficiario menciona una emergencia o riesgo para su seguridad',
+ n:'Escala de inmediato al REP, que es quien puede actuar. Interpreta todo lo dicho.', sens:1,
+ en:'The interpreter would like to inform the representative, on an urgent basis, that the client has just stated the following. The interpreter will render it now, word for word.'},
+
+{c:'etica', t:'Terminó tu turno pero la llamada sigue',
+ n:'Relevo limpio: sin resumir el caso al siguiente intérprete frente a las partes.',
+ en:'The interpreter\'s session is ending. Another interpreter will join the line to continue.',
+ es:'Mi turno está terminando. Otro intérprete se unirá a la línea para continuar.'}
+];
+
+/* ── DECLARACIÓN GRABADA (firma por voz) ────────── */
+const STATEMENT = {
+  title:'Declaración de Cupones de Alimentos · firma por grabación',
+  note:'Se lee en bloque. Cada declaración exige respuesta «sí» o «no» del beneficiario antes de pasar a la siguiente. La grabación sustituye a la firma, así que ninguna línea se resume ni se agrupa.',
+  lines:[
+    {en:'Please say your full name.',
+     es:'Por favor, diga su nombre completo.'},
+    {en:'Please say your date of birth.',
+     es:'Por favor, diga su fecha de nacimiento.'},
+    {en:'Please say your full residential and mailing address, including city and ZIP code.',
+     es:'Por favor, diga su dirección residencial y postal completa, incluyendo ciudad y código postal.'},
+    {en:'I am now going to read a series of statements that you need to agree to in order to submit your nutritional assistance and medical assistance application. Your recorded statement will be used as your signature.',
+     es:'Ahora voy a leer una serie de declaraciones que usted debe aceptar para enviar su solicitud de asistencia nutricional y médica. Su declaración grabada se utilizará como su firma.'},
+    {en:'Please listen carefully and give an answer to each of the statements.',
+     es:'Por favor, escuche atentamente y dé una respuesta a cada una de las declaraciones.'},
+    {en:'You swear or affirm under penalty of perjury that the statements or documents provided about yourself and the persons in your home that relate to your eligibility — including any information regarding income, citizenship or alien status, resources, property and other items that may contribute to your eligibility determination — are true and correct to the best of your knowledge. Yes or no?',
+     es:'Usted jura o afirma bajo pena de perjurio que las declaraciones o documentos proporcionados sobre usted y las personas en su hogar que se relacionan con su elegibilidad —incluyendo cualquier información sobre ingresos, ciudadanía o estatus migratorio, recursos, propiedades y otros elementos que puedan contribuir a la determinación de su elegibilidad— son verdaderos y correctos a su leal saber y entender. ¿Sí o no?'},
+    {en:'You have not withheld any information, and any photocopied information you have provided is the same as the original documents. Yes or no?',
+     es:'Usted no ha ocultado ninguna información, y toda la información fotocopiada que ha proporcionado es igual a los documentos originales. ¿Sí o no?'},
+    {en:'For nutrition assistance, the statements you may have made regarding felony convictions or parole are true and correct. Yes or no?',
+     es:'Para la asistencia nutricional, las declaraciones que usted haya hecho con respecto a condenas por delitos graves o libertad condicional son verdaderas y correctas. ¿Sí o no?'},
+    {en:'You also consent to the release of information. Yes or no?',
+     es:'Usted también consiente la divulgación de información. ¿Sí o no?'},
+    {en:'You understand the assignments and rights. Yes or no?',
+     es:'Usted entiende las asignaciones y los derechos. ¿Sí o no?'}
+  ],
+  after:[
+    {t:'Si el beneficiario responde algo distinto de sí o no',
+     en:'The interpreter would like to inform the representative that the client did not answer yes or no, and instead stated the following.'},
+    {t:'Si el beneficiario pide que le expliquen una declaración',
+     en:'The client is asking for an explanation of that statement. The interpreter has rendered it accurately and refers the request to the representative.'},
+    {t:'Si el beneficiario duda o pide repetir',
+     en:'The client is requesting that the statement be repeated. The interpreter will render it again in full.'}
+  ]
+};
+
+/* ── GLOSARIO ───────────────────────────────────── */
+const GLOSS = [
+ ['SNAP / Food Stamps','SNAP · cupones de alimentos','Se dice la sigla y se describe. Regionalismos del beneficiario: «estampillas», «bonos», «la tarjeta».'],
+ ['To apply / application','solicitar · solicitud','TRAMPA: no es «aplicar» ni «aplicación». Ese uso es calco del inglés.'],
+ ['Expedited benefits','beneficios acelerados','TRAMPA: no es «expedidos». Es procesamiento en 5 o 7 días según el estado.'],
+ ['Household','hogar · unidad familiar','TRAMPA: no es «casa». Definición legal: viven juntos y compran y preparan comida juntos.'],
+ ['Utilities','servicios del hogar','TRAMPA: «utilidades» significa ganancias. Aquí es luz, gas, agua, basura.'],
+ ['Shelter costs','gastos de vivienda','Incluye alquiler, hipoteca, impuestos y seguro de la vivienda.'],
+ ['Gross / net income','ingreso bruto · ingreso neto','Bruto es antes de deducciones. Confirmar siempre cuál pide el REP.'],
+ ['Deduction','deducción','Reduce el ingreso contable, no es un descuento de la tarjeta.'],
+ ['Resources / assets','recursos · activos','Efectivo, cuentas, acciones, bonos, vehículos.'],
+ ['Fair hearing','audiencia imparcial · audiencia justa','Ambas se usan según el estado. Mantén una sola forma dentro de la llamada.'],
+ ['Overpayment / claim','sobrepago · reclamo de cobro','TRAMPA: aquí «claim» es la deuda que la agencia cobra, no un reclamo del beneficiario.'],
+ ['IPV (Intentional Program Violation)','violación intencional del programa','Se dice la sigla y se describe. Acarrea descalificación de 12, 24 o 120 meses.'],
+ ['Disqualification','descalificación','No es «inhabilitación» en este contexto de formularios.'],
+ ['ABAWD','adulto capacitado sin dependientes','Sin equivalente breve. Se dice la sigla y se describe.'],
+ ['SUA (Standard Utility Allowance)','asignación estándar para servicios','Se describe; no existe término fijo en español.'],
+ ['Spenddown','spenddown · gasto compensatorio de Medicaid','Sin equivalente. Se dice el término y se explica que es el monto médico que se debe cubrir antes.'],
+ ['Certification period','período de certificación','Ventana en que los beneficios están aprobados.'],
+ ['Recertification','recertificación','Renovación del caso, no una solicitud nueva.'],
+ ['Authorized representative','representante autorizado','Persona designada por escrito para actuar por el hogar.'],
+ ['Collateral contact','contacto colateral','Tercero al que la agencia llama para verificar datos.'],
+ ['Verification / proof','verificación · comprobante','«Proof» rara vez es «prueba» aquí; es comprobante o documento.'],
+ ['Pay stub','talón de cheque · comprobante de pago','Regionalismo frecuente del beneficiario: «el cheque».'],
+ ['Landlord','arrendador · casero','«Casero» es más comprensible en llamada; «arrendador» en documentos.'],
+ ['Felony','delito grave','TRAMPA: no es «felonía».'],
+ ['Parole / probation','libertad bajo palabra · libertad condicional','Distinguirlas; el formulario pregunta por ambas.'],
+ ['Fleeing felon','prófugo de la justicia','Frase del formulario; se interpreta literal.'],
+ ['Under penalty of perjury','bajo pena de perjurio','Fórmula fija. No se suaviza ni se parafrasea.'],
+ ['Swear or affirm','jurar o afirmar','Se conservan los dos verbos; «afirmar» es la opción no religiosa.'],
+ ['Alien status','estatus migratorio','Terminología del formulario. Se interpreta sin editorializar.'],
+ ['Waive / waiver','renunciar · exención','TRAMPA: nunca «waivar».'],
+ ['EBT card','tarjeta EBT','Sigla intacta; se describe como tarjeta de beneficios.'],
+ ['eWIC card','tarjeta eWIC','Igual que EBT: sigla intacta.'],
+ ['Breast pump','bomba de extracción de leche','Término del documento de WIC.'],
+ ['Infant formula','fórmula infantil','TRAMPA: no «leche de fórmula» si el documento dice formula a secas.'],
+ ['Migrant or seasonal farmworker','trabajador agrícola migrante o por temporada','Frase completa del formulario.'],
+ ['Quality Control review','revisión de Control de Calidad','Unidad que audita casos; la cooperación es obligatoria.'],
+ ['Referral','remisión · referencia','Envío a otro programa o servicio.'],
+ ['Benefit issuance','emisión de beneficios','Cuándo y cómo se cargan los fondos.']
+];
+
+/* ─────────────────────────────────────────────────
+   Estado y render
+   ───────────────────────────────────────────────── */
+let view='disclosures', cat='all', query='', script=[];
+const $=s=>document.querySelector(s);
+const rail=$('#rail'), stage=$('#stage'), tray=$('#tray');
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function renderRail(){
+  if(view!=='disclosures'){rail.innerHTML='';return}
+  const counts={all:D.length};
+  CATS.forEach(c=>counts[c.id]=D.filter(d=>d.c===c.id).length);
+  rail.innerHTML='<p class="rail-h">Situaciones</p>'+
+    `<button class="cat" data-cat="all" aria-pressed="${cat==='all'}"><b>Todas</b><i>${counts.all} aclaratorias</i></button>`+
+    CATS.map(c=>`<button class="cat" data-cat="${c.id}" aria-pressed="${cat===c.id}"><b>${c.name}</b><i>${c.sub} · ${counts[c.id]}</i></button>`).join('');
+  rail.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{cat=b.dataset.cat;renderRail();renderStage()});
+}
+
+function matches(d){
+  if(cat!=='all'&&d.c!==cat)return false;
+  if(!query)return true;
+  const q=query.toLowerCase();
+  return (d.t+' '+(d.n||'')+' '+d.en+' '+(d.es||'')).toLowerCase().includes(q);
+}
+
+function cardHTML(d,i){
+  const c=CATS.find(x=>x.id===d.c);
+  const on=script.some(s=>s.key===d.en);
+  return `<article class="card">
+    <div class="card-head">
+      <p class="eyebrow"><span>${c?c.name:''}</span>${d.sens?'<span class="sens">· Sensible</span>':''}</p>
+      <h3>${esc(d.t)}</h3>
+      ${d.n?`<p class="note">${esc(d.n)}</p>`:''}
+    </div>
+    <div class="lane en"><span class="lane-rail"></span><div class="lane-body">
+      <span class="chip">EN → al REP</span>
+      <p class="say">${esc(d.en)}</p>
+    </div></div>
+    ${d.es?`<div class="lane es"><span class="lane-rail"></span><div class="lane-body">
+      <span class="chip">ES → al beneficiario</span>
+      <p class="say">${esc(d.es)}</p>
+    </div></div>`:''}
+    <div class="card-foot">
+      <button class="abtn add ${on?'added':''}" data-i="${i}">${on? 'En el guion ✓':'+ Agregar al guion'}</button>
+      <button class="abtn copy" data-i="${i}">Copiar EN</button>
+    </div>
+  </article>`;
+}
+
+function renderDisclosures(){
+  const list=D.map((d,i)=>({d,i})).filter(o=>matches(o.d));
+  stage.innerHTML=`<p class="meta">${list.length} de ${D.length} aclaratorias${query?` para «${esc(query)}»`:''}. Toda aclaratoria al REP va en tercera persona: <b>the interpreter…</b></p>`+
+    (list.length? list.map(o=>cardHTML(o.d,o.i)).join('')
+     : `<div class="empty">Sin resultados para «${esc(query)}». Prueba con una palabra suelta: <b>ruido</b>, <b>deletreo</b>, <b>perjurio</b>, <b>eWIC</b>.</div>`);
+  bindCards();
+}
+
+function renderStatement(){
+  stage.innerHTML=`<p class="meta">Bloque completo · ${STATEMENT.lines.length} segmentos</p>
+  <article class="card">
+    <div class="card-head">
+      <p class="eyebrow"><span>Contenido SNAP</span><span class="sens">· Sensible</span></p>
+      <h3>${STATEMENT.title}</h3>
+      <p class="note">${STATEMENT.note}</p>
+    </div>
+    ${STATEMENT.lines.map((l,i)=>`
+      <div class="lane en"><span class="lane-rail"></span><div class="lane-body">
+        <span class="chip">${i+1} · EN → al beneficiario, vía intérprete</span>
+        <p class="say">${esc(l.en)}</p>
+      </div></div>
+      <div class="lane es"><span class="lane-rail"></span><div class="lane-body">
+        <span class="chip">ES → rendición</span>
+        <p class="say">${esc(l.es)}</p>
+      </div></div>`).join('')}
+    <div class="card-foot">
+      <button class="abtn" id="addStatement">+ Agregar bloque completo al guion</button>
+    </div>
+  </article>
+  <p class="meta" style="margin-top:26px">Si el bloque se interrumpe</p>
+  ${STATEMENT.after.map(a=>`<article class="card">
+    <div class="card-head"><h3>${esc(a.t)}</h3></div>
+    <div class="lane en"><span class="lane-rail"></span><div class="lane-body">
+      <span class="chip">EN → al REP</span><p class="say">${esc(a.en)}</p>
+    </div></div>
+  </article>`).join('')}`;
+  $('#addStatement').onclick=()=>{
+    STATEMENT.lines.forEach((l,i)=>push({key:'stmt'+i,t:`Declaración grabada · ${i+1}`,en:l.en,es:l.es}));
+    flash('Bloque de declaración agregado al guion');
+  };
+}
+
+function renderGloss(){
+  const q=query.toLowerCase();
+  const rows=GLOSS.filter(r=>!q||r.join(' ').toLowerCase().includes(q));
+  stage.innerHTML=`<p class="meta">${rows.length} términos. Marcados en rojo los falsos amigos que más se cuelan en esta cola.</p>
+  <table class="gloss"><thead><tr><th>Inglés</th><th>Rendición</th><th>Nota de uso</th></tr></thead><tbody>
+  ${rows.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${r[2].startsWith('TRAMPA')?'<span class="trap">TRAMPA:</span>'+esc(r[2].slice(7)):esc(r[2])}</td></tr>`).join('')}
+  </tbody></table>`;
+}
+
+function bindCards(){
+  stage.querySelectorAll('.add').forEach(b=>b.onclick=()=>{
+    const d=D[+b.dataset.i];
+    if(script.some(s=>s.key===d.en)){script=script.filter(s=>s.key!==d.en);flash('Quitado del guion')}
+    else{push({key:d.en,t:d.t,en:d.en,es:d.es});flash('Agregado al guion')}
+    renderStage();
+  });
+  stage.querySelectorAll('.copy').forEach(b=>b.onclick=()=>copy(D[+b.dataset.i].en));
+}
+
+function push(o){script.push(o);syncTray()}
+function renderStage(){
+  if(view==='disclosures')renderDisclosures();
+  else if(view==='statement')renderStatement();
+  else renderGloss();
+  syncTray();
+}
+
+function syncTray(){
+  $('#trayN').textContent=script.length;
+  const tb=$('#trayBtn'); tb.textContent='Guion · '+script.length; tb.dataset.n=script.length;
+  $('#trayScroll').innerHTML = script.length
+    ? script.map((s,i)=>`<div class="tline">
+        <span class="n">${String(i+1).padStart(2,'0')}</span>
+        <div class="txt">
+          <h4>${esc(s.t)}</h4>
+          <p class="p-en">${esc(s.en)}</p>
+          ${s.es?`<p class="p-es">${esc(s.es)}</p>`:''}
+        </div>
+        <button class="rm" data-i="${i}">Quitar</button>
+      </div>`).join('')
+    : `<div class="tline"><div class="txt"><p style="color:#9DB2C9">El guion está vacío. Agrega aclaratorias desde las tarjetas y quedarán aquí en el orden en que las vas a decir.</p></div></div>`;
+  $('#trayScroll').querySelectorAll('.rm').forEach(b=>b.onclick=()=>{script.splice(+b.dataset.i,1);renderStage()});
+}
+
+function plain(){
+  return script.map((s,i)=>`${i+1}. ${s.t}\n   EN → REP: ${s.en}${s.es?`\n   ES → LEP: ${s.es}`:''}`).join('\n\n');
+}
+function copy(txt){
+  navigator.clipboard?.writeText(txt).then(()=>flash('Copiado')).catch(()=>fallback(txt));
+}
+function fallback(txt){
+  const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);
+  ta.select();try{document.execCommand('copy');flash('Copiado')}catch(e){flash('No se pudo copiar')}
+  ta.remove();
+}
+let tid;
+function flash(m){
+  const t=$('#toast');t.textContent=m;t.classList.add('show');
+  clearTimeout(tid);tid=setTimeout(()=>t.classList.remove('show'),1600);
+}
+
+/* eventos */
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===t));
+  view=t.dataset.view;renderRail();renderStage();window.scrollTo({top:0,behavior:'smooth'});
+});
+$('#q').addEventListener('input',e=>{query=e.target.value.trim();renderStage()});
+$('#liveBtn').onclick=()=>{
+  const on=document.body.classList.toggle('live');
+  $('#liveBtn').classList.toggle('on',on);
+  $('#liveBtn').setAttribute('aria-pressed',on);
+};
+$('#grabBtn').onclick=()=>{
+  const o=tray.classList.toggle('open');
+  $('#grabBtn').setAttribute('aria-expanded',o);
+  $('#grabBtn').querySelector('svg').style.transform=o?'rotate(180deg)':'';
+};
+$('#trayBtn').onclick=()=>$('#grabBtn').click();
+$('#copyAll').onclick=()=>script.length?copy(plain()):flash('El guion está vacío');
+$('#printAll').onclick=()=>script.length?window.print():flash('El guion está vacío');
+$('#clearAll').onclick=()=>{script=[];renderStage();flash('Guion vaciado')};
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&document.activeElement!==$('#q')){e.preventDefault();$('#q').focus()}
+  if(e.key==='Escape'){$('#q').value='';query='';renderStage();$('#q').blur()}
+});
+
+renderRail();renderStage();
+</script>
+</body>
+</html>

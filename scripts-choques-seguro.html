@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scripts de Intérprete — Choques &amp; Seguro de Auto</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Lato:wght@400;500;700&display=swap');
+
+  :root{
+    --bg: #14181C;
+    --surface: #1D2328;
+    --surface-2: #262E34;
+    --line: #333D45;
+    --text: #EDEEF0;
+    --text-muted: #94A0A8;
+    --amber: #E8A33D;
+    --blue: #5B8AA6;
+    --teal: #4FB6A8;
+    --violet: #9B8CE0;
+  }
+
+  *{ box-sizing: border-box; }
+  html, body{
+    margin:0; padding:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Lato', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header{
+    padding: 32px 20px 16px;
+    border-bottom: 1px solid var(--line);
+    position: sticky; top:0;
+    background: var(--bg);
+    z-index: 10;
+  }
+
+  .eyebrow{
+    font-family:'Montserrat', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  h1{
+    font-family:'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: clamp(22px, 5vw, 30px);
+    margin: 0 0 6px 0;
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle{
+    color: var(--text-muted);
+    font-size: 14px;
+    max-width: 660px;
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+
+  .legend{
+    display:flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .legend-item{
+    display:flex;
+    align-items:center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family:'Montserrat', sans-serif;
+    font-weight: 600;
+  }
+  .dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .dot.pv{ background: var(--amber); }
+  .dot.term{ background: var(--violet); }
+
+  nav.tabs{
+    display:flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 18px 20px 0;
+    scrollbar-width: none;
+  }
+  nav.tabs::-webkit-scrollbar{ display:none; }
+
+  .tab-btn{
+    font-family:'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    white-space: nowrap;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-bottom: none;
+    padding: 10px 16px;
+    border-radius: 10px 10px 0 0;
+    cursor: pointer;
+    transition: color .15s ease, background .15s ease;
+  }
+  .tab-btn .num{
+    color: var(--amber);
+    margin-right: 6px;
+    font-weight: 800;
+  }
+  .tab-btn:hover{ color: var(--text); }
+  .tab-btn.active{
+    color: var(--text);
+    background: var(--surface-2);
+  }
+
+  main{
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  .panel{
+    display:none;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 0 12px 12px 12px;
+    padding: 8px 0 8px 0;
+    margin-top: 0;
+  }
+  .panel.active{ display:block; }
+
+  .panel-head{
+    padding: 22px 22px 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .panel-head h2{
+    font-family:'Montserrat', sans-serif;
+    font-size: 18px;
+    margin: 0 0 4px;
+  }
+  .panel-head p{
+    margin:0;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .flow{
+    position: relative;
+    padding: 6px 22px 20px;
+  }
+  .flow::before{
+    content:"";
+    position: absolute;
+    left: 39px;
+    top: 4px;
+    bottom: 20px;
+    width: 2px;
+    background: var(--line);
+  }
+
+  .step{
+    position: relative;
+    padding-left: 40px;
+    margin: 22px 0;
+  }
+  .step-dot{
+    position: absolute;
+    left: 0; top: 2px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--amber);
+    color: var(--amber);
+    font-family:'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 11px;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .line{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+
+  .lang-row{
+    display:flex;
+    gap: 10px;
+    align-items: baseline;
+  }
+  .lang-tag{
+    font-family:'Montserrat', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 2px 7px;
+    border-radius: 5px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .lang-tag.en{ background: rgba(91,138,166,0.18); color: var(--blue); }
+  .lang-tag.es{ background: rgba(79,182,168,0.18); color: var(--teal); }
+
+  .line-text{
+    font-size: 14.5px;
+    line-height: 1.5;
+  }
+  .line-text b.pv{ color: var(--amber); font-weight: 700; }
+  .line-text b.term{ color: var(--violet); font-weight: 700; }
+
+  .gloss-search-wrap{
+    padding: 16px 22px 4px;
+  }
+  .gloss-search{
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    outline: none;
+  }
+  .gloss-search::placeholder{ color: var(--text-muted); }
+  .gloss-search:focus{ border-color: var(--violet); }
+
+  .gloss-count{
+    padding: 8px 22px 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  .gloss-grid{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 14px 22px 22px;
+  }
+  @media (min-width: 620px){
+    .gloss-grid{ grid-template-columns: 1fr 1fr; }
+  }
+
+  .gloss-card{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .gloss-en{
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 13.5px;
+    color: var(--violet);
+    margin-bottom: 3px;
+  }
+  .gloss-es{
+    font-size: 13.5px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .gloss-note{
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+  .gloss-card.hidden{ display:none; }
+
+  footer{
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 10px 20px 50px;
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.6;
+    border-top: 1px solid var(--line);
+  }
+
+  footer strong{ color: var(--text); }
+
+  @media (max-width: 480px){
+    .panel{ border-radius: 0 10px 10px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Referencia rápida · Intérprete</div>
+  <h1>Scripts: Choques de Auto &amp; Seguro</h1>
+  <div class="subtitle">Líneas bilingües por escenario, reforzadas con el glosario de seguros de auto (pestaña 05), listas para consulta en vivo.</div>
+  <div class="legend">
+    <div class="legend-item"><span class="dot pv"></span>Phrasal verb</div>
+    <div class="legend-item"><span class="dot term"></span>Término de seguros</div>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="tab-btn active" data-panel="p1"><span class="num">01</span>En la escena</button>
+  <button class="tab-btn" data-panel="p2"><span class="num">02</span>Llamada a la aseguradora</button>
+  <button class="tab-btn" data-panel="p3"><span class="num">03</span>Taller / ajustador</button>
+  <button class="tab-btn" data-panel="p4"><span class="num">04</span>Seguimiento y cierre</button>
+  <button class="tab-btn" data-panel="p5"><span class="num">05</span>Glosario de seguros</button>
+</nav>
+
+<main>
+
+  <section class="panel active" id="p1">
+    <div class="panel-head">
+      <h2>En la escena del choque</h2>
+      <p>Interacción entre el oficial de policía y el conductor inmediatamente después del choque.</p>
+    </div>
+    <div class="flow">
+
+      <div class="step">
+        <div class="step-dot">1</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"Can you tell me what happened, step by step?"</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"¿Puede contarme qué sucedió, paso a paso?"</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">2</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"Which direction were you traveling, and did the other vehicle <b class="pv">cut you off</b>?"</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"¿En qué dirección circulaba, y el otro vehículo le <b class="pv">cerró el paso</b>?"</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">3</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"Did you <b class="pv">slam on the brakes</b>, or did the other car <b class="pv">plow into</b> you?"</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"¿Usted <b class="pv">frenó bruscamente</b>, o el otro auto <b class="pv">lo embistió</b>?"</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">4</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"Is anyone injured? Do you need medical attention right now?"</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"¿Hay alguien lesionado? ¿Necesita atención médica en este momento?"</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">5</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"I need your driver's license, registration, and insurance card."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Necesito su licencia de conducir, el registro y la tarjeta de seguro."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">6</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"I'm going to <b class="pv">write up</b> a report of the collision. You'll get a copy."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Voy a <b class="pv">redactar</b> un informe del choque. Usted recibirá una copia."</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="panel" id="p2">
+    <div class="panel-head">
+      <h2>Llamada a la aseguradora</h2>
+      <p>Reporte telefónico del siniestro. Reforzado con vocabulario de coberturas y trámite del glosario de seguros.</p>
+    </div>
+    <div class="flow">
+
+      <div class="step">
+        <div class="step-dot">1</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"I'd like to <b class="pv">file a claim</b> for a car accident."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Quisiera <b class="pv">presentar un reclamo</b> por un accidente automovilístico."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">2</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"Are you the <b class="term">policyholder</b> on this insurance policy?"</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"¿Usted es el <b class="term">asegurado</b> (tomador de la póliza) de este seguro?"</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">3</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"Can you describe the damage to your vehicle?"</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"¿Puede describir el daño que sufrió su vehículo?"</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">4</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"The front bumper and the driver's side door got <b class="pv">banged up</b>."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"El parachoques delantero y la puerta del lado del conductor quedaron <b class="pv">abollados</b>."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">5</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"Do you have <b class="term">collision coverage</b>, <b class="term">comprehensive coverage</b>, or just <b class="term">liability</b>?"</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"¿Tiene <b class="term">cobertura por colisión</b>, <b class="term">cobertura amplia</b>, o solo <b class="term">responsabilidad civil</b>?"</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">6</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"Since the other driver was uninsured, this falls under your <b class="term">uninsured motorist coverage</b>."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Como el otro conductor no tenía seguro, esto corresponde a su <b class="term">cobertura por motorista no asegurado</b>."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">7</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"We'll send an adjuster to <b class="pv">look over</b> the damage."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Enviaremos a un ajustador para que <b class="pv">revise</b> el daño."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">8</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"Your <b class="term">deductible</b> for collision coverage is $500."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Su <b class="term">deducible</b> para la cobertura por colisión es de $500."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">9</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"We'll need <b class="term">proof of loss</b> documentation before we process payment."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Necesitaremos la <b class="term">prueba de pérdida</b> antes de procesar el pago."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">10</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"I'll <b class="pv">follow up on</b> your <b class="term">claim</b> within 48 hours."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Le daré <b class="pv">seguimiento</b> a su <b class="term">reclamo</b> dentro de 48 horas."</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="panel" id="p3">
+    <div class="panel-head">
+      <h2>Taller de reparación / con el ajustador</h2>
+      <p>Estado del vehículo, presupuesto y determinación de valor, con términos de pérdida total y depreciación.</p>
+    </div>
+    <div class="flow">
+
+      <div class="step">
+        <div class="step-dot">1</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"We <b class="pv">towed</b> the vehicle in yesterday afternoon."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Remolcamos el vehículo ayer por la tarde."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">2</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"The estimate includes parts and labor."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"El presupuesto incluye piezas y mano de obra."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">3</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"We'll need to replace the fender and <b class="pv">touch up</b> the paint."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Tendremos que reemplazar el guardafango y <b class="pv">retocar</b> la pintura."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">4</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"Are these OEM parts, or aftermarket parts?"</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"¿Estas son piezas originales de fábrica, o piezas genéricas?"</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">5</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"The frame will need to be <b class="pv">straightened out</b>."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Habrá que <b class="pv">enderezar</b> el chasis."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">6</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"Since repair costs exceed the vehicle's <b class="term">actual cash value</b>, the insurer may <b class="pv">total</b> the car instead of <b class="pv">fixing it up</b>."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Como el costo de reparación supera el <b class="term">valor real en efectivo</b> del vehículo, la aseguradora podría declarar <b class="term">pérdida total</b> en lugar de repararlo."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">7</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"If we issue a <b class="term">salvage title</b>, the resale value will be affected."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Si emitimos un <b class="term">título de salvamento</b>, el valor de reventa se verá afectado."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">8</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"You can also file a separate <b class="term">diminished value</b> claim for the loss in resale value."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"También puede presentar un reclamo aparte por <b class="term">valor disminuido</b>, por la pérdida en el valor de reventa."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">9</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"<b class="pv">Sign off</b> here once you approve the repair."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Firme aquí (<b class="pv">dé su visto bueno</b>) una vez que apruebe la reparación."</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="panel" id="p4">
+    <div class="panel-head">
+      <h2>Seguimiento y cierre del reclamo</h2>
+      <p>Entrega del vehículo, cierre formal del caso, subrogación y plazos legales.</p>
+    </div>
+    <div class="flow">
+
+      <div class="step">
+        <div class="step-dot">1</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"Your <b class="term">claim</b> has been approved for the amount discussed."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Su <b class="term">reclamo</b> ha sido aprobado por el monto conversado."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">2</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"We're issuing the payment directly to the body shop."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Emitiremos el pago directamente al taller."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">3</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"Please <b class="pv">check out</b> the vehicle before you sign for pickup."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Por favor <b class="pv">revise</b> el vehículo antes de firmar para recogerlo."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">4</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"If you notice anything else, call us back and we'll <b class="pv">follow up</b>."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Si nota algo más, llámenos de vuelta y le daremos seguimiento."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">5</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"This <b class="term">settlement</b> closes the claim, and includes <b class="term">subrogation</b> against the at-fault driver's insurer."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Este <b class="term">acuerdo</b> cierra el reclamo, e incluye la <b class="term">subrogación</b> en contra de la aseguradora del conductor responsable."</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-dot">6</div>
+        <div class="line">
+          <div class="lang-row"><span class="lang-tag en">EN</span><span class="line-text">"If you disagree with this settlement, keep in mind the <b class="term">statute of limitations</b> for filing a lawsuit."</span></div>
+          <div class="lang-row"><span class="lang-tag es">ES</span><span class="line-text">"Si no está de acuerdo con este acuerdo, tenga en cuenta el <b class="term">plazo de prescripción</b> para presentar una demanda."</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="panel" id="p5">
+    <div class="panel-head">
+      <h2>Glosario de seguros de auto</h2>
+      <p>Base terminológica de las coberturas y trámites que fortalecen los scripts anteriores. Escriba para filtrar.</p>
+    </div>
+    <div class="gloss-search-wrap">
+      <input type="text" class="gloss-search" id="glossSearch" placeholder="Buscar término en inglés o español...">
+    </div>
+    <div class="gloss-count" id="glossCount"></div>
+    <div class="gloss-grid" id="glossGrid">
+
+      <div class="gloss-card"><div class="gloss-en">Claim</div><div class="gloss-es">Reclamo / reclamación</div><div class="gloss-note"></div></div>
+      <div class="gloss-card"><div class="gloss-en">Claimant</div><div class="gloss-es">Reclamante</div><div class="gloss-note"></div></div>
+      <div class="gloss-card"><div class="gloss-en">Adjuster</div><div class="gloss-es">Ajustador (de seguros)</div><div class="gloss-note"></div></div>
+      <div class="gloss-card"><div class="gloss-en">Policyholder / Insured</div><div class="gloss-es">Asegurado / tomador de póliza</div><div class="gloss-note"></div></div>
+      <div class="gloss-card"><div class="gloss-en">Insurer / Carrier</div><div class="gloss-es">Aseguradora</div><div class="gloss-note"></div></div>
+      <div class="gloss-card"><div class="gloss-en">Premium</div><div class="gloss-es">Prima</div><div class="gloss-note">Pago periódico del seguro</div></div>
+      <div class="gloss-card"><div class="gloss-en">Deductible</div><div class="gloss-es">Deducible</div><div class="gloss-note">Monto que paga el asegurado antes de la cobertura</div></div>
+      <div class="gloss-card"><div class="gloss-en">Coverage</div><div class="gloss-es">Cobertura</div><div class="gloss-note"></div></div>
+      <div class="gloss-card"><div class="gloss-en">Liability coverage</div><div class="gloss-es">Cobertura de responsabilidad civil</div><div class="gloss-note"></div></div>
+      <div class="gloss-card"><div class="gloss-en">Collision coverage</div><div class="gloss-es">Cobertura por colisión</div><div class="gloss-note">Cubre daños al propio vehículo</div></div>
+      <div class="gloss-card"><div class="gloss-en">Comprehensive coverage</div><div class="gloss-es">Cobertura amplia / todo riesgo</div><div class="gloss-note">Cubre robo, incendio, fenómenos naturales, etc.</div></div>
+      <div class="gloss-card"><div class="gloss-en">Uninsured/underinsured motorist coverage</div><div class="gloss-es">Cobertura por motorista no asegurado/subasegurado</div><div class="gloss-note"></div></div>
+      <div class="gloss-card"><div class="gloss-en">Personal Injury Protection (PIP)</div><div class="gloss-es">Protección contra lesiones personales</div><div class="gloss-note">Cobertura "no-fault" en algunos estados</div></div>
+      <div class="gloss-card"><div class="gloss-en">Medical payments coverage (MedPay)</div><div class="gloss-es">Cobertura de pagos médicos</div><div class="gloss-note"></div></div>
+      <div class="gloss-card"><div class="gloss-en">Rental reimbursement</div><div class="gloss-es">Reembolso de auto de alquiler</div><div class="gloss-note"></div></div>
+      <div class="gloss-card"><div class="gloss-en">Gap insurance</div><div class="gloss-es">Seguro de brecha (GAP)</div><div class="gloss-note">Cubre diferencia entre valor del auto y saldo del préstamo</div></div>
+      <div class="gloss-card"><div class="gloss-en">No-fault state</div><div class="gloss-es">Estado "sin culpa"</div><div class="gloss-note">Cada aseguradora paga a su asegurado sin determinar culpa</div></div>
+      <div class="gloss-card"><div class="gloss-en">At-fault driver</div><div class="gloss-es">Conductor responsable / culpable</div><div class="gloss-note"></div></div>
+      <div class="gloss-card"><div class="gloss-en">Not-at-fault driver</div><div class="gloss-es">Conductor no responsable</div><div class="gloss-note"></div></div>
+      <div class="gloss-card"><div class="gloss-en">Total loss / Totaled vehicle</div><div class="gloss-es">Pérdida total</div><div class="gloss-note">El costo de reparación supera el valor del auto</div></div>
+      <div class="gloss-card"><div class="gloss-en">Actual cash value (ACV)</div><div class="gloss-es">Valor real en efectivo</div><div class="gloss-note">Valor de mercado del vehículo al momento del siniestro</div></div>
+      <div class="gloss-card"><div class="gloss-en">Diminished value</div><div class="gloss-es">Valor disminuido</div><div class="gloss-note">Pérdida de valor de reventa tras el choque</div></div>
+      <div class="gloss-card"><div class="gloss-en">Salvage title</div><div class="gloss-es">Título de salvamento / chatarra</div><div class="gloss-note">Vehículo declarado pérdida total pero reconstruido</div></div>
+      <div class="gloss-card"><div class="gloss-en">Comparative negligence</div><div class="gloss-es">Negligencia comparativa</div><div class="gloss-note">Responsabilidad repartida entre las partes</div></div>
+      <div class="gloss-card"><div class="gloss-en">Settlement</div><div class="gloss-es">Acuerdo / arreglo indemnizatorio</div><div class="gloss-note"></div></div>
+      <div class="gloss-card"><div class="gloss-en">Subrogation</div><div class="gloss-es">Subrogación</div><div class="gloss-note">La aseguradora recupera el pago del responsable</div></div>
+      <div class="gloss-card"><div class="gloss-en">Statute of limitations</div><div class="gloss-es">Plazo de prescripción</div><div class="gloss-note">Tiempo límite para presentar demanda/reclamo</div></div>
+      <div class="gloss-card"><div class="gloss-en">Demand letter</div><div class="gloss-es">Carta de reclamación / de exigencia</div><div class="gloss-note">Enviada por el abogado del reclamante</div></div>
+      <div class="gloss-card"><div class="gloss-en">Independent medical exam (IME)</div><div class="gloss-es">Examen médico independiente</div><div class="gloss-note">Solicitado por la aseguradora</div></div>
+      <div class="gloss-card"><div class="gloss-en">Proof of loss</div><div class="gloss-es">Prueba de pérdida</div><div class="gloss-note">Documento formal del reclamo</div></div>
+      <div class="gloss-card"><div class="gloss-en">Underwriting</div><div class="gloss-es">Suscripción (de la póliza)</div><div class="gloss-note">Evaluación de riesgo previa a emitir la póliza</div></div>
+      <div class="gloss-card"><div class="gloss-en">Endorsement / rider</div><div class="gloss-es">Endoso / cláusula adicional</div><div class="gloss-note">Modificación a la póliza</div></div>
+      <div class="gloss-card"><div class="gloss-en">Grace period</div><div class="gloss-es">Periodo de gracia</div><div class="gloss-note"></div></div>
+      <div class="gloss-card"><div class="gloss-en">Policy lapse</div><div class="gloss-es">Vencimiento / caducidad de la póliza</div><div class="gloss-note"></div></div>
+      <div class="gloss-card"><div class="gloss-en">SR-22</div><div class="gloss-es">Certificado SR-22</div><div class="gloss-note">Prueba de seguro requerida tras infracciones graves</div></div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <strong>Nota:</strong> los scripts omiten pasos protocolares base de apertura/confidencialidad y se centran en el contenido específico de cada escenario. Los términos en <span style="color:var(--amber)">ámbar</span> son phrasal verbs; los términos en <span style="color:var(--violet)">violeta</span> provienen del glosario de seguros de auto (pestaña 05) y ahora están integrados directamente en los diálogos de las pestañas 02, 03 y 04.
+</footer>
+
+<script>
+  const buttons = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.panel');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.panel).classList.add('active');
+    });
+  });
+
+  const searchInput = document.getElementById('glossSearch');
+  const cards = document.querySelectorAll('.gloss-card');
+  const countEl = document.getElementById('glossCount');
+
+  function updateCount(){
+    const visible = document.querySelectorAll('.gloss-card:not(.hidden)').length;
+    countEl.textContent = visible + ' de ' + cards.length + ' términos';
+  }
+
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    cards.forEach(card => {
+      const text = card.textContent.toLowerCase();
+      card.classList.toggle('hidden', q.length > 0 && !text.includes(q));
+    });
+    updateCount();
+  });
+
+  updateCount();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de Nota de Llamada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Lato:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0c1016;
+    --panel: #141b26;
+    --panel-2: #1c2532;
+    --border: #2a3444;
+    --text: #e9edf5;
+    --text-dim: #8a93a8;
+    --text-dimmer: #5c6479;
+    --ok: #34d399;
+    --warn: #f5a623;
+    --critical: #f2545b;
+    --info: #4fb0e8;
+    --accent: #a78bfa;
+    --radius: 10px;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(79,176,232,0.06), transparent 40%),
+      radial-gradient(circle at 85% 100%, rgba(167,139,250,0.05), transparent 40%);
+    color: var(--text);
+    font-family: 'Lato', sans-serif;
+    min-height: 100vh;
+    padding: 28px 20px 60px;
+  }
+  h1,h2,h3, .display{
+    font-family: 'Montserrat', sans-serif;
+  }
+  .wrap{ max-width: 1180px; margin: 0 auto; }
+
+  /* ---------- Header ---------- */
+  header.top{
+    display:flex; align-items:flex-end; justify-content: space-between;
+    gap: 20px; flex-wrap: wrap;
+    margin-bottom: 26px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand-eyebrow{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--info);
+    margin: 0 0 6px;
+  }
+  header.top h1{
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: var(--text);
+  }
+  header.top p{
+    margin: 6px 0 0;
+    color: var(--text-dim);
+    font-size: 14.5px;
+    max-width: 560px;
+  }
+  .clock{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+    text-align: right;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+  .clock b{ color: var(--text); font-weight: 600; }
+
+  /* ---------- Layout ---------- */
+  .grid{
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 900px){
+    .grid{ grid-template-columns: 1fr; }
+  }
+
+  .panel{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    margin-bottom: 20px;
+  }
+  .panel h2{
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-weight: 700;
+    color: var(--text-dim);
+    margin: 0 0 4px;
+  }
+  .panel .en-label{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    color: var(--text);
+    margin: 0 0 14px;
+    font-weight: 500;
+  }
+  .panel .section-hint{
+    font-size: 13px;
+    color: var(--text-dimmer);
+    margin: -8px 0 14px;
+  }
+
+  /* ---------- Outcome chip grid ---------- */
+  .chip-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 10px;
+  }
+  .chip{
+    position: relative;
+    display:block;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--chip-color, var(--border));
+    border-radius: 8px;
+    padding: 11px 14px 11px 14px;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease, transform .1s ease;
+  }
+  .chip:hover{ background: #212b3a; }
+  .chip input{ position:absolute; opacity:0; pointer-events:none; }
+  .chip .chip-label{
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text);
+    display:flex; align-items:center; gap:8px;
+  }
+  .chip .chip-label::before{
+    content:'';
+    width:8px; height:8px; border-radius: 50%;
+    background: var(--chip-color, var(--text-dimmer));
+    flex-shrink:0;
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
+  }
+  .chip .chip-hint{
+    font-size: 11.5px;
+    color: var(--text-dimmer);
+    margin-top: 3px;
+    padding-left: 16px;
+  }
+  .chip:has(input:checked){
+    background: rgba(255,255,255,0.03);
+    border-color: var(--chip-color, var(--border));
+    box-shadow: inset 0 0 0 1px var(--chip-color, var(--border));
+  }
+  .chip:has(input:focus-visible){ outline: 2px solid var(--info); outline-offset: 2px; }
+
+  /* checkbox chips (sector / circumstances) — more compact, pill style */
+  .pill-grid{ display:flex; flex-wrap:wrap; gap:8px; }
+  .pill{
+    position:relative;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor:pointer;
+    color: var(--text-dim);
+    transition: all .15s ease;
+  }
+  .pill input{ position:absolute; opacity:0; pointer-events:none; }
+  .pill:hover{ background:#212b3a; }
+  .pill:has(input:checked){
+    background: rgba(167,139,250,0.12);
+    border-color: var(--accent);
+    color: var(--text);
+  }
+  .pill:has(input:focus-visible){ outline: 2px solid var(--info); outline-offset: 2px; }
+
+  /* ---------- Conditional field blocks ---------- */
+  .field-block{
+    display:none;
+    margin-top: 14px;
+    padding: 14px 14px 4px;
+    background: rgba(255,255,255,0.02);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+  }
+  .field-block.show{ display:block; }
+  .field-row{ margin-bottom: 12px; }
+  .field-row label{
+    display:block;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+  input[type="text"], input[type="number"], select, textarea{
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Lato', sans-serif;
+    font-size: 13.5px;
+    padding: 9px 11px;
+  }
+  input:focus, select:focus, textarea:focus{
+    outline: none;
+    border-color: var(--info);
+  }
+  textarea{ resize: vertical; min-height: 64px; }
+  .two-col{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 520px){ .two-col{ grid-template-columns: 1fr; } }
+
+  /* ---------- Call details ---------- */
+  .arrow{ color: var(--text-dimmer); font-family:'JetBrains Mono',monospace; }
+
+  /* ---------- Ticket / output panel ---------- */
+  .ticket-wrap{ position: sticky; top: 20px; }
+  .ticket{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow:hidden;
+  }
+  .ticket-perf{
+    height: 14px;
+    background-image: radial-gradient(circle, var(--bg) 3px, transparent 3.5px);
+    background-size: 16px 16px;
+    background-position: -4px -8px;
+    background-color: var(--panel-2);
+  }
+  .ticket-head{
+    background: var(--panel-2);
+    padding: 14px 20px;
+    display:flex; align-items:center; justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .ticket-head .title-group{ display:flex; align-items:center; gap:10px; }
+  .led{
+    width: 10px; height:10px; border-radius:50%;
+    background: var(--border);
+    box-shadow: 0 0 8px 1px transparent;
+    transition: background .2s ease;
+  }
+  .led.on{ box-shadow: 0 0 8px 1px currentColor; }
+  @media (prefers-reduced-motion: no-preference){
+    .led.on{ animation: pulse 2.2s ease-in-out infinite; }
+  }
+  @keyframes pulse{
+    0%,100%{ opacity:1; } 50%{ opacity:.55; }
+  }
+  .ticket-head h3{
+    margin:0; font-size: 12.5px; letter-spacing:0.08em; text-transform:uppercase;
+    color: var(--text-dim); font-weight:700;
+  }
+  .lang-toggle{
+    display:flex; background: var(--panel); border:1px solid var(--border); border-radius: 6px; overflow:hidden;
+  }
+  .lang-toggle label{
+    padding: 5px 11px; font-size: 11.5px; font-weight:700; cursor:pointer; color: var(--text-dimmer);
+    font-family:'JetBrains Mono',monospace;
+  }
+  .lang-toggle input{ position:absolute; opacity:0; pointer-events:none; }
+  .lang-toggle label:has(input:checked){ background: var(--info); color: #06121c; }
+
+  .ticket-body{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.8px;
+    line-height: 1.65;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+    padding: 18px 20px;
+    min-height: 220px;
+  }
+  .ticket-body.placeholder{ color: var(--text-dimmer); font-style: italic; }
+
+  .ticket-foot{
+    display:flex; align-items:center; justify-content: space-between;
+    padding: 12px 20px 18px;
+    gap: 10px;
+  }
+  .char-count{ font-size: 11px; color: var(--text-dimmer); font-family:'JetBrains Mono',monospace; }
+
+  button{
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    font-size: 13.5px;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all .15s ease;
+    display:inline-flex; align-items:center; gap:7px;
+  }
+  .btn-primary{
+    background: var(--info);
+    color: #06121c;
+  }
+  .btn-primary:hover{ filter: brightness(1.08); }
+  .btn-primary:disabled{ background: var(--border); color: var(--text-dimmer); cursor: not-allowed; }
+  .btn-ghost{
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text-dim);
+  }
+  .btn-ghost:hover{ border-color: var(--text-dimmer); color: var(--text); }
+
+  .footer-actions{ display:flex; justify-content:flex-end; margin-top: -6px; margin-bottom: 18px; }
+
+  ::selection{ background: rgba(79,176,232,0.3); }
+
+  /* ---------- Verbal scripts panel ---------- */
+  .verbal-panel{ margin-bottom: 20px; }
+  .verbal-head{
+    display:flex; align-items:center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px;
+    margin-bottom: 4px;
+  }
+  .verbal-cards{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 16px;
+  }
+  @media (max-width: 900px){ .verbal-cards{ grid-template-columns: 1fr; } }
+
+  .script-card{
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 15px 15px;
+    display:flex; flex-direction:column;
+  }
+  .script-card .script-title{
+    display:flex; align-items:center; gap:8px;
+    font-size: 13px; font-weight: 700; color: var(--text);
+    margin-bottom: 3px;
+  }
+  .script-card .script-title .dot{
+    width:7px; height:7px; border-radius:50%; flex-shrink:0;
+  }
+  .script-card .script-sub{
+    font-size: 11.5px; color: var(--text-dimmer); margin-bottom: 10px;
+  }
+  .script-card .mini-field{ margin-bottom: 10px; }
+  .script-card .mini-field label{
+    display:block; font-size: 11px; color: var(--text-dim); margin-bottom: 4px; font-weight:600;
+  }
+  .script-card .mini-field input{ font-size: 12.5px; padding: 6px 9px; }
+
+  .script-stage{ margin-top: 10px; }
+  .script-stage:first-of-type{ margin-top: 0; }
+  .script-stage .stage-label{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 5px;
+    display:block;
+  }
+  .script-stage .stage-text{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.8px;
+    line-height: 1.55;
+    color: var(--text);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 11px;
+    white-space: pre-wrap;
+  }
+  .script-stage .copy-mini{
+    margin-top: 6px;
+    font-size: 11px;
+    padding: 5px 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .script-stage .copy-mini:hover{ border-color: var(--info); color: var(--text); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <p class="brand-eyebrow">// dispatch note builder</p>
+      <h1>Generador de Nota de Llamada</h1>
+      <p>Arma la nota de disposición lista para copiar y pegar en el portal. Selecciona el resultado de la llamada, agrega el contexto que aplique y copia el texto final.</p>
+    </div>
+    <div class="clock" id="clock"></div>
+  </header>
+
+  <div class="footer-actions">
+    <button class="btn-ghost" id="resetBtn" type="button">↺ Nueva llamada</button>
+  </div>
+
+  <div class="panel verbal-panel">
+    <div class="verbal-head">
+      <div>
+        <h2>Avisos verbales al REP</h2>
+        <p class="section-hint" style="margin-bottom:0;">Lo que debes decir en el momento — no la nota de cierre. Úsalos para dejar aviso previo por instrucción del REP/dispatcher/provider antes de colgar.</p>
+      </div>
+      <div class="lang-toggle">
+        <label><input type="radio" name="verbalLang" value="en" checked>EN</label>
+        <label><input type="radio" name="verbalLang" value="es">ES</label>
+      </div>
+    </div>
+
+    <div class="verbal-cards">
+      <!-- HOLD PROLONGADO -->
+      <div class="script-card">
+        <div class="script-title"><span class="dot" style="background:var(--warn)"></span>Hold prolongado</div>
+        <div class="script-sub">REP sigue en línea, pero la espera se ha extendido demasiado.</div>
+        <div class="mini-field">
+          <label>Umbral de espera (minutos)</label>
+          <input type="number" min="0" id="verbal-holdMinutes" placeholder="Ej: 10">
+        </div>
+        <div class="script-stage">
+          <span class="stage-label">Aviso previo</span>
+          <div class="stage-text" id="verbal-hold-warn"></div>
+          <button class="btn-ghost copy-mini" type="button" data-copy-target="verbal-hold-warn">⧉ Copiar</button>
+        </div>
+        <div class="script-stage">
+          <span class="stage-label">Justo antes de desconectar</span>
+          <div class="stage-text" id="verbal-hold-final"></div>
+          <button class="btn-ghost copy-mini" type="button" data-copy-target="verbal-hold-final">⧉ Copiar</button>
+        </div>
+      </div>
+
+      <!-- CORTE / DESCONEXIÓN -->
+      <div class="script-card">
+        <div class="script-title"><span class="dot" style="background:var(--critical)"></span>Corte / desconexión</div>
+        <div class="script-sub">La llamada se cortó o debes desconectarte tú por un problema técnico.</div>
+        <div class="script-stage">
+          <span class="stage-label">Si logras reconectar o hablar antes de colgar</span>
+          <div class="stage-text" id="verbal-drop-note"></div>
+          <button class="btn-ghost copy-mini" type="button" data-copy-target="verbal-drop-note">⧉ Copiar</button>
+        </div>
+      </div>
+
+      <!-- SIN CONEXIÓN -->
+      <div class="script-card">
+        <div class="script-title"><span class="dot" style="background:var(--text-dimmer)"></span>Cliente no se conecta</div>
+        <div class="script-sub">Aviso al REP mientras esperas, y antes de liberar la llamada.</div>
+        <div class="mini-field">
+          <label>Minutos esperando</label>
+          <input type="number" min="0" id="verbal-neverConnMinutes" placeholder="Ej: 5">
+        </div>
+        <div class="script-stage">
+          <span class="stage-label">Mientras esperas</span>
+          <div class="stage-text" id="verbal-neverconn-warn"></div>
+          <button class="btn-ghost copy-mini" type="button" data-copy-target="verbal-neverconn-warn">⧉ Copiar</button>
+        </div>
+        <div class="script-stage">
+          <span class="stage-label">Antes de liberar la llamada</span>
+          <div class="stage-text" id="verbal-neverconn-final"></div>
+          <button class="btn-ghost copy-mini" type="button" data-copy-target="verbal-neverconn-final">⧉ Copiar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT COLUMN: FORM -->
+    <div>
+
+      <div class="panel">
+        <h2>How did the call go?</h2>
+        <p class="section-hint">Elige la opción tal como aparece en el portal.</p>
+        <div class="chip-grid" id="outcomeGrid"></div>
+
+        <!-- conditional field blocks per outcome -->
+        <div class="field-block" data-for="never_connected">
+          <div class="field-row">
+            <label>¿Cuántos minutos esperaste en línea?</label>
+            <input type="number" min="0" id="never_connected-waitMinutes" placeholder="Ej: 5">
+          </div>
+        </div>
+
+        <div class="field-block" data-for="no_interpreter">
+          <div class="field-row">
+            <label>Motivo (opcional)</label>
+            <input type="text" id="no_interpreter-reason" placeholder="Ej: el cliente continuó en inglés">
+          </div>
+        </div>
+
+        <div class="field-block" data-for="audio_issue">
+          <div class="field-row">
+            <label>Describe el problema</label>
+            <input type="text" id="audio_issue-description" placeholder="Ej: audio unidireccional, estática, eco">
+          </div>
+          <div class="field-row">
+            <label>Desenlace</label>
+            <select id="audio_issue-resolution">
+              <option value="">— Selecciona —</option>
+              <option value="resolved">Se resolvió y la llamada continuó normal</option>
+              <option value="unresolved">No se pudo resolver, la llamada no se completó</option>
+              <option value="proceeded">Se completó pese al problema intermitente</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-block" data-for="video_issue">
+          <div class="field-row">
+            <label>Describe el problema</label>
+            <input type="text" id="video_issue-description" placeholder="Ej: video congelado, sin señal, pixelado">
+          </div>
+          <div class="field-row">
+            <label>Desenlace</label>
+            <select id="video_issue-resolution">
+              <option value="">— Selecciona —</option>
+              <option value="resolved">Se resolvió y la llamada continuó normal</option>
+              <option value="unresolved">No se pudo resolver, la llamada no se completó</option>
+              <option value="proceeded">Se completó pese al problema intermitente</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-block" data-for="dropped">
+          <div class="field-row">
+            <label>¿En qué momento se cortó? (opcional)</label>
+            <input type="text" id="dropped-duration" placeholder="Ej: 5 minutos después de iniciar">
+          </div>
+        </div>
+
+        <div class="field-block" data-for="wrong_language">
+          <div class="field-row">
+            <label>Idioma real que necesitaba el cliente (opcional)</label>
+            <input type="text" id="wrong_language-identifiedLanguage" placeholder="Ej: portugués">
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Contexto del entorno</h2>
+        <p class="section-hint">Marca si aplica — toda situación anormal en estos entornos debe quedar registrada.</p>
+        <div class="pill-grid">
+          <label class="pill"><input type="checkbox" name="sector" value="banking"> Bancario / Financiero</label>
+          <label class="pill"><input type="checkbox" name="sector" value="emergency911"> Emergencias 911</label>
+          <label class="pill"><input type="checkbox" name="sector" value="insurance"> Seguros / Underwriting</label>
+          <label class="pill"><input type="checkbox" name="sector" value="education"> Educación</label>
+          <label class="pill"><input type="checkbox" name="sector" value="medical"> Interpretación médica</label>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Circunstancias especiales</h2>
+        <p class="section-hint">Respaldo presencial, terceros en la línea, o espera indicada por REP/dispatcher/provider.</p>
+        <div class="pill-grid">
+          <label class="pill"><input type="checkbox" id="circ-backup"> Actué como respaldo (intérprete presencial en sitio)</label>
+          <label class="pill"><input type="checkbox" id="circ-thirdparty"> Llamada con terceros (third party)</label>
+          <label class="pill"><input type="checkbox" id="circ-wait"> Se me indicó esperar varios minutos</label>
+          <label class="pill"><input type="checkbox" id="circ-hold"> Hold prolongado (avisé al REP antes de desconectar)</label>
+        </div>
+
+        <div class="field-block" id="block-hold">
+          <div class="field-row">
+            <label>¿A partir de cuántos minutos avisaste que desconectarías? (opcional)</label>
+            <input type="number" min="0" id="holdMinutes" placeholder="Ej: 10">
+          </div>
+        </div>
+
+        <div class="field-block" id="block-backup">
+          <div class="field-row">
+            <label>Detalle de tu rol (opcional)</label>
+            <input type="text" id="backupDetail" placeholder="Ej: apoyo de relevo únicamente">
+          </div>
+        </div>
+
+        <div class="field-block" id="block-thirdparty">
+          <div class="field-row">
+            <label>¿Quién participó además de las partes principales? (opcional)</label>
+            <input type="text" id="thirdPartyDetail" placeholder="Ej: un familiar del cliente">
+          </div>
+        </div>
+
+        <div class="field-block" id="block-wait">
+          <div class="two-col">
+            <div class="field-row">
+              <label>¿Quién lo indicó?</label>
+              <input type="text" id="instructedBy" placeholder="Ej: REP, Dispatcher, Provider">
+            </div>
+            <div class="field-row">
+              <label>¿Cuántos minutos?</label>
+              <input type="number" min="0" id="waitInstructedMinutes" placeholder="Ej: 8">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Detalles de la llamada</h2>
+        <div class="two-col">
+          <div class="field-row">
+            <label>ID de llamada / Referencia (opcional)</label>
+            <input type="text" id="callId" placeholder="Ej: #48213">
+          </div>
+          <div class="field-row">
+            <label>Par de idiomas (opcional)</label>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="text" id="langFrom" placeholder="Inglés">
+              <span class="arrow">→</span>
+              <input type="text" id="langTo" placeholder="Español">
+            </div>
+          </div>
+        </div>
+        <div class="field-row">
+          <label>Notas adicionales (opcional)</label>
+          <textarea id="extraNotes" placeholder="Cualquier detalle extra que quieras dejar por escrito..."></textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: TICKET OUTPUT -->
+    <div class="ticket-wrap">
+      <div class="ticket">
+        <div class="ticket-perf"></div>
+        <div class="ticket-head">
+          <div class="title-group">
+            <span class="led" id="ledDot"></span>
+            <h3>Nota generada</h3>
+          </div>
+          <div class="lang-toggle">
+            <label><input type="radio" name="outLang" value="en" checked>EN</label>
+            <label><input type="radio" name="outLang" value="es">ES</label>
+          </div>
+        </div>
+        <div class="ticket-body placeholder" id="ticketBody">Selecciona el resultado de la llamada para generar la nota.</div>
+        <div class="ticket-foot">
+          <span class="char-count" id="charCount"></span>
+          <button class="btn-primary" id="copyBtn" type="button" disabled>⧉ Copiar nota</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const OUTCOMES = [
+  {id:'success', label:'Call completed successfully with no issues', color:'var(--ok)', hint:'Sin incidentes que reportar.'},
+  {id:'never_connected', label:'Client never connected', color:'var(--warn)', hint:'El cliente nunca entró a la llamada.'},
+  {id:'no_interpreter', label:'Client did not need an interpreter', color:'var(--text-dimmer)', hint:'No se necesitó intérprete.'},
+  {id:'audio_issue', label:'Technical audio issue', color:'var(--warn)', hint:'Falla técnica de audio.'},
+  {id:'video_issue', label:'Technical video issue', color:'var(--warn)', hint:'Falla técnica de video (VRI).'},
+  {id:'dropped', label:'Client dropped unexpectedly', color:'var(--critical)', hint:'La llamada se cortó sin aviso.'},
+  {id:'wrong_language', label:'Wrong Language', color:'var(--critical)', hint:'El idioma despachado no era el correcto.'},
+  {id:'test_call', label:'Test Call', color:'var(--info)', hint:'Prueba interna, sin cliente real.'}
+];
+
+const grid = document.getElementById('outcomeGrid');
+OUTCOMES.forEach((o, i)=>{
+  const label = document.createElement('label');
+  label.className = 'chip';
+  label.style.setProperty('--chip-color', o.color);
+  label.innerHTML = `
+    <input type="radio" name="outcome" value="${o.id}" ${i===0 ? '' : ''}>
+    <span class="chip-label">${o.label}</span>
+    <div class="chip-hint">${o.hint}</div>
+  `;
+  grid.appendChild(label);
+});
+
+function resolutionText(lang, val){
+  const map = {
+    en: {resolved:'The issue was resolved and the call proceeded normally.', unresolved:'The issue could not be resolved, and the call could not be completed as a result.', proceeded:'Despite the intermittent issue, the call was completed.'},
+    es: {resolved:'El problema se resolvió y la llamada continuó con normalidad.', unresolved:'No fue posible resolver el problema y, como resultado, la llamada no pudo completarse.', proceeded:'A pesar del problema intermitente, la llamada se completó.'}
+  };
+  return map[lang][val] || (lang==='en' ? 'Outcome of the issue not specified.' : 'No se especificó el desenlace del problema.');
+}
+
+const TEMPLATES = {
+  en: {
+    success: () => "Call completed successfully with no issues. Interpretation was provided from start to finish, with no technical, linguistic, or procedural issues to report.",
+    never_connected: (f) => `The client never connected to the call. I remained on the line for approximately ${f.waitMinutes || '[X]'} minute(s) awaiting connection before the call was released. No interpretation was rendered.`,
+    no_interpreter: (f) => `Upon connection, it was determined that the client did not require interpretation services for this call${f.reason ? `, as ${f.reason}` : ''}. Interpretation was not necessary.`,
+    audio_issue: (f) => `A technical audio issue was experienced during the call${f.description ? `: ${f.description}` : ''}. ${resolutionText('en', f.resolution)}`,
+    video_issue: (f) => `A technical video issue was experienced during the call${f.description ? `: ${f.description}` : ''}. ${resolutionText('en', f.resolution)}`,
+    dropped: (f) => `The client disconnected unexpectedly during the call${f.duration ? ` at approximately ${f.duration}` : ''}. No reason for the drop was given, and I remained available in case of reconnection.`,
+    wrong_language: (f) => `The language requested/dispatched did not match the language needed by the client${f.identifiedLanguage ? `; the client's actual language need was identified as ${f.identifiedLanguage}` : ''}. I was unable to proceed with interpretation, and the call was released for correct language dispatch.`,
+    test_call: () => "This was a test call used to verify audio/video/connection quality. No client was present and no interpretation was rendered."
+  },
+  es: {
+    success: () => "Llamada completada con éxito, sin incidentes. La interpretación se brindó de principio a fin, sin problemas técnicos, lingüísticos ni de procedimiento.",
+    never_connected: (f) => `El cliente nunca se conectó a la llamada. Permanecí en línea aproximadamente ${f.waitMinutes || '[X]'} minuto(s) esperando la conexión antes de liberar la llamada. No se brindó interpretación.`,
+    no_interpreter: (f) => `Al conectarse, se determinó que el cliente no requería servicios de interpretación para esta llamada${f.reason ? `, debido a que ${f.reason}` : ''}. No fue necesaria la interpretación.`,
+    audio_issue: (f) => `Se presentó un problema técnico de audio durante la llamada${f.description ? `: ${f.description}` : ''}. ${resolutionText('es', f.resolution)}`,
+    video_issue: (f) => `Se presentó un problema técnico de video durante la llamada${f.description ? `: ${f.description}` : ''}. ${resolutionText('es', f.resolution)}`,
+    dropped: (f) => `El cliente se desconectó de forma inesperada durante la llamada${f.duration ? ` aproximadamente a los ${f.duration}` : ''}. No se indicó el motivo de la desconexión y permanecí disponible en caso de reconexión.`,
+    wrong_language: (f) => `El idioma solicitado/despachado no coincidía con el idioma que necesitaba el cliente${f.identifiedLanguage ? `; se identificó que el idioma real requerido era ${f.identifiedLanguage}` : ''}. No fue posible continuar con la interpretación y la llamada fue liberada para un despacho con el idioma correcto.`,
+    test_call: () => "Esta fue una llamada de prueba utilizada para verificar la calidad de audio, video o conexión. No hubo cliente presente y no se brindó interpretación."
+  }
+};
+
+const SECTOR_TEMPLATES = {
+  en: {
+    banking: "Sector note: this call took place in a banking/financial services context; standard identity-verification and confidentiality protocols were observed throughout.",
+    emergency911: "Sector note: this was a 911/emergency services call. Given the safety-critical nature of the call, the situation was reported immediately and emergency interpretation protocol was followed.",
+    insurance: "Sector note: this call involved insurance/underwriting matters; standard confidentiality and accuracy protocols for policy-related information were maintained.",
+    education: "Sector note: this call took place in an educational services context (school/district communication).",
+    medical: "Sector note: this was a medical interpretation encounter. All applicable confidentiality and accuracy standards for healthcare interpretation were maintained throughout."
+  },
+  es: {
+    banking: "Nota de sector: esta llamada se realizó en un contexto bancario/financiero; se observaron los protocolos estándar de verificación de identidad y confidencialidad durante toda la llamada.",
+    emergency911: "Nota de sector: esta fue una llamada de emergencia/911. Dada la naturaleza crítica de la llamada, la situación se reportó de inmediato y se siguió el protocolo de interpretación para emergencias.",
+    insurance: "Nota de sector: esta llamada correspondía a asuntos de seguros/underwriting; se mantuvieron los protocolos estándar de confidencialidad y precisión para la información relacionada con pólizas.",
+    education: "Nota de sector: esta llamada se realizó en un contexto de servicios educativos (comunicación escolar/distrital).",
+    medical: "Nota de sector: este fue un encuentro de interpretación médica. Se mantuvieron durante toda la llamada los estándares de confidencialidad y precisión aplicables a la interpretación en salud."
+  }
+};
+
+const CIRC_TEMPLATES = {
+  backup: (lang, f) => lang==='en'
+    ? `Interpreter role note: I served in a backup/standby capacity for this call, as an in-person interpreter was present on-site; my involvement was limited to ${f.backupDetail || 'standby support only'}.`
+    : `Nota de rol: actué en calidad de intérprete de respaldo/standby para esta llamada, ya que había un intérprete presencial en el sitio; mi participación se limitó a ${f.backupDetail || 'un rol de espera (standby) únicamente'}.`,
+  thirdParty: (lang, f) => lang==='en'
+    ? `Call composition note: this was a third-party call; ${f.thirdPartyDetail || 'an additional party'} participated on the line in addition to the primary parties.`
+    : `Nota de composición: esta fue una llamada con terceros; ${f.thirdPartyDetail || 'una parte adicional'} participó en la línea además de las partes principales.`,
+  waitInstructed: (lang, f) => lang==='en'
+    ? `Instruction note: I was instructed by the ${f.instructedBy || 'REP/dispatcher'} to remain on the line for approximately ${f.waitInstructedMinutes || '[X]'} minute(s) before proceeding/disconnecting. This wait time was observed per their direction.`
+    : `Nota de instrucción: se me indicó por parte de ${f.instructedBy || 'REP/dispatcher'} que permaneciera en línea aproximadamente ${f.waitInstructedMinutes || '[X]'} minuto(s) antes de proceder o desconectar. Este tiempo de espera se cumplió según su indicación.`,
+  holdProlonged: (lang, f) => lang==='en'
+    ? `Hold note: this call involved an extended hold with the REP still on the line. The REP was notified in advance that I would need to disconnect if the hold continued past approximately ${f.holdMinutes || '[X]'} minute(s), per company policy.`
+    : `Nota de espera: esta llamada implicó un hold prolongado con el REP aún en línea. Se le avisó al REP con anticipación que tendría que desconectarme si la espera continuaba más de aproximadamente ${f.holdMinutes || '[X]'} minuto(s), según la política de la compañía.`
+};
+
+const VERBAL_TEMPLATES = {
+  en: {
+    holdWarn: (m) => `I want to let you know that per my company's policy, I'm only able to remain on hold for a limited amount of time. If we're not able to proceed within the next ${m || '[X]'} minutes, I'll need to disconnect. I'm not ending the call — I just wanted to give you a heads-up in advance.`,
+    holdFinal: () => `As mentioned, I have to disconnect now due to the extended hold time. This isn't a reflection of the call itself — please feel free to redial and request an interpreter when you're ready to proceed.`,
+    dropNote: () => `I want to note for the record that the call disconnected unexpectedly. I did not intentionally end the call. If needed, I'm available to reconnect, or you're welcome to redial and request an interpreter.`,
+    neverConnWarn: (m) => `I just want to confirm — the client hasn't connected to the call yet. I'll continue holding for a few more minutes, but wanted to flag that in case there's an issue on their end.`,
+    neverConnFinal: (m) => `Since the client hasn't connected after approximately ${m || '[X]'} minutes, I'll need to release this call. Please feel free to redial and request an interpreter once the client is available.`
+  },
+  es: {
+    holdWarn: (m) => `Quiero informarle que, según la política de mi compañía, solo puedo permanecer en espera por un tiempo limitado. Si no podemos continuar en los próximos ${m || '[X]'} minutos, tendré que desconectarme. No estoy terminando la llamada — solo quería avisarle con anticipación.`,
+    holdFinal: () => `Como le mencioné, debo desconectarme ahora debido al tiempo prolongado de espera. Esto no refleja la llamada en sí — puede volver a marcar y solicitar un intérprete cuando estén listos para continuar.`,
+    dropNote: () => `Quiero dejar constancia de que la llamada se desconectó de forma inesperada. No terminé la llamada intencionalmente. Si es necesario, estoy disponible para reconectarme, o puede volver a marcar y solicitar un intérprete.`,
+    neverConnWarn: (m) => `Solo quiero confirmar — el cliente aún no se ha conectado a la llamada. Continuaré en espera unos minutos más, pero quería avisarle por si hay algún problema de su lado.`,
+    neverConnFinal: (m) => `Como el cliente no se ha conectado después de aproximadamente ${m || '[X]'} minutos, tendré que liberar esta llamada. Puede volver a marcar y solicitar un intérprete cuando el cliente esté disponible.`
+  }
+};
+
+function val(id){ const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+function updateVisibility(){
+  const checked = document.querySelector('input[name="outcome"]:checked');
+  const outcomeId = checked ? checked.value : null;
+  document.querySelectorAll('.field-block[data-for]').forEach(block=>{
+    block.classList.toggle('show', block.dataset.for === outcomeId);
+  });
+  document.getElementById('block-backup').classList.toggle('show', document.getElementById('circ-backup').checked);
+  document.getElementById('block-thirdparty').classList.toggle('show', document.getElementById('circ-thirdparty').checked);
+  document.getElementById('block-wait').classList.toggle('show', document.getElementById('circ-wait').checked);
+  document.getElementById('block-hold').classList.toggle('show', document.getElementById('circ-hold').checked);
+}
+
+function generate(){
+  const outcomeEl = document.querySelector('input[name="outcome"]:checked');
+  const lang = document.querySelector('input[name="outLang"]:checked').value;
+  const ticketBody = document.getElementById('ticketBody');
+  const copyBtn = document.getElementById('copyBtn');
+  const charCount = document.getElementById('charCount');
+  const ledDot = document.getElementById('ledDot');
+
+  if(!outcomeEl){
+    ticketBody.textContent = lang==='en' ? 'Select the call outcome above to generate the note.' : 'Selecciona el resultado de la llamada para generar la nota.';
+    ticketBody.classList.add('placeholder');
+    copyBtn.disabled = true;
+    charCount.textContent = '';
+    ledDot.classList.remove('on');
+    ledDot.style.background = '';
+    ledDot.style.color = '';
+    return;
+  }
+
+  ticketBody.classList.remove('placeholder');
+  copyBtn.disabled = false;
+
+  const outcomeId = outcomeEl.value;
+  const outcomeMeta = OUTCOMES.find(o=>o.id===outcomeId);
+  ledDot.classList.add('on');
+  ledDot.style.background = outcomeMeta.color;
+  ledDot.style.color = outcomeMeta.color;
+
+  const f = {
+    waitMinutes: val('never_connected-waitMinutes'),
+    reason: val('no_interpreter-reason'),
+    description: val(outcomeId+'-description'),
+    resolution: val(outcomeId+'-resolution'),
+    duration: val('dropped-duration'),
+    identifiedLanguage: val('wrong_language-identifiedLanguage'),
+    backupDetail: val('backupDetail'),
+    thirdPartyDetail: val('thirdPartyDetail'),
+    waitInstructedMinutes: val('waitInstructedMinutes'),
+    instructedBy: val('instructedBy'),
+    holdMinutes: val('holdMinutes')
+  };
+
+  const lines = [];
+  const callId = val('callId');
+  const langFrom = val('langFrom');
+  const langTo = val('langTo');
+  const now = new Date();
+  const dateStr = now.toLocaleString(lang==='en' ? 'en-US' : 'es-BO', {dateStyle:'medium', timeStyle:'short'});
+
+  lines.push(lang==='en' ? 'CALL DISPOSITION NOTE' : 'NOTA DE DISPOSICIÓN DE LLAMADA');
+  lines.push((lang==='en' ? 'Date/Time: ' : 'Fecha/Hora: ') + dateStr);
+  if(callId) lines.push((lang==='en' ? 'Call ID/Reference: ' : 'ID de llamada / Referencia: ') + callId);
+  if(langFrom || langTo) lines.push((lang==='en' ? 'Language pair: ' : 'Par de idiomas: ') + (langFrom || '—') + ' → ' + (langTo || '—'));
+  lines.push('');
+  lines.push(TEMPLATES[lang][outcomeId](f));
+
+  const sectors = Array.from(document.querySelectorAll('input[name="sector"]:checked')).map(el=>el.value);
+  const circLines = [];
+  sectors.forEach(s=>{ circLines.push('- ' + SECTOR_TEMPLATES[lang][s]); });
+  if(document.getElementById('circ-backup').checked) circLines.push('- ' + CIRC_TEMPLATES.backup(lang, f));
+  if(document.getElementById('circ-thirdparty').checked) circLines.push('- ' + CIRC_TEMPLATES.thirdParty(lang, f));
+  if(document.getElementById('circ-wait').checked) circLines.push('- ' + CIRC_TEMPLATES.waitInstructed(lang, f));
+  if(document.getElementById('circ-hold').checked) circLines.push('- ' + CIRC_TEMPLATES.holdProlonged(lang, f));
+
+  if(circLines.length){
+    lines.push('');
+    lines.push(...circLines);
+  }
+
+  const extra = val('extraNotes');
+  if(extra){
+    lines.push('');
+    lines.push((lang==='en' ? 'Additional notes: ' : 'Notas adicionales: ') + extra);
+  }
+
+  const finalText = lines.join('\n');
+  ticketBody.textContent = finalText;
+  charCount.textContent = finalText.length + (lang==='en' ? ' characters' : ' caracteres');
+}
+
+function updateVerbalScripts(){
+  const lang = document.querySelector('input[name="verbalLang"]:checked').value;
+  const t = VERBAL_TEMPLATES[lang];
+  const holdM = val('verbal-holdMinutes');
+  const neverConnM = val('verbal-neverConnMinutes');
+
+  document.getElementById('verbal-hold-warn').textContent = t.holdWarn(holdM);
+  document.getElementById('verbal-hold-final').textContent = t.holdFinal();
+  document.getElementById('verbal-drop-note').textContent = t.dropNote();
+  document.getElementById('verbal-neverconn-warn').textContent = t.neverConnWarn(neverConnM);
+  document.getElementById('verbal-neverconn-final').textContent = t.neverConnFinal(neverConnM);
+}
+
+document.querySelectorAll('.copy-mini').forEach(btn=>{
+  btn.addEventListener('click', async ()=>{
+    const targetId = btn.dataset.copyTarget;
+    const text = document.getElementById(targetId).textContent;
+    const original = btn.textContent;
+    try{
+      await navigator.clipboard.writeText(text);
+      btn.textContent = '✓ Copiado';
+    }catch(err){
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try{ document.execCommand('copy'); btn.textContent = '✓ Copiado'; }
+      catch(e2){ btn.textContent = '✗ Error'; }
+      document.body.removeChild(ta);
+    }
+    setTimeout(()=>{ btn.textContent = original; }, 1400);
+  });
+});
+
+document.addEventListener('input', (e)=>{
+  updateVisibility();
+  generate();
+  updateVerbalScripts();
+});
+document.addEventListener('change', (e)=>{
+  updateVisibility();
+  generate();
+  updateVerbalScripts();
+});
+
+document.getElementById('copyBtn').addEventListener('click', async ()=>{
+  const text = document.getElementById('ticketBody').textContent;
+  const btn = document.getElementById('copyBtn');
+  const original = btn.innerHTML;
+  try{
+    await navigator.clipboard.writeText(text);
+    btn.innerHTML = '✓ Copiado';
+  }catch(err){
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try{ document.execCommand('copy'); btn.innerHTML = '✓ Copiado'; }
+    catch(e2){ btn.innerHTML = '✗ Error al copiar'; }
+    document.body.removeChild(ta);
+  }
+  setTimeout(()=>{ btn.innerHTML = original; }, 1600);
+});
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  document.querySelectorAll('input[type="radio"][name="outcome"]').forEach(el=>el.checked = false);
+  document.querySelectorAll('input[type="checkbox"]').forEach(el=>el.checked = false);
+  document.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(el=>el.value = '');
+  document.querySelectorAll('select').forEach(el=>el.value = '');
+  document.querySelector('input[name="outLang"][value="en"]').checked = true;
+  document.querySelector('input[name="verbalLang"][value="en"]').checked = true;
+  updateVisibility();
+  generate();
+  updateVerbalScripts();
+});
+
+function tickClock(){
+  const el = document.getElementById('clock');
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('es-BO', {weekday:'short', day:'2-digit', month:'short'});
+  const timeStr = now.toLocaleTimeString('es-BO', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  el.innerHTML = `${dateStr}<br><b>${timeStr}</b>`;
+}
+tickClock();
+setInterval(tickClock, 1000);
+
+updateVisibility();
+generate();
+updateVerbalScripts();
+</script>
+</body>
+</html>

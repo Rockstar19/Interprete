@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INTERLINE — Panel de despacho del intérprete</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Lato:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-base:#10151A;
+    --bg-panel:#1B222A;
+    --bg-panel-alt:#212B34;
+    --border:#2E3944;
+    --border-soft:#232B32;
+    --text-primary:#EAEFF3;
+    --text-secondary:#93A1AC;
+    --text-tertiary:#5D6B77;
+    --accent:#F5B700;
+    --accent-soft:rgba(245,183,0,0.13);
+    --accent-dim:rgba(245,183,0,0.35);
+    --font-display:'Montserrat', sans-serif;
+    --font-body:'Lato', sans-serif;
+    --radius:10px;
+    --dur:180ms;
+  }
+  html[data-service="gas"]{ --accent:#FF6A3D; --accent-soft:rgba(255,106,61,0.13); --accent-dim:rgba(255,106,61,0.35); }
+  html[data-service="agua"]{ --accent:#1FB6C9; --accent-soft:rgba(31,182,201,0.13); --accent-dim:rgba(31,182,201,0.35); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; animation:none !important; }
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; background:var(--bg-base); color:var(--text-primary); }
+  body{
+    font-family:var(--font-body);
+    font-size:15.5px;
+    line-height:1.55;
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(255,255,255,0.035), transparent 40%),
+      radial-gradient(circle at 85% 15%, var(--accent-soft), transparent 45%);
+    background-attachment:fixed;
+  }
+  ::selection{ background:var(--accent-dim); color:#fff; }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+
+  a{ color:var(--accent); }
+
+  .wrap{ max-width:1180px; margin:0 auto; padding:36px 24px 80px; }
+
+  /* ---------- Masthead ---------- */
+  .masthead{
+    display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:20px;
+    border-bottom:1px solid var(--border-soft); padding-bottom:24px; margin-bottom:28px;
+  }
+  .eyebrow{
+    font-family:var(--font-display); font-weight:700; font-size:11.5px; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--accent); transition:color var(--dur);
+    display:flex; align-items:center; gap:8px;
+  }
+  .eyebrow::before{
+    content:""; width:7px; height:7px; border-radius:50%; background:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft); transition:background var(--dur), box-shadow var(--dur);
+  }
+  h1{
+    font-family:var(--font-display); font-weight:800; font-size:clamp(28px,4vw,40px);
+    letter-spacing:0.01em; margin:10px 0 6px; color:var(--text-primary);
+  }
+  .subtitle{ color:var(--text-secondary); max-width:620px; font-size:14.5px; }
+  .legend{ display:flex; gap:10px; flex-wrap:wrap; }
+  .legend-badge{
+    font-family:var(--font-display); font-size:11px; letter-spacing:0.06em; font-weight:700;
+    border:1px solid var(--border); border-radius:999px; padding:8px 14px; color:var(--text-secondary);
+    background:var(--bg-panel); text-transform:uppercase; text-align:left; line-height:1.3; max-width:220px;
+  }
+  .legend-badge b{ color:var(--text-primary); display:block; font-size:12.5px; margin-bottom:2px; }
+
+  /* ---------- Service selector ---------- */
+  .console-bar{
+    display:flex; flex-wrap:wrap; gap:14px; align-items:stretch; margin-bottom:14px;
+  }
+  .service-toggle{
+    display:flex; gap:8px; background:var(--bg-panel); border:1px solid var(--border);
+    border-radius:var(--radius); padding:6px;
+  }
+  .svc-btn{
+    font-family:var(--font-display); font-weight:700; font-size:12.5px; letter-spacing:0.06em;
+    text-transform:uppercase; color:var(--text-secondary); background:transparent; border:none;
+    border-radius:7px; padding:11px 16px; cursor:pointer; display:flex; align-items:center; gap:8px;
+    transition:background var(--dur), color var(--dur);
+  }
+  .svc-btn svg{ width:15px; height:15px; opacity:0.8; }
+  .svc-btn:hover{ color:var(--text-primary); }
+  .svc-btn[aria-pressed="true"]{ background:var(--accent); color:#12161A; }
+  .svc-btn[aria-pressed="true"] svg{ opacity:1; }
+
+  .state-select-wrap{
+    display:flex; align-items:center; gap:10px; background:var(--bg-panel); border:1px solid var(--border);
+    border-radius:var(--radius); padding:0 14px; flex:1; min-width:220px;
+  }
+  .state-select-wrap label{ font-family:var(--font-display); font-size:11px; letter-spacing:0.1em; color:var(--text-tertiary); text-transform:uppercase; white-space:nowrap; }
+  select{
+    flex:1; background:transparent; border:none; color:var(--text-primary); font-family:var(--font-body);
+    font-size:14.5px; padding:12px 4px; cursor:pointer;
+  }
+  select:focus-visible{ outline:none; }
+  option{ background:var(--bg-panel-alt); color:var(--text-primary); }
+
+  /* ---------- Readout card ---------- */
+  .readout{
+    background:var(--bg-panel); border:1px solid var(--border); border-left:3px solid var(--accent);
+    border-radius:var(--radius); padding:16px 18px; margin-bottom:34px; transition:border-color var(--dur);
+  }
+  .readout .rlabel{ font-family:var(--font-display); font-size:11px; letter-spacing:0.12em; color:var(--text-tertiary); text-transform:uppercase; margin-bottom:10px; }
+  .readout-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .readout-col h4{
+    margin:0 0 6px; font-family:var(--font-display); font-size:11.5px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--accent); transition:color var(--dur);
+  }
+  .readout-col ul{ margin:0; padding-left:16px; color:var(--text-secondary); font-size:13.5px; }
+  .readout-col li{ margin-bottom:4px; }
+  .readout-note{ margin-top:12px; font-size:12px; color:var(--text-tertiary); border-top:1px dashed var(--border-soft); padding-top:10px; }
+
+  /* ---------- Section headers ---------- */
+  .section-head{ display:flex; align-items:baseline; justify-content:space-between; margin:38px 0 14px; gap:12px; flex-wrap:wrap; }
+  .section-head h2{ font-family:var(--font-display); font-weight:700; font-size:18px; margin:0; }
+  .section-head .hint{ color:var(--text-tertiary); font-size:13px; }
+
+  .category-label{
+    font-family:var(--font-display); font-weight:700; font-size:12px; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--text-secondary); margin:26px 0 12px; padding-bottom:8px; border-bottom:1px solid var(--border-soft);
+  }
+
+  /* ---------- Scenario cards ---------- */
+  .scenario{
+    background:var(--bg-panel); border:1px solid var(--border); border-radius:var(--radius);
+    padding:16px 18px; margin-bottom:12px; transition:border-color var(--dur), background var(--dur);
+  }
+  .scenario[data-active="true"]{ border-color:var(--accent-dim); background:var(--bg-panel-alt); }
+  .scenario-top{ display:flex; align-items:flex-start; gap:14px; }
+  .switch{ position:relative; width:42px; height:24px; flex:none; margin-top:2px; }
+  .switch input{ position:absolute; inset:0; opacity:0; cursor:pointer; margin:0; }
+  .switch .track{
+    position:absolute; inset:0; background:var(--bg-base); border:1px solid var(--border); border-radius:999px;
+    transition:background var(--dur), border-color var(--dur);
+  }
+  .switch .thumb{
+    position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:var(--text-tertiary);
+    transition:transform var(--dur), background var(--dur);
+  }
+  .switch input:checked + .track{ background:var(--accent-soft); border-color:var(--accent); }
+  .switch input:checked + .track + .thumb{ transform:translateX(18px); background:var(--accent); }
+  .switch input:focus-visible + .track{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  .scenario-body{ flex:1; }
+  .scenario-label{ font-family:var(--font-display); font-weight:700; font-size:15px; color:var(--text-primary); cursor:pointer; }
+  .scenario-when{ color:var(--text-tertiary); font-size:12.5px; margin-top:3px; }
+
+  .scenario-preview{
+    display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; opacity:0.45;
+    transition:opacity var(--dur);
+  }
+  .scenario[data-active="true"] .scenario-preview{ opacity:1; }
+  .preview-block{ border-left:2px solid var(--border); padding:4px 0 4px 12px; font-size:13.5px; }
+  .scenario[data-active="true"] .preview-block{ border-left-color:var(--accent); }
+  .preview-block .ptag{ font-family:var(--font-display); font-size:10px; letter-spacing:0.1em; color:var(--text-tertiary); text-transform:uppercase; margin-bottom:3px; }
+  .preview-block.na{ color:var(--text-tertiary); font-style:italic; }
+
+  /* ---------- Glosario ---------- */
+  .glossary-search{
+    display:flex; align-items:center; gap:10px; background:var(--bg-panel); border:1px solid var(--border);
+    border-radius:var(--radius); padding:0 14px; margin-bottom:14px;
+  }
+  .glossary-search svg{ width:15px; height:15px; color:var(--text-tertiary); flex:none; }
+  .glossary-search input{
+    flex:1; background:transparent; border:none; color:var(--text-primary); font-family:var(--font-body);
+    font-size:14.5px; padding:12px 4px;
+  }
+  .glossary-search input:focus-visible{ outline:none; }
+  .glossary-search input::placeholder{ color:var(--text-tertiary); }
+  .glossary-table{
+    background:var(--bg-panel); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;
+  }
+  .glossary-row{
+    display:grid; grid-template-columns:1fr 1fr; gap:16px; padding:11px 18px;
+    border-bottom:1px solid var(--border-soft);
+  }
+  .glossary-row:last-child{ border-bottom:none; }
+  .glossary-row:nth-child(even){ background:rgba(255,255,255,0.015); }
+  .glossary-row .en{ color:var(--text-primary); font-weight:600; font-size:13.5px; }
+  .glossary-row .es{ color:var(--text-secondary); font-size:13.5px; }
+  .glossary-row.hidden{ display:none; }
+  .glossary-empty{ padding:18px; color:var(--text-tertiary); font-style:italic; font-size:13.5px; }
+
+  /* ---------- Output ---------- */
+  .output-grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  .output-col{ background:var(--bg-panel); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+  .output-col-head{
+    display:flex; align-items:center; justify-content:space-between; padding:12px 16px;
+    border-bottom:1px solid var(--border-soft); background:var(--bg-panel-alt);
+  }
+  .output-col-head h3{ margin:0; font-family:var(--font-display); font-size:12.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-primary); }
+  .copy-btn{
+    font-family:var(--font-display); font-weight:700; font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+    background:transparent; border:1px solid var(--border); color:var(--text-secondary); border-radius:6px;
+    padding:6px 11px; cursor:pointer; transition:border-color var(--dur), color var(--dur), background var(--dur);
+  }
+  .copy-btn:hover{ color:var(--text-primary); border-color:var(--accent); }
+  .copy-btn.copied{ background:var(--accent); color:#12161A; border-color:var(--accent); }
+  .output-text{
+    margin:0; padding:16px; white-space:pre-wrap; font-family:var(--font-body); font-size:14px;
+    line-height:1.7; color:var(--text-primary); min-height:140px;
+  }
+  .output-text .empty{ color:var(--text-tertiary); font-style:italic; }
+  .output-text .line{ display:block; margin-bottom:10px; padding-left:14px; position:relative; }
+  .output-text .line::before{ content:"—"; position:absolute; left:0; color:var(--accent); }
+
+  footer{
+    margin-top:48px; padding-top:20px; border-top:1px solid var(--border-soft);
+    color:var(--text-tertiary); font-size:12px; max-width:760px;
+  }
+
+  @media (max-width:760px){
+    .readout-grid{ grid-template-columns:1fr; }
+    .output-grid{ grid-template-columns:1fr; }
+    .scenario-preview{ grid-template-columns:1fr; }
+    .console-bar{ flex-direction:column; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div>
+      <div class="eyebrow">Panel de despacho del intérprete</div>
+      <h1>INTERLINE</h1>
+      <div class="subtitle">Generador de guion de protocolo para asignaciones de interpretación remota (OPI) en llamadas de pago de electricidad, gas y agua. Selecciona la situación y obtén la línea exacta para dirigirte a la REP y al LEP.</div>
+    </div>
+    <div class="legend">
+      <div class="legend-badge"><b>REP</b>Representante de la compañía de servicios — habla inglés</div>
+      <div class="legend-badge"><b>LEP</b>Beneficiario con dominio limitado del inglés — habla español</div>
+    </div>
+  </div>
+
+  <div class="console-bar">
+    <div class="service-toggle" role="group" aria-label="Tipo de servicio">
+      <button class="svc-btn" data-svc="electricidad" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>
+        Electricidad
+      </button>
+      <button class="svc-btn" data-svc="gas" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-1 3-4 4-4 8a4 4 0 0 0 8 0c0-1-.5-2-1-2 .3 2-1 3-2 3s-2-1-1-3c1-2 1-4 0-6z"/></svg>
+        Gas
+      </button>
+      <button class="svc-btn" data-svc="agua" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8 8 5 11.5 5 15a7 7 0 0 0 14 0c0-3.5-3-7-7-13z"/></svg>
+        Agua
+      </button>
+    </div>
+    <div class="state-select-wrap">
+      <label for="stateSelect">Estado</label>
+      <select id="stateSelect"></select>
+    </div>
+  </div>
+
+  <div class="readout">
+    <div class="rlabel">Proveedores de referencia — <span id="readoutState">Alabama</span> · <span id="readoutSvc">Electricidad</span></div>
+    <div class="readout-grid">
+      <div class="readout-col"><h4>Electricidad</h4><ul id="listElec"></ul></div>
+      <div class="readout-col"><h4>Gas</h4><ul id="listGas"></ul></div>
+      <div class="readout-col"><h4>Agua</h4><ul id="listAgua"></ul></div>
+    </div>
+    <div class="readout-note">Nombres de referencia para reconocimiento rápido en llamada. El proveedor exacto varía por condado o municipio, especialmente en agua; confírmalo siempre con lo que indique el beneficiario.</div>
+  </div>
+
+  <div class="section-head">
+    <h2>Vocabulario clave — pago, cobro y desconexión</h2>
+    <div class="hint" id="glossaryCount">28 términos</div>
+  </div>
+  <div class="glossary-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input type="text" id="glossaryFilter" placeholder="Buscar término en inglés o español…">
+  </div>
+  <div class="glossary-table" id="glossaryTable"></div>
+
+  <div class="section-head">
+    <h2>Situaciones y disclosures</h2>
+    <div class="hint">Activa cada situación según ocurra en la llamada. No incluye saludos ni cierres.</div>
+  </div>
+
+  <div id="scenarioContainer"></div>
+
+  <div class="section-head">
+    <h2>Guion generado</h2>
+    <div class="hint" id="countHint">0 líneas seleccionadas</div>
+  </div>
+
+  <div class="output-grid">
+    <div class="output-col">
+      <div class="output-col-head">
+        <h3>Línea REP · Inglés</h3>
+        <button class="copy-btn" data-target="repOut">Copiar</button>
+      </div>
+      <div class="output-text" id="repOut"><span class="empty">Selecciona al menos una situación arriba para generar el guion hacia la REP.</span></div>
+    </div>
+    <div class="output-col">
+      <div class="output-col-head">
+        <h3>Línea LEP · Español</h3>
+        <button class="copy-btn" data-target="lepOut">Copiar</button>
+      </div>
+      <div class="output-text" id="lepOut"><span class="empty">Selecciona al menos una situación arriba para generar el guion hacia el LEP.</span></div>
+    </div>
+  </div>
+
+  <footer>
+    Herramienta de referencia de protocolo para uso propio en asignaciones de interpretación remota. No sustituye el código de ética ni los lineamientos específicos de la agencia o cliente para el que interpretes; verifica siempre el proveedor y los datos que indique el beneficiario en cada llamada.
+  </footer>
+
+</div>
+
+<script>
+  // ---------- Datos: proveedores por estado ----------
+  const STATE_DATA = {
+    AL:{name:"Alabama", elec:["Alabama Power"], gas:["Spire Alabama"], agua:["Birmingham Water Works (varía por ciudad)"]},
+    AK:{name:"Alaska", elec:["Chugach Electric Association","Alaska Power & Telephone"], gas:["ENSTAR Natural Gas"], agua:["Anchorage Water & Wastewater Utility"]},
+    AZ:{name:"Arizona", elec:["Arizona Public Service (APS)","Salt River Project (SRP)","Tucson Electric Power"], gas:["Southwest Gas"], agua:["Arizona Water Company","EPCOR Water Arizona"]},
+    AR:{name:"Arkansas", elec:["Entergy Arkansas"], gas:["CenterPoint Energy Arkansas","Arkansas Oklahoma Gas"], agua:["Central Arkansas Water"]},
+    CA:{name:"California", elec:["Pacific Gas & Electric (PG&E)","Southern California Edison (SCE)","San Diego Gas & Electric (SDG&E)"], gas:["SoCalGas","PG&E"], agua:["California American Water","Golden State Water"]},
+    CO:{name:"Colorado", elec:["Xcel Energy (Public Service Co. of Colorado)","Black Hills Energy"], gas:["Xcel Energy","Black Hills Energy"], agua:["Denver Water"]},
+    CT:{name:"Connecticut", elec:["Eversource","United Illuminating"], gas:["Eversource","Southern Connecticut Gas"], agua:["Aquarion Water Company"]},
+    DE:{name:"Delaware", elec:["Delmarva Power"], gas:["Delmarva Power","Chesapeake Utilities"], agua:["Artesian Water Company"]},
+    DC:{name:"Distrito de Columbia", elec:["Pepco"], gas:["Washington Gas"], agua:["DC Water"]},
+    FL:{name:"Florida", elec:["Florida Power & Light (FPL)","Duke Energy Florida","Tampa Electric (TECO)"], gas:["TECO Peoples Gas","Florida City Gas"], agua:["Florida Governmental Utility Authority","Aqua Florida"]},
+    GA:{name:"Georgia", elec:["Georgia Power"], gas:["Atlanta Gas Light"], agua:["Departamento de agua municipal (varía por ciudad)"]},
+    HI:{name:"Hawái", elec:["Hawaiian Electric (HECO)"], gas:["Hawaii Gas"], agua:["Honolulu Board of Water Supply"]},
+    ID:{name:"Idaho", elec:["Idaho Power","Avista"], gas:["Intermountain Gas Company"], agua:["Veolia Idaho (United Water Idaho)"]},
+    IL:{name:"Illinois", elec:["ComEd (Commonwealth Edison)","Ameren Illinois"], gas:["Nicor Gas","Peoples Gas"], agua:["Illinois American Water","Aqua Illinois"]},
+    IN:{name:"Indiana", elec:["AES Indiana","Duke Energy Indiana","NIPSCO"], gas:["NIPSCO","CenterPoint Energy Indiana (Vectren)"], agua:["Indiana American Water"]},
+    IA:{name:"Iowa", elec:["MidAmerican Energy","Alliant Energy"], gas:["MidAmerican Energy","Black Hills Energy"], agua:["Des Moines Water Works"]},
+    KS:{name:"Kansas", elec:["Evergy"], gas:["Kansas Gas Service"], agua:["WaterOne (Johnson County)"]},
+    KY:{name:"Kentucky", elec:["LG&E","Kentucky Utilities"], gas:["LG&E"], agua:["Kentucky American Water","Louisville Water Company"]},
+    LA:{name:"Luisiana", elec:["Entergy Louisiana","CLECO"], gas:["Atmos Energy","CenterPoint Energy Louisiana"], agua:["Sewerage & Water Board of New Orleans (varía por ciudad)"]},
+    ME:{name:"Maine", elec:["Central Maine Power (CMP)","Versant Power"], gas:["Summit Natural Gas of Maine"], agua:["Maine Water Company","Portland Water District"]},
+    MD:{name:"Maryland", elec:["BGE (Baltimore Gas & Electric)","Pepco","Delmarva Power"], gas:["BGE","Washington Gas"], agua:["WSSC Water"]},
+    MA:{name:"Massachusetts", elec:["Eversource","National Grid"], gas:["Eversource","National Grid","Berkshire Gas"], agua:["Massachusetts Water Resources Authority (MWRA)","Aquarion"]},
+    MI:{name:"Míchigan", elec:["DTE Energy","Consumers Energy"], gas:["DTE Energy","Consumers Energy","SEMCO Energy"], agua:["Great Lakes Water Authority (Detroit)"]},
+    MN:{name:"Minnesota", elec:["Xcel Energy","Minnesota Power"], gas:["CenterPoint Energy Minnesota","Xcel Energy"], agua:["Minneapolis Water Works (varía por ciudad)"]},
+    MS:{name:"Misisipi", elec:["Entergy Mississippi","Mississippi Power"], gas:["Atmos Energy","CenterPoint Energy Mississippi"], agua:["Servicio municipal de agua (varía por ciudad)"]},
+    MO:{name:"Misuri", elec:["Ameren Missouri","Evergy"], gas:["Spire Missouri"], agua:["Missouri American Water"]},
+    MT:{name:"Montana", elec:["NorthWestern Energy"], gas:["NorthWestern Energy"], agua:["Mountain Water Company (Missoula)"]},
+    NE:{name:"Nebraska", elec:["Nebraska Public Power District (NPPD)","Omaha Public Power District (OPPD)"], gas:["Black Hills Energy","Metropolitan Utilities District (MUD)"], agua:["Metropolitan Utilities District (MUD)"]},
+    NV:{name:"Nevada", elec:["NV Energy"], gas:["Southwest Gas"], agua:["Las Vegas Valley Water District"]},
+    NH:{name:"Nuevo Hampshire", elec:["Eversource","Unitil"], gas:["Liberty Utilities","Unitil"], agua:["Pennichuck Water"]},
+    NJ:{name:"Nueva Jersey", elec:["PSE&G","Jersey Central Power & Light (JCP&L)","Atlantic City Electric"], gas:["PSE&G","New Jersey Natural Gas","South Jersey Gas"], agua:["New Jersey American Water"]},
+    NM:{name:"Nuevo México", elec:["PNM (Public Service Co. of New Mexico)","El Paso Electric"], gas:["New Mexico Gas Company"], agua:["Albuquerque Bernalillo County Water Utility Authority"]},
+    NY:{name:"Nueva York", elec:["Con Edison","National Grid","NYSEG","Central Hudson"], gas:["Con Edison","National Grid","NYSEG"], agua:["NYC Dept. of Environmental Protection (varía por ciudad)"]},
+    NC:{name:"Carolina del Norte", elec:["Duke Energy Carolinas","Duke Energy Progress"], gas:["PSNC Energy","Piedmont Natural Gas"], agua:["Charlotte Water (varía por ciudad)"]},
+    ND:{name:"Dakota del Norte", elec:["Xcel Energy","Otter Tail Power"], gas:["Montana-Dakota Utilities"], agua:["Servicio municipal de agua (varía por ciudad)"]},
+    OH:{name:"Ohio", elec:["AEP Ohio","Duke Energy Ohio","FirstEnergy (Ohio Edison / Illuminating Co. / Toledo Edison)"], gas:["Columbia Gas of Ohio","Dominion Energy Ohio"], agua:["Ohio American Water"]},
+    OK:{name:"Oklahoma", elec:["Oklahoma Gas & Electric (OG&E)","Public Service Co. of Oklahoma (PSO)"], gas:["Oklahoma Natural Gas (ONG)"], agua:["Oklahoma City Utilities"]},
+    OR:{name:"Oregón", elec:["Portland General Electric (PGE)","Pacific Power"], gas:["NW Natural"], agua:["Portland Water Bureau"]},
+    PA:{name:"Pensilvania", elec:["PECO","PPL Electric Utilities","Duquesne Light"], gas:["PECO","UGI Utilities","Columbia Gas of Pennsylvania"], agua:["Pennsylvania American Water","Aqua Pennsylvania"]},
+    RI:{name:"Rhode Island", elec:["Rhode Island Energy"], gas:["Rhode Island Energy"], agua:["Providence Water"]},
+    SC:{name:"Carolina del Sur", elec:["Dominion Energy South Carolina","Duke Energy Carolinas","Santee Cooper"], gas:["Dominion Energy South Carolina"], agua:["Servicio municipal de agua (varía por ciudad)"]},
+    SD:{name:"Dakota del Sur", elec:["Xcel Energy","Black Hills Energy"], gas:["MidAmerican Energy","Black Hills Energy"], agua:["Servicio municipal de agua (varía por ciudad)"]},
+    TN:{name:"Tennessee", elec:["Nashville Electric Service","Memphis Light, Gas & Water (distribuidoras locales de TVA)"], gas:["Memphis Light, Gas & Water","Piedmont Natural Gas"], agua:["Memphis Light, Gas & Water","Nashville Metro Water"]},
+    TX:{name:"Texas", elec:["Oncor","CenterPoint Energy","AEP Texas"], gas:["CenterPoint Energy","Atmos Energy"], agua:["San Antonio Water System (SAWS)","Dallas Water Utilities"]},
+    UT:{name:"Utah", elec:["Rocky Mountain Power"], gas:["Dominion Energy Utah"], agua:["Salt Lake City Public Utilities"]},
+    VT:{name:"Vermont", elec:["Green Mountain Power"], gas:["Vermont Gas Systems"], agua:["Servicio municipal de agua (varía por ciudad)"]},
+    VA:{name:"Virginia", elec:["Dominion Energy Virginia","Appalachian Power"], gas:["Virginia Natural Gas","Washington Gas"], agua:["Fairfax Water"]},
+    WA:{name:"Washington", elec:["Puget Sound Energy","Seattle City Light","Avista"], gas:["Puget Sound Energy","Cascade Natural Gas"], agua:["Seattle Public Utilities"]},
+    WV:{name:"Virginia Occidental", elec:["Appalachian Power","Mon Power"], gas:["Mountaineer Gas Company"], agua:["West Virginia American Water"]},
+    WI:{name:"Wisconsin", elec:["We Energies","Xcel Energy"], gas:["We Energies","Wisconsin Public Service"], agua:["Milwaukee Water Works"]},
+    WY:{name:"Wyoming", elec:["Rocky Mountain Power","Black Hills Energy"], gas:["Black Hills Energy","Source Gas"], agua:["Servicio municipal de agua (varía por ciudad)"]}
+  };
+
+  // ---------- Datos: situaciones / disclosures ----------
+  const SCENARIOS = [
+    { id:"repeticion", category:"Gestión de la comunicación", label:"Solicitud de repetición (audio poco claro)",
+      when:"Cuando el audio se corta, hay ruido de fondo o no se entiende una palabra.",
+      rep:"The interpreter apologizes for the interruption — could you please repeat your last statement? The audio was unclear.",
+      lep:"El intérprete necesita que repita lo último que dijo; hubo un problema de audio." },
+    { id:"ritmo", category:"Gestión de la comunicación", label:"Solicitud de hablar más despacio",
+      when:"Cuando el ritmo del habla dificulta una interpretación precisa.",
+      rep:"Could you please speak a little more slowly so the interpreter can convey the message accurately?",
+      lep:"¿Podría hablar un poco más despacio para que el intérprete pueda traducir con precisión?" },
+    { id:"aclaracion", category:"Gestión de la comunicación", label:"Aclaración de término o nota cultural",
+      when:"Ante un término técnico, un regionalismo o una referencia cultural ambigua.",
+      rep:"The interpreter would like to briefly clarify a term before continuing.",
+      lep:"El intérprete necesita una breve aclaración sobre un término que usted mencionó." },
+    { id:"verificacion", category:"Gestión de la comunicación", label:"Transmisión de datos de verificación",
+      when:"Al comunicar nombre completo, número de cuenta, dirección de servicio o fecha de nacimiento.",
+      rep:"The interpreter will now relay the account verification information provided by the caller.",
+      lep:"El intérprete va a transmitir los datos de verificación que usted indique: nombre completo, número de cuenta y dirección del servicio." },
+    { id:"corte-programado-elec", category:"Electricidad — servicio y seguridad", label:"Corte de energía programado o por mantenimiento",
+      when:"Cuando se informa una interrupción planificada del servicio eléctrico por mantenimiento.",
+      rep:"The interpreter will interpret the scheduled outage window and affected area exactly as stated.",
+      lep:"El intérprete va a traducir el horario y el área afectada por el corte programado, exactamente como se indique." },
+    { id:"apagon-imprevisto", category:"Electricidad — servicio y seguridad", label:"Apagón o interrupción imprevista",
+      when:"Cuando el beneficiario reporta un corte de luz inesperado y se solicita el tiempo estimado de restablecimiento.",
+      rep:"The interpreter will relay the estimated restoration time exactly as provided by the representative.",
+      lep:"El intérprete va a transmitir el tiempo estimado de restablecimiento del servicio, tal como lo indique la representante." },
+    { id:"peligro-electrico", category:"Electricidad — servicio y seguridad", label:"Peligro eléctrico (cables caídos, chispas, olor a quemado)",
+      when:"Ante un reporte de riesgo eléctrico inmediato; la precisión y la rapidez son críticas.",
+      rep:"This is a safety-related report — the interpreter will interpret all instructions immediately and exactly as given, without delay or paraphrase.",
+      lep:"Esto es un reporte de seguridad — el intérprete va a traducir todas las instrucciones de inmediato y tal como se den, sin demora ni parafraseo." },
+    { id:"lectura-medidor-elec", category:"Electricidad — servicio y seguridad", label:"Lectura del medidor eléctrico",
+      when:"Cuando se solicita o se aclara una lectura de consumo del medidor.",
+      rep:"The interpreter will confirm the meter reading number exactly as stated, digit by digit if needed.",
+      lep:"El intérprete va a confirmar la lectura del medidor exactamente como se indique, dígito por dígito si es necesario." },
+
+    { id:"olor-gas", category:"Gas — servicio y seguridad", label:"Olor a gas o posible fuga (emergencia)",
+      when:"Ante un reporte de olor a gas; requiere máxima precisión y velocidad, sin suavizar el mensaje.",
+      rep:"This is a gas safety emergency — the interpreter will interpret every instruction immediately, exactly as given, with no delay or paraphrase.",
+      lep:"Esto es una emergencia de seguridad de gas — el intérprete va a traducir cada instrucción de inmediato, tal como se dé, sin demora ni parafraseo." },
+    { id:"corte-programado-gas", category:"Gas — servicio y seguridad", label:"Corte o mantenimiento programado de gas",
+      when:"Cuando se informa una interrupción planificada del servicio de gas.",
+      rep:"The interpreter will interpret the scheduled maintenance window and any required access exactly as stated.",
+      lep:"El intérprete va a traducir el horario del mantenimiento programado y cualquier acceso requerido, exactamente como se indique." },
+    { id:"verificacion-aparatos", category:"Gas — servicio y seguridad", label:"Verificación de piloto o aparatos de gas",
+      when:"Cuando se dan instrucciones técnicas sobre encender o verificar un piloto o aparato.",
+      rep:"The interpreter will interpret each technical instruction step by step, exactly as given.",
+      lep:"El intérprete va a traducir cada instrucción técnica paso a paso, exactamente como se indique." },
+    { id:"alta-gas", category:"Gas — servicio y seguridad", label:"Alta o cambio de titularidad del servicio de gas",
+      when:"Cuando se solicita abrir el servicio o transferir la cuenta a nombre de otra persona.",
+      rep:"The interpreter will relay the requested service start date and account holder information exactly as provided.",
+      lep:"El intérprete va a transmitir la fecha solicitada de inicio del servicio y los datos del nuevo titular, exactamente como se indiquen." },
+
+    { id:"fuga-agua", category:"Agua — servicio y seguridad", label:"Fuga de agua o rotura de tubería",
+      when:"Ante un reporte de fuga visible o rotura; puede requerir atención urgente.",
+      rep:"The interpreter will interpret the location and urgency of the leak exactly as described, without delay.",
+      lep:"El intérprete va a traducir la ubicación y la urgencia de la fuga exactamente como se describa, sin demora." },
+    { id:"calidad-agua", category:"Agua — servicio y seguridad", label:"Calidad, color u olor del agua",
+      when:"Cuando el beneficiario reporta un cambio en la apariencia u olor del agua.",
+      rep:"The interpreter will relay the description of the water issue exactly as reported by the caller.",
+      lep:"El intérprete va a transmitir la descripción del problema con el agua, exactamente como la reporte el beneficiario." },
+    { id:"corte-programado-agua", category:"Agua — servicio y seguridad", label:"Corte programado de agua por mantenimiento",
+      when:"Cuando se informa una interrupción planificada del servicio de agua.",
+      rep:"The interpreter will interpret the scheduled outage window and affected area exactly as stated.",
+      lep:"El intérprete va a traducir el horario y el área afectada por el corte programado de agua, exactamente como se indique." },
+    { id:"alta-agua", category:"Agua — servicio y seguridad", label:"Alta o cambio de titularidad del servicio de agua",
+      when:"Cuando se solicita abrir el servicio o transferir la cuenta a nombre de otra persona.",
+      rep:"The interpreter will relay the requested service start date and account holder information exactly as provided.",
+      lep:"El intérprete va a transmitir la fecha solicitada de inicio del servicio y los datos del nuevo titular, exactamente como se indiquen." },
+
+    { id:"tercero", category:"Excepciones y casos especiales", label:"Tercer interlocutor en la línea",
+      when:"Si se detecta la voz o participación de una persona adicional no identificada.",
+      rep:"The interpreter would like to note that there appears to be a third party present on the line.",
+      lep:"El intérprete indica que parece haber una tercera persona participando en la línea." },
+    { id:"lenguaje", category:"Excepciones y casos especiales", label:"Lenguaje explícito o inapropiado",
+      when:"Cuando una de las partes usa lenguaje ofensivo que debe interpretarse igualmente.",
+      rep:"Interpreter's note: the caller used explicit language, which will be interpreted verbatim and without omission.",
+      lep:"El intérprete debe traducir todo de forma literal, incluido el lenguaje que usted utilice." },
+    { id:"supervisor", category:"Excepciones y casos especiales", label:"Solicitud de supervisor o escalamiento",
+      when:"Cuando el beneficiario pide hablar con un superior o disputa un cargo.",
+      rep:"The caller is requesting to speak with a supervisor regarding this matter.",
+      lep:"Usted está solicitando hablar con un supervisor; el intérprete transmitirá esta solicitud a la representante." },
+    { id:"tecnica", category:"Excepciones y casos especiales", label:"Dificultad técnica o corte de llamada",
+      when:"Ante una caída de línea, eco o falla de conexión durante la asignación.",
+      rep:"The interpreter experienced a brief technical difficulty — could you please repeat your last statement?",
+      lep:"Hubo una interrupción técnica breve en la línea; ¿podría repetir lo último que dijo?" },
+    { id:"grabacion", category:"Excepciones y casos especiales", label:"Aviso de grabación o monitoreo",
+      when:"Cuando la REP indica que la llamada puede ser grabada; el intérprete traslada el aviso al LEP.",
+      rep:null,
+      lep:"Se le informa que esta llamada puede estar siendo grabada o monitoreada con fines de calidad del servicio." },
+
+    { id:"confirmacion-numerica", category:"Pago y facturación", label:"Confirmación numérica de montos y fechas",
+      when:"Al mencionar montos en dólares, números de referencia o fechas límite de pago.",
+      rep:"The interpreter will confirm the exact amount and date stated, to ensure accuracy.",
+      lep:"El intérprete va a repetir el monto exacto y la fecha que se mencionaron, para confirmar que sean correctos." },
+    { id:"autorizacion-pago", category:"Pago y facturación", label:"Autorización verbal de pago (tarjeta o cuenta bancaria)",
+      when:"Antes de transmitir un número de tarjeta, cuenta bancaria o autorización de cobro.",
+      rep:"The interpreter will relay the payment authorization exactly as stated by the caller, including any account or card details provided.",
+      lep:"El intérprete va a transmitir la autorización de pago tal como usted la indique; por favor proporcione los datos despacio y con claridad." },
+    { id:"plan-pago", category:"Pago y facturación", label:"Aclaración de plan o acuerdo de pago",
+      when:"Cuando se ofrece o discute un plan de pagos, fraccionamiento o fecha de vencimiento extendida.",
+      rep:"The interpreter will interpret the payment arrangement details exactly as presented, without adding or omitting terms.",
+      lep:"El intérprete va a traducir los detalles del plan de pago tal como se los presenten, sin agregar ni omitir condiciones." },
+    { id:"programa-asistencia", category:"Pago y facturación", label:"Programas de asistencia o descuento",
+      when:"Cuando se menciona un programa de asistencia (por ejemplo, LIHEAP) o descuento por bajos ingresos.",
+      rep:"The interpreter would like to confirm the exact name of the assistance program mentioned before continuing.",
+      lep:"El intérprete necesita confirmar el nombre exacto del programa de asistencia mencionado, para traducirlo con precisión." },
+
+    { id:"saldo-vencido", category:"Cobro y saldo vencido", label:"Aviso de saldo vencido",
+      when:"Cuando la REP comunica un saldo pendiente o vencido.",
+      rep:"The interpreter will interpret the balance and due date exactly as stated, without softening or altering the tone.",
+      lep:"El intérprete va a traducir el saldo y la fecha de vencimiento exactamente como se indiquen, sin suavizar ni cambiar el tono del mensaje." },
+    { id:"disputa-cargo", category:"Cobro y saldo vencido", label:"Disputa de un cargo",
+      when:"Cuando el beneficiario cuestiona o rechaza un cargo específico de la factura.",
+      rep:"The caller is disputing a specific charge on the account; the interpreter will relay exactly which charge is in question.",
+      lep:"Usted está cuestionando un cargo específico; el intérprete va a transmitir exactamente cuál es, para que lo revisen." },
+    { id:"negociacion-neutral", category:"Cobro y saldo vencido", label:"Neutralidad en negociación de cobro",
+      when:"Si el beneficiario le pide al intérprete que negocie, suplique o presione en su nombre.",
+      rep:"As the interpreter, I cannot negotiate or advocate on behalf of either party — I will only interpret what is said.",
+      lep:"El intérprete no puede negociar en su nombre ni presionar a la representante; solo puede traducir lo que ambas partes digan." },
+
+    { id:"aviso-corte", category:"Corte, reconexión y cancelación de servicio", label:"Aviso de corte de servicio (desconexión)",
+      when:"Cuando la REP comunica una fecha u hora de desconexión inminente por falta de pago.",
+      rep:"The interpreter will interpret the disconnection date and any amount required exactly as stated, without paraphrasing.",
+      lep:"El intérprete va a traducir la fecha de corte y el monto requerido exactamente como se indiquen, sin parafrasear." },
+    { id:"proteccion-especial", category:"Corte, reconexión y cancelación de servicio", label:"Protecciones especiales (certificado médico, moratoria estacional)",
+      when:"Cuando se menciona una posible protección contra el corte (por ejemplo, certificado médico o moratoria de invierno).",
+      rep:"The interpreter would like to confirm the exact requirement mentioned for this protection before relaying it.",
+      lep:"El intérprete necesita confirmar el requisito exacto de esta protección para traducirlo con precisión; el intérprete no puede indicarle si usted califica o no." },
+    { id:"cargo-reconexion", category:"Corte, reconexión y cancelación de servicio", label:"Cargo de reconexión",
+      when:"Cuando se informa el costo y el proceso para restablecer el servicio después de un corte.",
+      rep:"The interpreter will relay the reconnection fee and process exactly as explained.",
+      lep:"El intérprete va a traducir el cargo y el proceso de reconexión exactamente como se lo expliquen." },
+    { id:"cancelacion-voluntaria", category:"Corte, reconexión y cancelación de servicio", label:"Cancelación voluntaria del servicio",
+      when:"Cuando el beneficiario solicita cerrar su cuenta por decisión propia (mudanza, cambio de proveedor, etc.).",
+      rep:"The caller is requesting to close the service account; the interpreter will relay the requested closing date and final billing details.",
+      lep:"Usted está solicitando cerrar el servicio; el intérprete va a transmitir la fecha de cierre solicitada y los detalles de la factura final." },
+    { id:"deposito-garantia", category:"Corte, reconexión y cancelación de servicio", label:"Depósito de garantía",
+      when:"Cuando se menciona un depósito de garantía requerido para abrir o reconectar el servicio.",
+      rep:"The interpreter will interpret the deposit amount and conditions exactly as stated.",
+      lep:"El intérprete va a traducir el monto y las condiciones del depósito de garantía exactamente como se indiquen." }
+  ];
+
+  const GLOSSARY = [
+    ["Account number","Número de cuenta"],
+    ["Account holder","Titular de la cuenta"],
+    ["Amount due","Monto adeudado"],
+    ["Balance","Saldo"],
+    ["Past due balance","Saldo vencido"],
+    ["Due date","Fecha de vencimiento"],
+    ["Grace period","Período de gracia"],
+    ["Late fee / late charge","Cargo por pago atrasado / recargo"],
+    ["Payment arrangement / payment plan","Plan de pago / acuerdo de pago"],
+    ["Budget billing / levelized billing","Facturación nivelada"],
+    ["Deposit","Depósito de garantía"],
+    ["Disconnection / shut-off","Corte de servicio / desconexión"],
+    ["Disconnection notice","Aviso de corte"],
+    ["Final notice","Aviso final"],
+    ["Reconnection fee","Cargo de reconexión"],
+    ["Delinquent account","Cuenta morosa"],
+    ["Collections department","Departamento de cobros"],
+    ["Write-off","Cancelación de deuda incobrable"],
+    ["Assistance program","Programa de asistencia"],
+    ["LIHEAP","Programa de Asistencia de Energía para Hogares de Bajos Ingresos"],
+    ["Medical certificate / medical hold","Certificado médico / retención médica"],
+    ["Winter moratorium","Moratoria de invierno"],
+    ["Meter reading","Lectura del medidor"],
+    ["Estimated bill","Factura estimada"],
+    ["Autopay / automatic payment","Pago automático"],
+    ["Service address","Dirección del servicio"],
+    ["Dispute a charge","Disputar un cargo"],
+    ["Final bill","Factura final"]
+  ];
+
+  const SVC_LABELS = { electricidad:"Electricidad", gas:"Gas", agua:"Agua" };
+
+  // ---------- Estado ----------
+  const stateSelect = document.getElementById("stateSelect");
+  Object.keys(STATE_DATA)
+    .sort((a,b)=> STATE_DATA[a].name.localeCompare(STATE_DATA[b].name,'es'))
+    .forEach(code=>{
+      const opt = document.createElement("option");
+      opt.value = code;
+      opt.textContent = STATE_DATA[code].name;
+      stateSelect.appendChild(opt);
+    });
+  stateSelect.value = "TX";
+
+  function renderReadout(){
+    const code = stateSelect.value;
+    const data = STATE_DATA[code];
+    document.getElementById("readoutState").textContent = data.name;
+    document.getElementById("readoutSvc").textContent = SVC_LABELS[currentService];
+    fillList("listElec", data.elec);
+    fillList("listGas", data.gas);
+    fillList("listAgua", data.agua);
+  }
+  function fillList(id, items){
+    const ul = document.getElementById(id);
+    ul.innerHTML = "";
+    items.forEach(i=>{
+      const li = document.createElement("li");
+      li.textContent = i;
+      ul.appendChild(li);
+    });
+  }
+
+  // ---------- Selector de servicio ----------
+  let currentService = "electricidad";
+  const svcButtons = document.querySelectorAll(".svc-btn");
+  svcButtons.forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      currentService = btn.dataset.svc;
+      svcButtons.forEach(b=> b.setAttribute("aria-pressed", b===btn ? "true":"false"));
+      document.documentElement.setAttribute("data-service", currentService);
+      renderReadout();
+    });
+  });
+
+  stateSelect.addEventListener("change", renderReadout);
+
+  // ---------- Escenarios ----------
+  const container = document.getElementById("scenarioContainer");
+  let lastCategory = "";
+  const activeSet = new Set();
+
+  SCENARIOS.forEach(sc=>{
+    if(sc.category !== lastCategory){
+      const catEl = document.createElement("div");
+      catEl.className = "category-label";
+      catEl.textContent = sc.category;
+      container.appendChild(catEl);
+      lastCategory = sc.category;
+    }
+
+    const card = document.createElement("div");
+    card.className = "scenario";
+    card.dataset.active = "false";
+    card.id = "card-"+sc.id;
+
+    const repPreview = sc.rep
+      ? `<div class="preview-block"><div class="ptag">REP · EN</div>${escapeHtml(sc.rep)}</div>`
+      : `<div class="preview-block na"><div class="ptag">REP · EN</div>No aplica — este aviso lo origina la REP.</div>`;
+    const lepPreview = sc.lep
+      ? `<div class="preview-block"><div class="ptag">LEP · ES</div>${escapeHtml(sc.lep)}</div>`
+      : `<div class="preview-block na"><div class="ptag">LEP · ES</div>No aplica.</div>`;
+
+    card.innerHTML = `
+      <div class="scenario-top">
+        <label class="switch">
+          <input type="checkbox" id="chk-${sc.id}" aria-describedby="when-${sc.id}">
+          <span class="track"></span>
+          <span class="thumb"></span>
+        </label>
+        <div class="scenario-body">
+          <label class="scenario-label" for="chk-${sc.id}">${escapeHtml(sc.label)}</label>
+          <div class="scenario-when" id="when-${sc.id}">${escapeHtml(sc.when)}</div>
+          <div class="scenario-preview">${repPreview}${lepPreview}</div>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+
+    const chk = card.querySelector("input");
+    chk.addEventListener("change", ()=>{
+      card.dataset.active = chk.checked ? "true" : "false";
+      if(chk.checked) activeSet.add(sc.id); else activeSet.delete(sc.id);
+      renderOutput();
+    });
+  });
+
+  function escapeHtml(str){
+    return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  // ---------- Salida ----------
+  function renderOutput(){
+    const repBox = document.getElementById("repOut");
+    const lepBox = document.getElementById("lepOut");
+    const selected = SCENARIOS.filter(sc=> activeSet.has(sc.id));
+
+    if(selected.length === 0){
+      repBox.innerHTML = '<span class="empty">Selecciona al menos una situación arriba para generar el guion hacia la REP.</span>';
+      lepBox.innerHTML = '<span class="empty">Selecciona al menos una situación arriba para generar el guion hacia el LEP.</span>';
+      document.getElementById("countHint").textContent = "0 líneas seleccionadas";
+      return;
+    }
+
+    let repHtml = "";
+    let lepHtml = "";
+    selected.forEach(sc=>{
+      if(sc.rep) repHtml += `<span class="line">${escapeHtml(sc.rep)}</span>`;
+      if(sc.lep) lepHtml += `<span class="line">${escapeHtml(sc.lep)}</span>`;
+    });
+
+    repBox.innerHTML = repHtml || '<span class="empty">Ninguna de las situaciones seleccionadas requiere una línea hacia la REP.</span>';
+    lepBox.innerHTML = lepHtml || '<span class="empty">Ninguna de las situaciones seleccionadas requiere una línea hacia el LEP.</span>';
+    document.getElementById("countHint").textContent = selected.length + (selected.length===1 ? " situación seleccionada" : " situaciones seleccionadas");
+  }
+
+  // ---------- Copiar ----------
+  document.querySelectorAll(".copy-btn").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const target = document.getElementById(btn.dataset.target);
+      const lines = Array.from(target.querySelectorAll(".line")).map(el=> el.textContent);
+      const text = lines.join("\n");
+      if(!text) return;
+      try{
+        await navigator.clipboard.writeText(text);
+      }catch(e){
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+      const original = btn.textContent;
+      btn.textContent = "Copiado ✓";
+      btn.classList.add("copied");
+      setTimeout(()=>{ btn.textContent = original; btn.classList.remove("copied"); }, 1600);
+    });
+  });
+
+  // ---------- Glosario ----------
+  const glossaryTable = document.getElementById("glossaryTable");
+  GLOSSARY.forEach(pair=>{
+    const row = document.createElement("div");
+    row.className = "glossary-row";
+    row.dataset.en = pair[0].toLowerCase();
+    row.dataset.es = pair[1].toLowerCase();
+    row.innerHTML = `<div class="en">${escapeHtml(pair[0])}</div><div class="es">${escapeHtml(pair[1])}</div>`;
+    glossaryTable.appendChild(row);
+  });
+  document.getElementById("glossaryCount").textContent = GLOSSARY.length + " términos";
+
+  const glossaryFilter = document.getElementById("glossaryFilter");
+  glossaryFilter.addEventListener("input", ()=>{
+    const q = glossaryFilter.value.trim().toLowerCase();
+    let visible = 0;
+    document.querySelectorAll(".glossary-row").forEach(row=>{
+      const match = !q || row.dataset.en.includes(q) || row.dataset.es.includes(q);
+      row.classList.toggle("hidden", !match);
+      if(match) visible++;
+    });
+    let emptyMsg = glossaryTable.querySelector(".glossary-empty");
+    if(visible === 0){
+      if(!emptyMsg){
+        emptyMsg = document.createElement("div");
+        emptyMsg.className = "glossary-empty";
+        emptyMsg.textContent = "Sin resultados para esa búsqueda.";
+        glossaryTable.appendChild(emptyMsg);
+      }
+    } else if(emptyMsg){
+      emptyMsg.remove();
+    }
+    document.getElementById("glossaryCount").textContent = visible + " de " + GLOSSARY.length + " términos";
+  });
+
+  // ---------- Init ----------
+  document.documentElement.setAttribute("data-service", currentService);
+  renderReadout();
+  renderOutput();
+</script>
+</body>
+</html>

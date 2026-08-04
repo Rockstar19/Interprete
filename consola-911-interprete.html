@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consola 911 · Guiones de intérprete ES ⇄ EN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --console:#0E1519;
+  --panel:#161F26;
+  --panel-2:#1D2932;
+  --strip:#F4F1E8;          /* tira de lectura */
+  --strip-ink:#0C1317;
+  --cue:#63CFE4;            /* lo que dice el oficial */
+  --critical:#FF6E4E;       /* solo urgencia real */
+  --dim:#7A93A3;
+  --edge:rgba(255,255,255,.09);
+  --display:'Montserrat','Century Gothic','Lato',sans-serif;
+  --body:'Lato','Century Gothic','Montserrat',sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--console);color:#DCE7ED;
+  font-family:var(--body);font-size:16px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--cue);outline-offset:2px}
+
+/* ── Cabecera ─────────────────────────────── */
+.top{position:sticky;top:0;z-index:40;background:var(--console);border-bottom:1px solid var(--edge)}
+.top-in{max-width:1180px;margin:0 auto;padding:13px 20px 10px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.mark{margin-right:auto;display:flex;align-items:center;gap:11px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--critical);flex:none}
+body.live .dot{animation:blip 1.4s ease-out infinite}
+@keyframes blip{0%{opacity:1}50%{opacity:.25}100%{opacity:1}}
+.mark h1{font-family:var(--display);font-weight:800;font-size:14px;letter-spacing:.16em;text-transform:uppercase;margin:0}
+.mark small{display:block;color:var(--dim);font-size:11px;letter-spacing:.05em;font-weight:400}
+.find{position:relative;flex:1 1 240px;max-width:340px}
+.find input{
+  width:100%;padding:8px 11px 8px 32px;background:var(--panel);
+  border:1px solid #2B3B47;border-radius:3px;color:#E7EFF4;font-size:14.5px;font-family:var(--body);
+}
+.find input::placeholder{color:#607686}
+.find svg{position:absolute;left:10px;top:50%;transform:translateY(-50%)}
+.btn{
+  background:transparent;border:1px solid #33454F;color:#B9CCD8;border-radius:3px;
+  padding:7px 12px;font-family:var(--display);font-size:11.5px;font-weight:700;
+  letter-spacing:.09em;text-transform:uppercase;
+}
+.btn:hover{background:var(--panel);color:#fff}
+.btn.on{background:var(--cue);border-color:var(--cue);color:#06181D}
+.btn.tally{background:var(--cue);border-color:var(--cue);color:#06181D}
+.btn.tally[data-n="0"]{background:transparent;border-color:#33454F;color:#B9CCD8}
+
+.tabs{max-width:1180px;margin:0 auto;padding:0 20px;display:flex;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  background:none;border:0;border-bottom:2px solid transparent;color:#6F8899;
+  padding:8px 0;margin-right:24px;white-space:nowrap;margin-bottom:-1px;
+  font-family:var(--display);font-weight:700;font-size:11.5px;letter-spacing:.11em;text-transform:uppercase;
+}
+.tab:hover{color:#DCE7ED}
+.tab[aria-selected="true"]{color:#fff;border-bottom-color:var(--cue)}
+
+/* ── Regla permanente ─────────────────────── */
+.rule{
+  max-width:1180px;margin:18px auto 0;padding:0 20px;
+}
+.rule div{
+  border-left:2px solid var(--critical);padding:9px 0 9px 13px;
+  font-size:13.5px;color:#AFC3D0;
+}
+body.live .rule{display:none}
+
+/* ── Escalera de prioridad ────────────────── */
+.ladder{max-width:1180px;margin:16px auto 0;padding:0 20px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.ladder::-webkit-scrollbar{display:none}
+.step{
+  background:none;border:1px solid #2A3A45;border-radius:3px;color:#8FA7B6;
+  padding:7px 11px;white-space:nowrap;text-align:left;line-height:1.25;
+}
+.step b{display:block;font-family:var(--display);font-size:9.5px;letter-spacing:.14em;color:var(--cue);font-weight:700}
+.step span{font-size:13px}
+.step:hover{border-color:#456070;color:#DCE7ED}
+.step[aria-pressed="true"]{border-color:var(--cue);background:rgba(99,207,228,.1);color:#fff}
+
+.chips{max-width:1180px;margin:10px auto 0;padding:0 20px;display:flex;gap:6px;flex-wrap:wrap}
+.chip{
+  background:none;border:1px solid #2A3A45;border-radius:20px;color:#8FA7B6;
+  padding:4px 12px;font-size:12.5px;
+}
+.chip[aria-pressed="true"]{border-color:#7FE0C4;color:#7FE0C4}
+
+main{max-width:1180px;margin:0 auto;padding:20px 20px 130px}
+.count{font-size:12.5px;color:var(--dim);margin:6px 0 16px;letter-spacing:.02em}
+
+/* ── Tarjeta: la tira iluminada ───────────── */
+.line{
+  background:var(--panel);border:1px solid var(--edge);border-radius:4px;
+  margin-bottom:12px;overflow:hidden;display:flex;
+}
+.tag{
+  width:52px;flex:none;background:var(--panel-2);border-right:1px solid var(--edge);
+  display:flex;align-items:flex-start;justify-content:center;padding-top:14px;
+}
+.tag span{
+  font-family:var(--display);font-size:10px;font-weight:800;letter-spacing:.1em;
+  color:var(--cue);
+}
+.line.crit .tag{background:rgba(255,110,78,.14)}
+.line.crit .tag span{color:var(--critical)}
+.guts{flex:1;min-width:0;padding:12px 16px 14px}
+.cue{
+  color:var(--cue);font-size:13.5px;line-height:1.45;margin:0 0 10px;
+  display:flex;gap:8px;align-items:baseline;
+}
+.cue i{font-style:normal;font-family:var(--display);font-size:9px;font-weight:700;letter-spacing:.14em;color:#4E7C89;flex:none}
+.say{
+  background:var(--strip);color:var(--strip-ink);border-radius:3px;
+  padding:13px 15px;margin:0;font-size:19px;line-height:1.5;font-weight:400;
+}
+body.live .say{font-size:23px;line-height:1.52;padding:16px 17px}
+.say + .say{margin-top:7px}
+.tip{font-size:13px;color:#93AAB8;margin:10px 0 0;font-style:italic}
+body.live .tip{display:none}
+.acts{display:flex;gap:7px;margin-top:11px}
+.mini{
+  background:none;border:1px solid #33454F;border-radius:3px;color:#9DB4C2;
+  padding:4px 10px;font-family:var(--display);font-size:10.5px;font-weight:700;
+  letter-spacing:.07em;text-transform:uppercase;
+}
+.mini:hover{border-color:#5D7C8C;color:#fff}
+.mini.in{background:var(--cue);border-color:var(--cue);color:#06181D}
+
+/* aclaratorias al despachador: tira invertida */
+.line.rev .say{background:var(--panel-2);color:#EAF3F7;border:1px solid #2E4049;font-size:17.5px}
+body.live .line.rev .say{font-size:20px}
+
+/* secuencias críticas */
+.seq{background:var(--panel);border:1px solid var(--edge);border-radius:4px;margin-bottom:18px;overflow:hidden}
+.seq-h{padding:14px 16px 12px;border-bottom:1px solid var(--edge)}
+.seq-h h3{font-family:var(--display);font-size:16px;margin:0;letter-spacing:-.01em}
+.seq-h p{margin:7px 0 0;font-size:13px;color:#93AAB8;font-style:italic}
+body.live .seq-h p{display:none}
+.seq-step{display:flex;gap:0;border-top:1px solid rgba(255,255,255,.05)}
+.seq-n{width:52px;flex:none;padding:14px 0 0;text-align:center;font-family:var(--display);font-weight:800;font-size:12px;color:var(--critical)}
+.seq-b{flex:1;min-width:0;padding:12px 16px 14px}
+
+/* glosario */
+table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--edge)}
+th{
+  font-family:var(--display);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+  text-align:left;padding:10px 14px;background:var(--panel-2);color:#8FA7B6;font-weight:700;
+}
+td{padding:10px 14px;border-top:1px solid rgba(255,255,255,.06);font-size:15px;vertical-align:top}
+td:first-child{font-weight:700;width:26%;color:var(--cue)}
+td:nth-child(2){width:30%;color:#F0EDE4;font-weight:700}
+td:last-child{font-size:13px;color:#93AAB8}
+.trap{color:var(--critical);font-weight:700}
+@media(max-width:660px){
+  table,tbody,tr,td{display:block;width:100%}
+  thead{display:none}
+  tr{border-top:1px solid var(--edge);padding:7px 0}
+  td{border:0;padding:2px 14px}
+  td:first-child,td:nth-child(2){width:auto}
+}
+
+.none{border:1px dashed #2E404B;border-radius:4px;padding:32px 18px;text-align:center;color:var(--dim);font-size:15px}
+
+/* ── Bandeja ──────────────────────────────── */
+.tray{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;background:#0A1013;
+  border-top:2px solid var(--cue);transform:translateY(calc(100% - 44px));
+  transition:transform .26s ease;max-height:72vh;display:flex;flex-direction:column;
+}
+.tray.up{transform:translateY(0)}
+.tray-bar{display:flex;align-items:center;gap:10px;height:44px;padding:0 20px;max-width:1180px;margin:0 auto;width:100%}
+.tray-bar .pull{
+  background:none;border:0;color:#DCE7ED;font-family:var(--display);font-size:11.5px;
+  font-weight:700;letter-spacing:.11em;text-transform:uppercase;margin-right:auto;
+  display:flex;align-items:center;gap:9px;height:44px;padding:0;
+}
+.tray-body{overflow-y:auto;padding:4px 20px 22px;max-width:1180px;margin:0 auto;width:100%}
+.row{border-top:1px solid #1E2B33;padding:12px 0;display:flex;gap:12px;align-items:flex-start}
+.row .num{font-family:var(--display);font-weight:800;font-size:11px;color:var(--cue);width:20px;flex:none;padding-top:4px}
+.row .bod{flex:1;min-width:0}
+.row .bod .k{font-size:12px;color:#6F8899;margin:0 0 5px}
+.row .bod .v{margin:0;font-size:16px;color:#F0EDE4;line-height:1.45}
+.row .out{background:none;border:1px solid #2E404B;color:#7A93A3;border-radius:3px;font-size:10.5px;padding:3px 8px;font-family:var(--display);font-weight:700;flex:none}
+.row .out:hover{border-color:var(--critical);color:var(--critical)}
+
+.toast{
+  position:fixed;bottom:60px;left:50%;transform:translateX(-50%) translateY(12px);
+  background:var(--panel-2);border:1px solid var(--cue);color:#fff;padding:8px 16px;
+  border-radius:3px;font-size:13px;z-index:70;opacity:0;pointer-events:none;transition:all .2s;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{
+  .top,.ladder,.chips,.rule,.acts,.tray-bar,.count,.none{display:none!important}
+  body{background:#fff;color:#000}
+  .tray{position:static;transform:none;max-height:none;background:#fff;border:0}
+  .row{border-top:1px solid #999}
+  .row .bod .v{color:#000}
+  .row .bod .k{color:#444}
+  main{padding:0}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="mark">
+      <span class="dot" aria-hidden="true"></span>
+      <div><h1>Consola 911</h1><small>Guiones de intérprete · ES ⇄ EN · sin apertura ni cierre</small></div>
+    </div>
+    <div class="find">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#607686" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <input id="q" type="search" placeholder="Buscar: dirección, sangrado, placa…  ( / )" aria-label="Buscar">
+    </div>
+    <button class="btn" id="liveBtn" aria-pressed="false">Modo llamada</button>
+    <button class="btn tally" id="trayBtn" data-n="0">Guion · 0</button>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-v="prio">Preguntas por prioridad</button>
+    <button class="tab" role="tab" aria-selected="false" data-v="seq">Instrucciones críticas</button>
+    <button class="tab" role="tab" aria-selected="false" data-v="disc">Aclaratorias al despachador</button>
+    <button class="tab" role="tab" aria-selected="false" data-v="gloss">Glosario y trampas</button>
+  </nav>
+</header>
+
+<div class="rule"><div id="ruleTxt"></div></div>
+<div class="ladder" id="ladder"></div>
+<div class="chips" id="chips"></div>
+
+<main>
+  <p class="count" id="count"></p>
+  <section id="stage"></section>
+</main>
+
+<div class="tray" id="tray">
+  <div class="tray-bar">
+    <button class="pull" id="pull" aria-expanded="false">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#63CFE4" stroke-width="3"><path d="M6 15l6-6 6 6"/></svg>
+      Guion armado · <span id="tn">0</span>
+    </button>
+    <button class="btn" id="copyAll">Copiar</button>
+    <button class="btn" id="printAll">Imprimir</button>
+    <button class="btn" id="clearAll">Vaciar</button>
+  </div>
+  <div class="tray-body" id="trayBody"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   PRIORIDADES · lo que le dices al LEP en español
+   cue = lo que dice el oficial o despachador
+   es  = rendición al beneficiario (una o varias tiras)
+   ═══════════════════════════════════════════════ */
+const PRIOS=[
+ {id:'p1',n:'P1',t:'Ubicación',s:'Verificar siempre'},
+ {id:'p2',n:'P2',t:'Naturaleza',s:'Qué pasó y cuándo'},
+ {id:'p3',n:'P3',t:'Paciente',s:'Estado y síntomas'},
+ {id:'p4',n:'P4',t:'Seguridad',s:'Del llamante y la escena'},
+ {id:'p5',n:'P5',t:'Sospechoso',s:'Persona y vehículo'},
+ {id:'p6',n:'P6',t:'Prearribo',s:'Mientras llega la unidad'}
+];
+const KINDS=[{id:'all',t:'Todas'},{id:'med',t:'Médica'},{id:'pol',t:'Policial'},{id:'fue',t:'Incendio'}];
+
+const Q=[
+/* ── P1 UBICACIÓN ───────────────────────────── */
+{p:'p1',k:['med','pol','fue'],crit:1,cue:'What is the address of the emergency?',
+ es:['¿Cuál es la dirección de la emergencia?'],
+ tip:'Primera pregunta de toda llamada. No la combines con ninguna otra ni la adelantes.'},
+
+{p:'p1',k:['med','pol','fue'],cue:'What city is that in?',
+ es:['¿En qué ciudad queda esa dirección?']},
+
+{p:'p1',k:['med','pol','fue'],cue:'Is that a house, an apartment or a business?',
+ es:['¿Es una casa, un apartamento o un negocio?','¿Cuál es el número del apartamento y en qué piso está?']},
+
+{p:'p1',k:['med','pol','fue'],cue:'What is the nearest cross street?',
+ es:['¿Cuál es la calle más cercana? ¿Entre qué dos calles está?']},
+
+{p:'p1',k:['med','pol','fue'],crit:1,cue:'Let me repeat that address back to you.',
+ es:['Le voy a repetir la dirección. Dígame si está correcta.'],
+ tip:'La verificación de dirección es el punto donde más se pierde tiempo y donde más grave es un error. Repite dígito por dígito.'},
+
+{p:'p1',k:['med','pol','fue'],cue:'Can you spell the street name?',
+ es:['¿Me puede deletrear el nombre de la calle, letra por letra?'],
+ tip:'Pide deletreo siempre en calles con nombre propio. No asumas la grafía.'},
+
+{p:'p1',k:['med','pol','fue'],cue:'Are you at that location right now?',
+ es:['¿Está usted en ese lugar en este momento?','¿Desde dónde está llamando?']},
+
+{p:'p1',k:['med','pol','fue'],cue:'What number are you calling from, in case we get disconnected?',
+ es:['¿De qué número está llamando, por si se corta la llamada?']},
+
+{p:'p1',k:['med','pol','fue'],cue:'I need a street address, not a landmark.',
+ es:['Necesito una dirección con número y nombre de calle.','¿Ve el número en la casa, un letrero o algún negocio cerca que pueda leerme?'],
+ tip:'Muy frecuente: el llamante da una referencia («frente a la iglesia»). Reporta al despachador que estás intentando obtener número y calle.'},
+
+{p:'p1',k:['med','pol'],cue:'What highway are you on? Did you pass a mile marker or an exit?',
+ es:['¿En qué carretera está?','¿Vio algún marcador de milla o el número de alguna salida?','¿En qué dirección iba, hacia el norte, sur, este u oeste?']},
+
+/* ── P2 NATURALEZA ──────────────────────────── */
+{p:'p2',k:['med','pol','fue'],crit:1,cue:'Tell me exactly what happened.',
+ es:['Dígame exactamente qué fue lo que pasó.']},
+
+{p:'p2',k:['med','pol','fue'],cue:'Do you need police, fire or an ambulance?',
+ es:['¿Necesita policía, bomberos o ambulancia?']},
+
+{p:'p2',k:['med','pol','fue'],cue:'Is it happening right now?',
+ es:['¿Está pasando en este momento o ya terminó?','¿Hace cuánto tiempo ocurrió?']},
+
+{p:'p2',k:['med','pol'],crit:1,cue:'Is anyone hurt?',
+ es:['¿Hay alguien herido?','¿Cuántas personas están heridas?']},
+
+{p:'p2',k:['pol'],crit:1,cue:'Are there any weapons involved?',
+ es:['¿Hay armas de por medio?','¿Vio si era pistola, cuchillo u otra cosa?']},
+
+{p:'p2',k:['med','pol'],cue:'How many people are involved?',
+ es:['¿Cuántas personas están involucradas?']},
+
+{p:'p2',k:['pol'],cue:'Has anyone been drinking or using drugs?',
+ es:['¿Alguna de las personas ha estado tomando alcohol o usando drogas?']},
+
+{p:'p2',k:['fue'],crit:1,cue:'Is everyone out of the building?',
+ es:['¿Ya salieron todos del edificio?','¿Falta alguien adentro? ¿En qué parte de la casa estaba?']},
+
+{p:'p2',k:['fue'],cue:'What is on fire?',
+ es:['¿Qué se está quemando?','¿Ve llamas o solamente humo?']},
+
+/* ── P3 PACIENTE ────────────────────────────── */
+{p:'p3',k:['med'],cue:'How old is the patient?',
+ es:['¿Qué edad tiene la persona?','¿Es hombre o mujer?']},
+
+{p:'p3',k:['med'],crit:1,cue:'Is the patient conscious?',
+ es:['¿Está consciente? ¿Le responde cuando usted le habla?'],
+ tip:'Si el llamante duda, el despachador querrá que le pidas sacudirla suavemente y gritarle. Espera su instrucción.'},
+
+{p:'p3',k:['med'],crit:1,cue:'Is the patient breathing?',
+ es:['¿Está respirando?','Acerque el oído a la boca y a la nariz y dígame si siente el aire.','¿Se le mueve el pecho?'],
+ tip:'Respiración agónica: si el llamante describe ronquidos o boqueos, repórtalo tal cual. No lo interpretes como «sí respira».'},
+
+{p:'p3',k:['med'],cue:'Is she breathing normally?',
+ es:['¿Respira normal o le cuesta trabajo?','¿Puede hablar oraciones completas o solo palabras sueltas?']},
+
+{p:'p3',k:['med'],crit:1,cue:'Is there any bleeding?',
+ es:['¿Está sangrando?','¿De qué parte del cuerpo y cuánta sangre?','¿La sangre sale a chorros?']},
+
+{p:'p3',k:['med'],cue:'Does she have chest pain?',
+ es:['¿Le duele el pecho?','¿El dolor se le corre al brazo, al cuello, a la quijada o a la espalda?','¿Está sudando frío o tiene náuseas?']},
+
+{p:'p3',k:['med'],crit:1,cue:'I need to check for stroke signs.',
+ es:['¿Se le tuerce un lado de la cara?','¿Puede levantar los dos brazos y mantenerlos arriba?','¿Se le traba la lengua al hablar?','¿A qué hora exactamente la vio bien por última vez?'],
+ tip:'La última hora en que se la vio normal decide el tratamiento. Insiste en una hora concreta, no en «hace ratito».'},
+
+{p:'p3',k:['med'],cue:'Is she having a seizure right now?',
+ es:['¿Está convulsionando en este momento?','¿Cuánto tiempo lleva convulsionando?','¿Ha tenido convulsiones antes?']},
+
+{p:'p3',k:['med'],crit:1,cue:'Is she choking?',
+ es:['¿Se está ahogando con comida o con algún objeto?','¿Puede toser, hablar o llorar?']},
+
+{p:'p3',k:['med'],cue:'Do you know what she took?',
+ es:['¿Sabe qué tomó y cuánta cantidad?','¿Tiene el frasco o el envase a la mano? Léame la etiqueta.','¿Hace cuánto tiempo lo tomó?']},
+
+{p:'p3',k:['med'],cue:'Is this an allergic reaction?',
+ es:['¿Es una reacción alérgica?','¿Se le está hinchando la cara, la lengua o la garganta?','¿Tiene un inyector de epinefrina, un EpiPen?']},
+
+{p:'p3',k:['med'],cue:'Is she diabetic?',
+ es:['¿Es diabética?','¿Se puso su insulina hoy? ¿Ha comido?']},
+
+{p:'p3',k:['med'],cue:'How far along is she?',
+ es:['¿De cuántas semanas o meses está embarazada?','¿Cada cuánto le vienen las contracciones?','¿Ya se le rompió la fuente?','¿Ya se ve la cabeza del bebé?']},
+
+{p:'p3',k:['med'],cue:'Does the patient have a DNR?',
+ es:['¿La persona tiene una orden de no resucitar, un DNR, aquí en la casa?','¿Tiene el papel a la mano?'],
+ tip:'Se dice la sigla DNR y se describe. Si el llamante menciona hospicio o cuidados paliativos, repórtalo al despachador de inmediato.'},
+
+{p:'p3',k:['med'],cue:'What medications does she take? Any allergies?',
+ es:['¿Qué medicamentos toma?','¿Es alérgica a algún medicamento?']},
+
+/* ── P4 SEGURIDAD ───────────────────────────── */
+{p:'p4',k:['pol','fue','med'],crit:1,cue:'Are you in a safe place?',
+ es:['¿Está usted en un lugar seguro?']},
+
+{p:'p4',k:['pol'],crit:1,cue:'Is the suspect still there?',
+ es:['¿Esa persona todavía está ahí?','¿En qué parte de la casa está ahora?']},
+
+{p:'p4',k:['pol','fue'],crit:1,cue:'Can you get out safely?',
+ es:['¿Puede salir sin ponerse en peligro?','Salga y sígame hablando desde afuera.']},
+
+{p:'p4',k:['pol','fue','med'],crit:1,cue:'Stay on the line with me. Do not hang up.',
+ es:['No cuelgue. Quédese en la línea conmigo.'],
+ tip:'Frase de control. Se interpreta completa y con el mismo tono firme del despachador, sin suavizarla.'},
+
+{p:'p4',k:['pol'],crit:1,cue:'Can you talk freely? Answer yes or no.',
+ es:['¿Puede hablar libremente en este momento?','Conteste solamente sí o no.'],
+ tip:'Violencia doméstica o secuestro: el llamante puede estar oído por el agresor. No agregues explicaciones ni preguntes por qué.'},
+
+{p:'p4',k:['fue'],crit:1,cue:'Get out of the building now and do not go back inside.',
+ es:['Salga del edificio ahora mismo.','No vuelva a entrar por ningún motivo.']},
+
+{p:'p4',k:['fue'],cue:'If there is smoke, stay low and crawl out.',
+ es:['Si hay humo, agáchese y salga gateando, lo más pegado al piso que pueda.']},
+
+{p:'p4',k:['pol'],crit:1,cue:'Silence your phone and stay quiet.',
+ es:['Ponga el teléfono en silencio.','No haga ruido y no salga de donde está.']},
+
+{p:'p4',k:['pol'],cue:'Lock the door and stay away from the windows.',
+ es:['Cierre la puerta con llave.','Aléjese de las ventanas.']},
+
+{p:'p4',k:['pol','fue','med'],cue:'Is anyone else in the home?',
+ es:['¿Hay más personas en la casa?','¿Hay niños o personas mayores? ¿Dónde están ahora?']},
+
+{p:'p4',k:['pol','fue','med'],cue:'Do you have any dogs?',
+ es:['¿Hay perros en la propiedad?','Por favor enciérrelos antes de que llegue la ayuda.']},
+
+/* ── P5 SOSPECHOSO ──────────────────────────── */
+{p:'p5',k:['pol'],cue:'Can you describe him?',
+ es:['¿Cómo es la persona?','¿Más o menos qué estatura tiene?','¿Es delgada, mediana o robusta?','¿Qué edad aparenta?']},
+
+{p:'p5',k:['pol'],cue:'What is his complexion?',
+ es:['¿De qué color es su piel: clara, media u oscura?'],
+ tip:'Complexion en inglés es el tono de la piel. En español «complexión» es la contextura del cuerpo. No las mezcles.'},
+
+{p:'p5',k:['pol'],cue:'What was he wearing?',
+ es:['¿Cómo estaba vestida?','¿De qué color la camisa y de qué color el pantalón?','¿Traía gorra, capucha o algo en la cara?']},
+
+{p:'p5',k:['pol'],crit:1,cue:'Which way did he go?',
+ es:['¿Para qué lado se fue?','¿Se fue a pie o en un vehículo?','¿Hace cuánto se fue?']},
+
+{p:'p5',k:['pol'],cue:'What is the year, make and model of the vehicle?',
+ es:['¿De qué color es el vehículo?','¿Sabe la marca y el modelo?','¿Más o menos de qué año es?','¿Es carro, camioneta o troca?'],
+ tip:'Year / make / model: año, marca y modelo. «Make» no es «hacer»; es la fábrica. Si el llamante dice «troca», repórtalo como camioneta o pickup.'},
+
+{p:'p5',k:['pol'],crit:1,cue:'Did you get the license plate?',
+ es:['¿Alcanzó a ver la placa?','Dígame los números y las letras que recuerde, aunque sean pocos.','¿De qué estado era la placa?'],
+ tip:'Placa, matrícula o chapa según el país del llamante. Si no reconoce «placa», ofrece las tres.'},
+
+{p:'p5',k:['pol'],cue:'Was he armed?',
+ es:['¿Tenía un arma?','¿La sacó o solo la mencionó?']},
+
+{p:'p5',k:['pol'],cue:'Do you know this person?',
+ es:['¿Usted conoce a esa persona?','¿Cómo se llama y qué relación tiene con usted?']},
+
+/* ── P6 PREARRIBO ───────────────────────────── */
+{p:'p6',k:['med','pol','fue'],crit:1,cue:'Help is on the way.',
+ es:['La ayuda ya va en camino.'],
+ tip:'Se interpreta apenas el despachador lo dice; es lo que baja el pánico del llamante y permite seguir con las preguntas.'},
+
+{p:'p6',k:['med'],cue:'The paramedics are en route.',
+ es:['Los paramédicos ya salieron para allá.']},
+
+{p:'p6',k:['med','pol','fue'],cue:'Unlock the front door and turn on the outside light.',
+ es:['Abra la puerta de entrada y déjela sin llave.','Prenda la luz de afuera.']},
+
+{p:'p6',k:['med','pol','fue'],cue:'Have someone wait outside to flag them down.',
+ es:['Que alguien salga a la calle para hacerles señas cuando lleguen.']},
+
+{p:'p6',k:['med'],crit:1,cue:'Do not move the patient.',
+ es:['No mueva a la persona, a menos que esté en peligro donde está.']},
+
+{p:'p6',k:['med'],cue:'Do not give her anything to eat or drink.',
+ es:['No le dé nada de comer ni de beber, ni agua.']},
+
+{p:'p6',k:['pol'],cue:'Do not touch anything at the scene.',
+ es:['No toque ni mueva nada en el lugar.']},
+
+{p:'p6',k:['med','pol','fue'],cue:'I am going to stay on the line with you.',
+ es:['Me voy a quedar en la línea con usted hasta que lleguen.']}
+];
+
+/* ═══ INSTRUCCIONES CRÍTICAS ═══════════════════ */
+const SEQ=[
+{t:'RCP solo con las manos · adulto',
+ n:'El despachador marca el ritmo. Interpreta cada orden apenas la diga y sigue su velocidad; el conteo se dice en voz alta y no se resume.',
+ s:[
+  {cue:'Get her flat on her back on a hard surface.',es:'Acuéstela boca arriba en el piso, sobre una superficie dura.'},
+  {cue:'Kneel next to her and bare the chest.',es:'Arrodíllese a su lado y descúbrale el pecho.'},
+  {cue:'Put the heel of your hand in the center of the chest, between the nipples.',es:'Ponga la base de la mano en el centro del pecho, entre los pezones.'},
+  {cue:'Put your other hand on top and lace your fingers.',es:'Ponga la otra mano encima y entrelace los dedos.'},
+  {cue:'Push down hard and fast, about two inches.',es:'Empuje fuerte y rápido, como cinco centímetros hacia abajo.'},
+  {cue:'Keep pumping. One, two, three, four…',es:'No pare de comprimir. Uno, dos, tres, cuatro…'},
+  {cue:'Don\u2019t stop until I tell you to.',es:'No se detenga hasta que yo le diga.'}
+ ]},
+{t:'Hemorragia',
+ n:'Prioridad sobre cualquier otra pregunta si el sangrado es abundante.',
+ s:[
+  {cue:'Get a clean cloth or a towel.',es:'Busque una tela limpia o una toalla.'},
+  {cue:'Press down hard directly on the wound.',es:'Presione fuerte, directamente sobre la herida.'},
+  {cue:'Do not lift the cloth to look.',es:'No levante la tela para revisar. Siga presionando sin soltar.'},
+  {cue:'If it soaks through, add another cloth on top.',es:'Si se empapa, ponga otra tela encima, sin quitar la primera.'}
+ ]},
+{t:'Atragantamiento · persona consciente',
+ n:'Si tose con fuerza, no se interviene. La instrucción cambia en cuanto deja de toser.',
+ s:[
+  {cue:'Can she cough or speak?',es:'¿Puede toser o hablar?'},
+  {cue:'Stand behind her and wrap your arms around her waist.',es:'Párese detrás de ella y abrácela por la cintura.'},
+  {cue:'Make a fist just above the belly button.',es:'Haga un puño justo arriba del ombligo.'},
+  {cue:'Thrust inward and upward, quick and hard.',es:'Empuje hacia adentro y hacia arriba, rápido y fuerte.'},
+  {cue:'Keep going until the object comes out.',es:'Siga hasta que salga el objeto o hasta que llegue la ayuda.'}
+ ]},
+{t:'Sobredosis y naloxona',
+ n:'Pregunta por el envase: el despachador necesita el nombre del medicamento tal como está impreso.',
+ s:[
+  {cue:'Do you have Narcan or naloxone in the house?',es:'¿Tiene Narcan o naloxona ahí en la casa?'},
+  {cue:'Spray the whole dose into one nostril.',es:'Póngale toda la dosis en una fosa nasal.'},
+  {cue:'Roll her onto her side.',es:'Voltéela de lado, por si vomita.'},
+  {cue:'Stay with her and watch her breathing.',es:'Quédese con ella y vigile que siga respirando.'}
+ ]},
+{t:'Parto inminente',
+ n:'Nunca adelantes pasos: el despachador decide cuándo se pasa de una instrucción a la siguiente.',
+ s:[
+  {cue:'Do not let her go to the bathroom.',es:'No la deje ir al baño.'},
+  {cue:'Have her lie down and bend her knees.',es:'Acuéstela y que doble las rodillas.'},
+  {cue:'Support the baby\u2019s head. Do not pull.',es:'Sostenga la cabeza del bebé. No jale.'},
+  {cue:'Wipe the baby\u2019s mouth and nose.',es:'Límpiele la boca y la nariz al bebé.'},
+  {cue:'Dry the baby and keep it warm against her skin.',es:'Seque al bebé y manténgalo calientito contra el pecho de la mamá.'}
+ ]},
+{t:'Quemaduras',
+ n:'Aquí abundan los remedios caseros. Interpreta la prohibición completa, no solo la parte del agua.',
+ s:[
+  {cue:'Run cool water over the burn.',es:'Ponga agua fresca sobre la quemadura.'},
+  {cue:'Do not use ice, butter or ointment.',es:'No le ponga hielo, mantequilla, pasta de dientes ni pomada.'},
+  {cue:'Do not break any blisters.',es:'No le reviente las ampollas.'},
+  {cue:'Cover it loosely with a clean cloth.',es:'Cúbrala sin apretar con una tela limpia.'}
+ ]}
+];
+
+/* ═══ ACLARATORIAS AL DESPACHADOR ══════════════ */
+const DISC=[
+{t:'Estás verificando la dirección',n:'Anúncialo para que el despachador no crea que perdió la llamada.',
+ en:'The interpreter is verifying the address with the caller.'},
+{t:'El llamante está histérico',n:'Describe el hecho; el despachador decide cómo recuperar el control.',
+ en:'The interpreter is having difficulty rendering; the caller is hysterical and is not responding to the questions.'},
+{t:'El llamante no es coherente',n:'Reporta y sigue interpretando todo lo que diga, aunque no tenga orden.',
+ en:'The caller is not coherent. The interpreter will continue to render everything that is said.'},
+{t:'Da demasiada información de golpe',n:'Los tips de 911 lo señalan como la causa más común de pérdida de datos.',
+ en:'The caller is providing several pieces of information at once. The interpreter will render them in the order given.'},
+{t:'Da una referencia, no una dirección',n:'Frecuente. Reporta el intento en curso para que el despachador no repita la pregunta.',
+ en:'The caller is giving a landmark rather than a street address. The interpreter is attempting to obtain a house number and street name.'},
+{t:'No escuchas al llamante',n:'Pide repetición sin justificarte; en 911 cada segundo de explicación es tiempo perdido.',
+ en:'The interpreter cannot hear the caller and is requesting repetition.'},
+{t:'Ruido relevante en la línea del llamante',n:'Gritos, golpes, algo que suene a disparos. Descríbelo como posible, no lo afirmes.',
+ en:'The interpreter can hear shouting in the background on the caller\u2019s line.'},
+{t:'Se cortó la línea del llamante',n:'Repórtalo de inmediato; no cuelgues por tu cuenta.',
+ en:'The interpreter can no longer hear the caller. The line appears to have dropped.'},
+{t:'Ahora habla otra persona',n:'El despachador necesita saber que cambió la fuente de la información.',
+ en:'A third party is now speaking on the caller\u2019s line.'},
+{t:'Quien habla es un menor',n:'Reporta la observación; no evalúes su edad exacta.',
+ en:'The person now speaking on the caller\u2019s line appears to be a child.'},
+{t:'El llamante te pide a ti que le digas qué hacer',n:'No instruyas nunca por tu cuenta, ni siquiera algo obvio como salir de la casa.',
+ en:'The caller is asking the interpreter what to do. The interpreter cannot instruct and is referring the question to the dispatcher.'},
+{t:'El llamante no habla español como lengua materna',n:'Quechua, mam, k\u2019iche\u2019, mixteco, náhuatl. Repórtalo pronto, no al final.',
+ en:'The caller does not appear to be a native Spanish speaker and comprehension is limited. Another language may be required.'},
+{t:'Usan un código o una sigla que no conoces',n:'Nunca adivines un 10-code ni una abreviatura de reporte. A/O, BOLO, ADW y similares se confirman antes.',
+ en:'The interpreter would like the meaning of that code before rendering it.'},
+{t:'Te equivocaste y lo notaste',n:'La autocorrección inmediata es obligatoria.',
+ en:'Correction by the interpreter: the previous rendition should have been the following.'},
+{t:'El llamante contesta otra cosa',n:'Reporta el desfase en vez de acomodar la respuesta a la pregunta.',
+ en:'The interpreter has rendered the question twice; the caller is answering a different question.'},
+{t:'El llamante se niega a identificarse',n:'Traslada la negativa tal cual, sin insistir por tu cuenta.',
+ en:'The caller declines to give a name.'},
+{t:'El ritmo no te deja rendir completo',n:'Pídelo una vez. Si el despachador te interrumpe igual, cede el turno: está evaluando la llamada.',
+ en:'The interpreter requests shorter segments so that nothing is lost at this pace.'},
+{t:'El llamante quiere colgar antes de tiempo',n:'Reporta la intención; la decisión de liberar la línea es del despachador.',
+ en:'The caller is stating that he wants to hang up.'}
+];
+
+/* ═══ GLOSARIO ═════════════════════════════════ */
+const GL=[
+ ['A/O — arresting officer','oficial a cargo del arresto','Abreviatura de reporte. Se describe; no se deletrea la sigla al llamante.'],
+ ['Back up','refuerzos · apoyo policial','TRAMPA: no es «respaldo». Son las unidades que asisten a los primeros en llegar.'],
+ ['BOLO — be on the lookout','alerta de búsqueda','Se describe. Suele venir seguida de la descripción física.'],
+ ['Assault','agresión · ataque','Amenaza o intento de causar daño; no requiere contacto físico.'],
+ ['Battery','agresión con lesiones','TRAMPA: nada que ver con «batería». Aquí sí hubo contacto físico.'],
+ ['ADW — assault with a deadly weapon','agresión con arma peligrosa','Cuchillo, arma de fuego, objeto contundente, incluso patada con calzado.'],
+ ['Robbery','robo con violencia o intimidación','Hay una víctima presente. Distinto de burglary.'],
+ ['Burglary','robo con allanamiento','Entrar sin permiso a una vivienda o local para robar. La víctima puede no estar.'],
+ ['Theft · larceny','hurto','Tomar bienes ajenos sin violencia ni allanamiento.'],
+ ['Shoplifting','hurto en tienda','Ocultar mercancía, cambiar etiquetas o intercambiar envases.'],
+ ['Carjacking','robo de vehículo con violencia','Se le quita el vehículo a alguien que está en posesión de él, por fuerza o intimidación.'],
+ ['Hit and run','atropello y fuga · choque y fuga','Según haya sido a un peatón o a otro vehículo.'],
+ ['Disorderly conduct','alteración del orden público','Conducta que altera la paz.'],
+ ['DUI · DWI','conducir bajo los efectos del alcohol o de drogas','TRAMPA: no «manejar intoxicado». «Intoxicado» en español se entiende como envenenado.'],
+ ['Field sobriety test','pruebas de coordinación en el lugar','Se describe. No es el alcoholímetro.'],
+ ['Breathalyzer','alcoholímetro','Mide el alcohol en el aliento.'],
+ ['BAC — blood alcohol concentration','concentración de alcohol en la sangre','Se dice la sigla y se describe.'],
+ ['Controlled substance','sustancia controlada','Droga regulada por ley federal o estatal.'],
+ ['Warrant','orden judicial','Precisar el tipo: orden de arresto, orden de cateo, orden de comparecencia.'],
+ ['Search warrant','orden de cateo · orden de registro','«Cateo» es de uso mexicano; «registro» se entiende más ampliamente.'],
+ ['Felony','delito grave','TRAMPA: no es «felonía».'],
+ ['Misdemeanor','delito menor','Pena máxima de un año o menos.'],
+ ['Probable cause','causa probable','Fórmula legal fija; no se parafrasea.'],
+ ['Citation','citación · multa','Según sea comparecencia o sanción económica.'],
+ ['Complainant','denunciante','Quien inicia la denuncia.'],
+ ['Domestic dispute · domestic violence','discusión doméstica · violencia doméstica','El despachador distingue entre las dos. No las unifiques.'],
+ ['Juvenile · minor','menor de edad','Menor de dieciocho años.'],
+ ['Complexion','tez · tono de piel','TRAMPA: «complexión» en español es la contextura del cuerpo, no el color de la piel.'],
+ ['Year / make / model','año, marca y modelo','TRAMPA: «make» es la marca de fábrica, no el verbo hacer.'],
+ ['License plate number','número de placa · matrícula · chapa','Varía por país: placa (MX, CO, CL), matrícula (ES, AR), chapa (CU, PY). Ofrece varias si no lo reconoce.'],
+ ['VIN','número de identificación del vehículo','Se dice la sigla y se describe.'],
+ ['Pass out','desmayarse · perder el conocimiento','TRAMPA: nunca «pasar fuera». Distingue desmayo breve de pérdida prolongada.'],
+ ['Unconscious · unresponsive','inconsciente · no responde','«No responde» es más claro para el llamante que «no reactivo».'],
+ ['Shortness of breath','falta de aire · dificultad para respirar','Evita «corto de aliento», que suena a traducción.'],
+ ['Numbness','entumecimiento · adormecimiento','Puede venir con hormigueo o ardor.'],
+ ['Chest pain','dolor de pecho','Pregunta siempre si el dolor se corre a brazo, cuello o quijada.'],
+ ['Stroke','derrame cerebral · ACV','Muchos llamantes reconocen «derrame» y no «accidente cerebrovascular».'],
+ ['Seizure','convulsión · ataque','TRAMPA: en contexto policial «seizure» es incautación. Confirma cuál es antes de rendir.'],
+ ['Overdose','sobredosis','Pide siempre el envase del medicamento.'],
+ ['Naloxone · Narcan','naloxona · Narcan','Nombre comercial intacto; muchos llamantes solo conocen «Narcan».'],
+ ['CPR','RCP · reanimación cardiopulmonar','Se dice la sigla en español, RCP, y se describe.'],
+ ['DNR · DNI','orden de no resucitar · orden de no entubar','Se dicen las siglas y se describen. Son órdenes médicas distintas.'],
+ ['Hospice','hospicio · cuidados paliativos','TRAMPA: «hospicio» en varios países se entiende como asilo u orfanato. Añade «cuidados paliativos».'],
+ ['EMS · paramedics','paramédicos · servicios médicos de emergencia','«Ambulancia» es lo que el llamante espera oír.'],
+ ['Dispatcher','despachador · operador del 911','«Operadora» es lo más reconocible en llamada.'],
+ ['PSAP','central de emergencias','Se describe; la sigla no significa nada para el llamante.'],
+ ['10-codes (10-4, 10-20…)','no se traducen','Se solicita el significado al despachador antes de rendir cualquier código.']
+];
+
+/* ═══ Estado ═══════════════════════════════════ */
+let view='prio', prio='all', kind='all', q='', script=[];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const RULES={
+ prio:'Interpretas, no diriges. Todo lo que aparece aquí se dice únicamente después de que el despachador lo pida: no adelantes preguntas ni instrucciones, aunque sepas cuál sigue.',
+ seq:'Estas secuencias las ordena el despachador, paso por paso. Tu trabajo es rendir cada orden apenas la escuchas y sostener su ritmo, sin resumir ni saltar pasos.',
+ disc:'Estas frases van al despachador, en tercera persona. En 911 se dicen cortas y sin justificación: el ritmo de la llamada no admite explicaciones.',
+ gloss:'Marcadas en rojo las trampas que más se cuelan bajo presión. Si un término no está claro, se pregunta antes de rendirlo, nunca después.'
+};
+
+function ladder(){
+  const L=$('#ladder'), C=$('#chips');
+  if(view!=='prio'){L.innerHTML='';C.innerHTML='';return}
+  L.innerHTML=`<button class="step" data-p="all" aria-pressed="${prio==='all'}"><b>TODO</b><span>Secuencia completa</span></button>`+
+    PRIOS.map(p=>`<button class="step" data-p="${p.id}" aria-pressed="${prio===p.id}"><b>${p.n}</b><span>${p.t}</span></button>`).join('');
+  C.innerHTML=KINDS.map(k=>`<button class="chip" data-k="${k.id}" aria-pressed="${kind===k.id}">${k.t}</button>`).join('');
+  L.querySelectorAll('.step').forEach(b=>b.onclick=()=>{prio=b.dataset.p;ladder();render()});
+  C.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{kind=b.dataset.k;ladder();render()});
+}
+
+function hit(o){
+  if(!q)return true;
+  const s=q.toLowerCase();
+  return JSON.stringify(o).toLowerCase().includes(s);
+}
+
+function qCard(o,i){
+  const p=PRIOS.find(x=>x.id===o.p);
+  const on=script.some(x=>x.key===o.cue);
+  return `<article class="line ${o.crit?'crit':''}">
+    <div class="tag"><span>${p?p.n:''}</span></div>
+    <div class="guts">
+      <p class="cue"><i>OFICIAL</i><span>${esc(o.cue)}</span></p>
+      ${o.es.map(t=>`<p class="say">${esc(t)}</p>`).join('')}
+      ${o.tip?`<p class="tip">${esc(o.tip)}</p>`:''}
+      <div class="acts">
+        <button class="mini add ${on?'in':''}" data-i="${i}">${on?'En el guion':'+ Guion'}</button>
+        <button class="mini cp" data-i="${i}">Copiar ES</button>
+      </div>
+    </div>
+  </article>`;
+}
+
+function renderPrio(){
+  const list=Q.map((o,i)=>({o,i})).filter(x=>
+    (prio==='all'||x.o.p===prio) && (kind==='all'||x.o.k.includes(kind)) && hit(x.o));
+  $('#count').textContent=`${list.length} de ${Q.length} renglones · el orden P1 a P6 es el orden en que la central los necesita`;
+  $('#stage').innerHTML=list.length
+    ? list.map(x=>qCard(x.o,x.i)).join('')
+    : `<div class="none">Nada con «${esc(q)}». Prueba una palabra suelta: <b>placa</b>, <b>respirando</b>, <b>cuadra</b>, <b>arma</b>.</div>`;
+  $('#stage').querySelectorAll('.add').forEach(b=>b.onclick=()=>{
+    const o=Q[+b.dataset.i];
+    if(script.some(x=>x.key===o.cue)) script=script.filter(x=>x.key!==o.cue);
+    else script.push({key:o.cue,k:o.cue,v:o.es.join('  ·  ')});
+    render();
+  });
+  $('#stage').querySelectorAll('.cp').forEach(b=>b.onclick=()=>copy(Q[+b.dataset.i].es.join('\n')));
+}
+
+function renderSeq(){
+  const list=SEQ.filter(hit);
+  $('#count').textContent=`${list.length} secuencias · cada paso se rinde por separado, en cuanto el despachador lo dicta`;
+  $('#stage').innerHTML=list.map((s,si)=>`<div class="seq">
+    <div class="seq-h"><h3>${esc(s.t)}</h3><p>${esc(s.n)}</p></div>
+    ${s.s.map((p,i)=>`<div class="seq-step">
+      <div class="seq-n">${String(i+1).padStart(2,'0')}</div>
+      <div class="seq-b">
+        <p class="cue"><i>DESPACHO</i><span>${esc(p.cue)}</span></p>
+        <p class="say">${esc(p.es)}</p>
+      </div></div>`).join('')}
+    <div class="seq-step"><div class="seq-n"></div><div class="seq-b">
+      <div class="acts"><button class="mini seqadd" data-s="${si}">+ Agregar secuencia al guion</button></div>
+    </div></div>
+  </div>`).join('') || `<div class="none">Sin coincidencias.</div>`;
+  $('#stage').querySelectorAll('.seqadd').forEach(b=>b.onclick=()=>{
+    const s=list[+b.dataset.s];
+    s.s.forEach((p,i)=>script.push({key:s.t+i,k:`${s.t} · ${i+1}`,v:p.es}));
+    render();flash('Secuencia agregada');
+  });
+}
+
+function renderDisc(){
+  const list=DISC.filter(hit);
+  $('#count').textContent=`${list.length} de ${DISC.length} aclaratorias · van en inglés y en tercera persona`;
+  $('#stage').innerHTML=list.map((d,i)=>{
+    const on=script.some(x=>x.key===d.en);
+    return `<article class="line rev">
+      <div class="tag"><span>EN</span></div>
+      <div class="guts">
+        <p class="cue"><i>SITUACIÓN</i><span>${esc(d.t)}</span></p>
+        <p class="say">${esc(d.en)}</p>
+        <p class="tip">${esc(d.n)}</p>
+        <div class="acts">
+          <button class="mini dadd ${on?'in':''}" data-i="${i}">${on?'En el guion':'+ Guion'}</button>
+          <button class="mini dcp" data-i="${i}">Copiar EN</button>
+        </div>
+      </div></article>`;
+  }).join('') || `<div class="none">Sin coincidencias.</div>`;
+  $('#stage').querySelectorAll('.dadd').forEach(b=>b.onclick=()=>{
+    const d=list[+b.dataset.i];
+    if(script.some(x=>x.key===d.en)) script=script.filter(x=>x.key!==d.en);
+    else script.push({key:d.en,k:d.t,v:d.en});
+    render();
+  });
+  $('#stage').querySelectorAll('.dcp').forEach(b=>b.onclick=()=>copy(list[+b.dataset.i].en));
+}
+
+function renderGloss(){
+  const list=GL.filter(r=>!q||r.join(' ').toLowerCase().includes(q.toLowerCase()));
+  $('#count').textContent=`${list.length} términos`;
+  $('#stage').innerHTML=`<table><thead><tr><th>Inglés</th><th>Rendición</th><th>Nota de uso</th></tr></thead><tbody>
+  ${list.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${
+    r[2].startsWith('TRAMPA')?'<span class="trap">TRAMPA:</span>'+esc(r[2].slice(7)):esc(r[2])
+  }</td></tr>`).join('')}</tbody></table>`;
+}
+
+function render(){
+  $('#ruleTxt').textContent=RULES[view];
+  if(view==='prio')renderPrio();
+  else if(view==='seq')renderSeq();
+  else if(view==='disc')renderDisc();
+  else renderGloss();
+  syncTray();
+}
+
+function syncTray(){
+  $('#tn').textContent=script.length;
+  const b=$('#trayBtn');b.textContent='Guion · '+script.length;b.dataset.n=script.length;
+  $('#trayBody').innerHTML=script.length
+    ? script.map((s,i)=>`<div class="row">
+        <span class="num">${String(i+1).padStart(2,'0')}</span>
+        <div class="bod"><p class="k">${esc(s.k)}</p><p class="v">${esc(s.v)}</p></div>
+        <button class="out" data-i="${i}">Quitar</button></div>`).join('')
+    : `<div class="row"><div class="bod"><p class="v" style="color:#6F8899;font-size:14px">Vacío. Arma aquí la secuencia que vas a necesitar antes de tomar la llamada.</p></div></div>`;
+  $('#trayBody').querySelectorAll('.out').forEach(x=>x.onclick=()=>{script.splice(+x.dataset.i,1);render()});
+}
+
+function plain(){return script.map((s,i)=>`${i+1}. ${s.k}\n   ${s.v}`).join('\n\n')}
+function copy(t){
+  if(navigator.clipboard) navigator.clipboard.writeText(t).then(()=>flash('Copiado')).catch(()=>fb(t));
+  else fb(t);
+}
+function fb(t){
+  const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();
+  try{document.execCommand('copy');flash('Copiado')}catch(e){flash('No se pudo copiar')}
+  a.remove();
+}
+let tid;
+function flash(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tid);tid=setTimeout(()=>t.classList.remove('show'),1500)}
+
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',String(x===t)));
+  view=t.dataset.v;ladder();render();window.scrollTo({top:0,behavior:'smooth'});
+});
+$('#q').addEventListener('input',e=>{q=e.target.value.trim();render()});
+$('#liveBtn').onclick=()=>{
+  const on=document.body.classList.toggle('live');
+  $('#liveBtn').classList.toggle('on',on);$('#liveBtn').setAttribute('aria-pressed',String(on));
+};
+$('#pull').onclick=()=>{
+  const up=$('#tray').classList.toggle('up');
+  $('#pull').setAttribute('aria-expanded',String(up));
+  $('#pull').querySelector('svg').style.transform=up?'rotate(180deg)':'';
+};
+$('#trayBtn').onclick=()=>$('#pull').click();
+$('#copyAll').onclick=()=>script.length?copy(plain()):flash('El guion está vacío');
+$('#printAll').onclick=()=>script.length?window.print():flash('El guion está vacío');
+$('#clearAll').onclick=()=>{script=[];render();flash('Guion vaciado')};
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&document.activeElement!==$('#q')){e.preventDefault();$('#q').focus()}
+  if(e.key==='Escape'){$('#q').value='';q='';render();$('#q').blur()}
+});
+
+ladder();render();
+</script>
+</body>
+</html>
