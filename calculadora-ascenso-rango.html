@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="es-BO">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de ascenso de rango — Interpretación remota</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --tinta:#0B1B2B; --tinta-60:rgba(11,27,43,.60); --tinta-38:rgba(11,27,43,.38);
+  --papel:#E7ECEF; --tarjeta:#FFFFFF;
+  --guindo:#7A1F2B; --guindo-suave:rgba(122,31,43,.10);
+  --acero:#2F5F86; --acero-suave:rgba(47,95,134,.10);
+  --musgo:#3E6B4E; --musgo-suave:rgba(62,107,78,.10);
+  --ambar:#A9760F; --ambar-suave:rgba(169,118,15,.12);
+  --linea:rgba(11,27,43,.14); --linea-fuerte:rgba(11,27,43,.30);
+  --texto:'Century Gothic','Montserrat','Lato',system-ui,sans-serif;
+  --display:'Montserrat','Century Gothic','Lato',sans-serif;
+  --radio:3px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--texto); color:var(--tinta); background-color:var(--papel);
+  background-image:repeating-linear-gradient(to bottom,rgba(11,27,43,.055) 0 1px,transparent 1px 29px);
+  font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased;
+}
+.num{font-variant-numeric:tabular-nums;letter-spacing:.01em}
+h1,h2,h3{font-family:var(--display);margin:0;font-weight:800;letter-spacing:-.015em}
+a{color:var(--acero)}
+.rotulo{font-family:var(--display);font-weight:600;font-size:10px;text-transform:uppercase;
+  letter-spacing:.18em;color:var(--tinta-60)}
+
+/* cabecera */
+.barra{border-bottom:1.5px solid var(--tinta);background:var(--tarjeta);padding:22px clamp(16px,4vw,48px) 18px}
+.barra-int{max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;justify-content:space-between}
+.barra h1{font-size:clamp(24px,3.4vw,38px);line-height:1;text-transform:uppercase}
+.barra h1 span{color:var(--guindo)}
+.sellos{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-end}
+.sello{font-family:var(--display);font-weight:600;font-size:12px;border-left:3px solid var(--guindo);
+  padding-left:12px;color:var(--tinta-60)}
+.sello strong{display:block;color:var(--tinta);font-size:15px;font-weight:800}
+.sello.meta{border-left-color:var(--musgo)}
+
+.archivo{display:flex;align-items:center;gap:10px;border-left:3px solid var(--linea-fuerte);padding-left:12px}
+.archivo .punto{width:8px;height:8px;border-radius:50%;background:var(--tinta-38);flex-shrink:0}
+.archivo.ok .punto{background:var(--musgo)}
+.archivo.error .punto{background:var(--guindo)}
+.archivo .txt{font-size:11.5px;color:var(--tinta-60);line-height:1.35}
+.archivo .txt b{display:block;color:var(--tinta);font-size:12.5px;font-weight:700}
+.btn-archivo{font-family:var(--texto);font-size:12px;font-weight:600;padding:8px 13px;cursor:pointer;
+  background:var(--tarjeta);border:1px solid var(--tinta);border-radius:var(--radio);color:var(--tinta);white-space:nowrap}
+.btn-archivo:hover{background:var(--tinta);color:#fff}
+.btn-archivo[disabled]{opacity:.4;cursor:not-allowed}
+.btn-archivo.chico{font-size:11px;padding:6px 10px}
+
+/* estructura */
+.marco{max-width:1280px;margin:0 auto;padding:clamp(18px,3vw,34px) clamp(16px,4vw,48px) 60px;
+  display:grid;grid-template-columns:320px minmax(0,1fr);gap:clamp(18px,2.4vw,32px);align-items:start}
+@media(max-width:960px){.marco{grid-template-columns:1fr}}
+.panel{position:sticky;top:16px}
+@media(max-width:960px){.panel{position:static}}
+.bloque{background:var(--tarjeta);border:1px solid var(--linea);border-radius:var(--radio);
+  padding:18px 18px 20px;margin-bottom:18px}
+.bloque > .rotulo{display:block;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--linea)}
+
+label.campo{display:block;margin-bottom:13px}
+label.campo > span{display:block;font-size:12px;font-weight:600;margin-bottom:5px;color:var(--tinta-60)}
+label.campo > small{display:block;font-size:11px;color:var(--tinta-38);margin-top:3px}
+input[type=number],input[type=text],select{
+  width:100%;font-family:var(--texto);font-size:15px;color:var(--tinta);background:#F7F9FA;
+  border:1px solid var(--linea-fuerte);border-radius:var(--radio);padding:8px 10px;font-variant-numeric:tabular-nums}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--guindo);outline-offset:1px}
+.nota{font-size:11.5px;color:var(--tinta-60);line-height:1.45;margin:6px 0 0}
+.total-ventana{background:#F7F9FA;border:1px dashed var(--linea-fuerte);border-radius:var(--radio);
+  padding:10px 12px;margin-top:2px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:baseline}
+.total-ventana b{font-family:var(--display);font-weight:800;font-size:18px}
+
+/* lectura principal */
+.lectura{background:var(--tinta);color:#fff;border-radius:var(--radio);padding:24px clamp(18px,2.6vw,30px);margin-bottom:18px}
+.lectura .rotulo{color:rgba(255,255,255,.55)}
+.lectura-grande{font-family:var(--display);font-weight:800;font-size:clamp(34px,6vw,52px);line-height:1;
+  letter-spacing:-.02em;margin:10px 0 4px}
+.lectura-sub{font-size:13.5px;color:rgba(255,255,255,.72);max-width:60ch;margin:0}
+.mini-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;margin-top:22px;
+  background:rgba(255,255,255,.18);border-top:1px solid rgba(255,255,255,.18)}
+.mini{background:var(--tinta);padding:13px 12px 11px}
+.mini .rotulo{font-size:9px}
+.mini b{display:block;font-family:var(--display);font-weight:800;font-size:18px;margin-top:5px;font-variant-numeric:tabular-nums}
+
+/* tarjetas de nivel */
+.niveles{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.tarjeta-nivel{border:1px solid var(--linea);border-radius:var(--radio);padding:15px 16px 16px;position:relative;
+  background:#FAFBFC}
+.tarjeta-nivel.alcanzado{border-color:var(--musgo);background:var(--musgo-suave)}
+.tarjeta-nivel.enfoque{border-color:var(--acero);background:var(--acero-suave)}
+.tarjeta-nivel.rumor{border-style:dashed}
+.tn-cab{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:2px}
+.tn-nombre{font-family:var(--display);font-weight:800;font-size:18px;letter-spacing:-.01em}
+.tn-tarifa{font-size:11.5px;color:var(--tinta-60);margin-bottom:12px}
+.chip-estado{font-family:var(--display);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 7px;border-radius:2px;background:var(--tinta);color:#fff;white-space:nowrap}
+.chip-estado.ok{background:var(--musgo)}
+.chip-estado.falta{background:var(--acero)}
+.chip-estado.rumor{background:var(--ambar)}
+.barra-progreso{height:7px;border-radius:4px;background:rgba(11,27,43,.08);overflow:hidden;margin:4px 0 3px}
+.barra-progreso i{display:block;height:100%;background:var(--acero);border-radius:4px;transition:width .25s ease}
+.tarjeta-nivel.alcanzado .barra-progreso i{background:var(--musgo)}
+.tn-linea{display:flex;justify-content:space-between;font-size:11.5px;color:var(--tinta-60);margin-bottom:10px}
+.tn-linea b{color:var(--tinta);font-variant-numeric:tabular-nums}
+.tn-gap{font-size:12px;margin-top:4px;color:var(--tinta-60)}
+.tn-gap strong{color:var(--guindo)}
+.badge-rumor{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ambar);border:1px solid var(--ambar);border-radius:2px;padding:2px 6px;margin-bottom:10px}
+
+/* cascada (reutilizada del medidor de ciclo) */
+.cascada{display:grid;gap:2px}
+.paso{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:baseline;padding:11px 14px;
+  background:#FAFBFC;border-left:3px solid var(--linea-fuerte)}
+.paso .et{font-size:12.5px;color:var(--tinta-60)}
+.paso .et b{display:block;color:var(--tinta);font-size:13.5px;font-weight:600}
+.paso .vl{font-family:var(--display);font-weight:800;font-size:17px;font-variant-numeric:tabular-nums}
+.paso.ok{border-left-color:var(--musgo)}
+.paso.ok .vl{color:var(--musgo)}
+.paso.falta{border-left-color:var(--acero)}
+.paso.falta .vl{color:var(--acero)}
+.paso.rumor{border-left-color:var(--ambar);border-left-style:dashed}
+
+/* tablas */
+.tabla-env{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-family:var(--display);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--tinta-60);text-align:right;padding:0 8px 8px;border-bottom:1.5px solid var(--tinta);white-space:nowrap}
+th:first-child,th:nth-child(2){text-align:left}
+td{padding:6px 8px;border-bottom:1px solid var(--linea);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td:first-child,td:nth-child(2){text-align:left}
+tr.fila-hito td{background:var(--musgo-suave);font-weight:700}
+tr.fila-hoy td{background:var(--guindo-suave)}
+
+/* fórmulas */
+.formula{border-left:3px solid var(--linea-fuerte);padding:9px 0 9px 14px;margin:0 0 16px}
+.formula .fn{font-size:14.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.formula .fl{font-size:12.5px;color:var(--tinta-60);margin-top:3px;font-family:ui-monospace,Consolas,monospace}
+.formula .fd{font-size:12px;color:var(--tinta-60);margin-top:5px}
+
+.alerta{background:#FDF6E6;border:1px solid var(--ambar);border-radius:var(--radio);padding:10px 13px;
+  font-size:12.5px;margin-bottom:14px;color:#6B4A05}
+.alerta:empty{display:none}
+footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-size:11.5px;color:var(--tinta-60)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{
+  body{background:#fff}
+  .panel{display:none}
+  .marco{display:block}
+  .lectura{background:#fff;color:#000;border:1.5px solid #000}
+  .lectura .rotulo,.lectura-sub{color:#333}
+  .mini{background:#fff}
+}
+</style>
+</head>
+<body>
+
+<header class="barra">
+  <div class="barra-int">
+    <div>
+      <p class="rotulo" style="margin:0 0 6px">Ventana móvil de 3 ciclos quincenales · interpretación remota</p>
+      <h1>Ascenso de <span>rango</span></h1>
+    </div>
+    <div class="sellos">
+      <div class="sello">Nivel alcanzado hoy<strong id="selloNivel">—</strong></div>
+      <div class="sello meta">Próxima meta<strong id="selloMeta">—</strong></div>
+      <div class="archivo" id="archivoEstado">
+        <span class="punto"></span>
+        <span class="txt" id="archivoTexto"><b>Sin archivo conectado</b>Los cambios solo viven en esta pestaña</span>
+      </div>
+      <button type="button" class="btn-archivo" id="btnArchivo">Abrir archivo local</button>
+    </div>
+  </div>
+</header>
+
+<div class="marco">
+
+  <aside class="panel">
+    <div class="bloque">
+      <span class="rotulo">Almacenamiento</span>
+      <p class="nota" style="margin:0 0 12px">
+        Igual que en el medidor de ciclo: Chrome puede recordar un archivo <code>.json</code> propio de esta
+        calculadora en tu disco (por defecto <code>progreso-rango.json</code>, distinto del archivo de pagos).
+      </p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button type="button" class="btn-archivo" id="btnArchivoPanel" style="flex:1">Abrir mi archivo…</button>
+        <button type="button" class="btn-archivo chico" id="btnArchivoNuevo">Crear nuevo</button>
+        <button type="button" class="btn-archivo chico" id="btnDesconectar" hidden>Desconectar</button>
+      </div>
+      <p class="nota" id="notaArchivo" style="margin-top:10px"></p>
+    </div>
+
+    <div class="bloque">
+      <span class="rotulo">Ventana de minutos — últimos 3 ciclos</span>
+      <p class="nota" style="margin:0 0 12px">Propio solo cuenta los ciclos <strong>C<span id="lblCA">—</span>, C<span id="lblCB">—</span> y C<span id="lblCC">—</span></strong> para tu ventana actual. Al cerrar C<span id="lblCD">—</span>, el ciclo más antiguo (C<span id="lblCA2">—</span>) se olvida.</p>
+      <label class="campo"><span id="lblCicloA">Ciclo más antiguo</span>
+        <input type="number" id="cA" min="0" step="1" value="629">
+        <small>Se cae de la ventana en el próximo cierre.</small></label>
+      <label class="campo"><span id="lblCicloB">Ciclo intermedio</span>
+        <input type="number" id="cB" min="0" step="1" value="629"></label>
+      <label class="campo"><span id="lblCicloC">Ciclo más reciente (cierra hoy)</span>
+        <input type="number" id="cC" min="0" step="1" value="630"></label>
+      <div class="total-ventana"><span class="rotulo" style="margin:0">Ventana actual</span><b class="num" id="ventanaTotal">1888</b></div>
+    </div>
+
+    <div class="bloque">
+      <span class="rotulo">Calificación de clientes</span>
+      <label class="campo"><span>Promedio actual (sobre 5)</span>
+        <input type="number" id="rating" min="0" max="5" step="0.01" value="4.65"></label>
+      <p class="nota">La calificación no se proyecta automáticamente: actualízala aquí cuando Propio te muestre un nuevo promedio.</p>
+    </div>
+
+    <div class="bloque">
+      <span class="rotulo">Simulador a futuro</span>
+      <label class="campo"><span>Minutos promedio interpretados por día</span>
+        <input type="number" id="proyeccionDia" min="0" step="1" value="45">
+        <small>Cada ciclo dura 14 días; equivale a <b id="proyeccionCicloTxt">630</b> min/ciclo.</small></label>
+      <p class="nota">Se usa solo para proyectar cuándo llegarías a cada nivel; no cambia la ventana actual.</p>
+    </div>
+  </aside>
+
+  <section>
+    <div class="lectura">
+      <span class="rotulo">Nivel alcanzado con la ventana y calificación actuales</span>
+      <div class="lectura-grande" id="lectNivel">—</div>
+      <p class="lectura-sub" id="lectSub">—</p>
+      <div class="mini-kpis">
+        <div class="mini"><span class="rotulo">Ventana actual</span><b class="num" id="kVentana">—</b></div>
+        <div class="mini"><span class="rotulo">Calificación</span><b class="num" id="kRating">—</b></div>
+        <div class="mini"><span class="rotulo">Próximo nivel</span><b class="num" id="kProximo">—</b></div>
+        <div class="mini"><span class="rotulo">Min. faltantes</span><b class="num" id="kFaltanMin">—</b></div>
+        <div class="mini"><span class="rotulo">Puntos faltantes</span><b class="num" id="kFaltanRating">—</b></div>
+        <div class="mini"><span class="rotulo">Se olvida al cerrar</span><b class="num" id="kSeOlvida">—</b></div>
+      </div>
+    </div>
+
+    <div class="alerta" id="alerta"></div>
+
+    <div class="bloque">
+      <span class="rotulo">Los cuatro niveles</span>
+      <div class="niveles" id="niveles"></div>
+    </div>
+
+    <div class="bloque">
+      <span class="rotulo">¿Cuánto necesito el próximo ciclo?</span>
+      <p class="nota" style="margin:0 0 14px">Al cerrar el ciclo de hoy, C<span id="lblCA3">—</span> sale de la ventana y quedan
+        <strong id="restanteVentana">—</strong> minutos de base. Esto es lo que tendrías que sumar <strong>solo en el próximo ciclo</strong> para tocar cada nivel de inmediato.</p>
+      <div class="cascada" id="cascadaProximo"></div>
+    </div>
+
+    <div class="bloque">
+      <span class="rotulo">Simulador a futuro — a este ritmo, ¿en cuánto tiempo llego?</span>
+      <p class="nota" id="notaSimulador" style="margin-bottom:14px"></p>
+      <div class="cascada" id="cascadaSimulador" style="margin-bottom:16px"></div>
+      <p class="nota" style="margin:0 0 8px">Cómo se arma la ventana mientras sostengas ese ritmo — desde el ciclo C+3 en adelante se mantiene constante:</p>
+      <div class="tabla-env">
+        <table>
+          <thead><tr>
+            <th>Ciclo</th><th>Período</th><th>Ventana proyectada</th><th>Nivel por minutos</th>
+          </tr></thead>
+          <tbody id="cuerpoSimulador"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="bloque">
+      <span class="rotulo">Tarifas por nivel</span>
+      <div class="tabla-env">
+        <table>
+          <thead><tr><th>Nivel</th><th>Minutos (ventana 3 ciclos)</th><th>Calificación</th><th>Tarifa surge</th><th>Tarifa base</th></tr></thead>
+          <tbody id="cuerpoTarifas"></tbody>
+        </table>
+      </div>
+      <p class="nota" style="margin-top:10px">Bronce, Plata y Oro cambian tu tarifa <strong>solo durante surge hours</strong>; el resto del tiempo sigues a $0,12/min. Platino es un rumor no confirmado: de existir, reemplazaría tu tarifa base los 365 días — para esta calculadora asumimos que ese nivel sustituye por completo al sistema de surge (se "inmuniza").</p>
+    </div>
+
+    <div class="bloque">
+      <span class="rotulo">Cómo se calcula</span>
+      <div id="formulas"></div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  Propio contabiliza tu ventana de ascenso con los <strong>últimos tres ciclos quincenales cerrados</strong>: al cerrar un ciclo nuevo, el ciclo que quedaba en cuarto lugar hacia atrás se olvida y ya no cuenta. Esta calculadora no está conectada a la plataforma de Propio — los minutos y la calificación se ingresan a mano, con lo que veas en tu panel de la empresa. El nivel Platino se describe aquí como referencia de un rumor no oficial; sus condiciones pueden cambiar o no llegar a confirmarse.
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var CLAVE='calculadora-rango-2026-v1';
+  var MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  var BASE=new Date(2025,11,13); // mismo ancla que el medidor de ciclo: sábado 13 dic 2025 = inicio de C1
+
+  var NIVELES=[
+    {id:'bronce', nombre:'Bronce', min:0,     rating:0,    tarifaSurge:0.13, tarifaBase:0.12, rumor:false},
+    {id:'plata',  nombre:'Plata',  min:2500,  rating:4.70, tarifaSurge:0.14, tarifaBase:0.12, rumor:false},
+    {id:'oro',    nombre:'Oro',    min:5000,  rating:4.80, tarifaSurge:0.15, tarifaBase:0.12, rumor:false},
+    {id:'platino',nombre:'Platino',min:10000, rating:4.85, tarifaSurge:null, tarifaBase:0.14, rumor:true}
+  ];
+
+  var st={ cA:629, cB:629, cC:630, rating:4.65, proyeccionDia:45 };
+  var el={};
+  ['selloNivel','selloMeta','lblCA','lblCB','lblCC','lblCD','lblCA2','lblCA3','lblCicloA','lblCicloB','lblCicloC',
+   'cA','cB','cC','ventanaTotal','rating','proyeccionDia','proyeccionCicloTxt',
+   'lectNivel','lectSub','kVentana','kRating','kProximo','kFaltanMin','kFaltanRating','kSeOlvida',
+   'alerta','niveles','restanteVentana','cascadaProximo','notaSimulador','cascadaSimulador','cuerpoSimulador','cuerpoTarifas','formulas',
+   'btnArchivo','btnArchivoPanel','btnArchivoNuevo','btnDesconectar','notaArchivo']
+   .forEach(function(id){ el[id]=document.getElementById(id); });
+
+  /* ---- utilidades de fecha / ciclos, mismo patrón que el medidor de ciclo ---- */
+  var DIAS_SEM=['dom','lun','mar','mié','jue','vie','sáb'];
+  function hoy0(){ var h=new Date(); return new Date(h.getFullYear(),h.getMonth(),h.getDate()); }
+  function fCorta(d){ return DIAS_SEM[d.getDay()]+' '+d.getDate()+' '+MESES[d.getMonth()].slice(0,3); }
+  function ciclo(idx){
+    var ini=new Date(BASE.getFullYear(),BASE.getMonth(),BASE.getDate()+idx*14);
+    var fin=new Date(ini.getFullYear(),ini.getMonth(),ini.getDate()+13);
+    return {n:idx+1, ini:ini, fin:fin};
+  }
+  function idxCicloDeHoy(){
+    var h=hoy0().getTime();
+    var idx=Math.floor((h-BASE.getTime())/(14*86400000));
+    return Math.max(0,idx);
+  }
+  function nUSD(v){ return '$ '+(isFinite(v)?v:0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function difMesesDias(desde,hasta){
+    var meses=(hasta.getFullYear()-desde.getFullYear())*12+(hasta.getMonth()-desde.getMonth());
+    var dias=hasta.getDate()-desde.getDate();
+    if(dias<0){
+      meses--;
+      dias+=new Date(hasta.getFullYear(),hasta.getMonth(),0).getDate();
+    }
+    if(meses<0){ meses=0; dias=Math.max(0,Math.round((hasta.getTime()-desde.getTime())/86400000)); }
+    return {meses:meses,dias:dias};
+  }
+  function formatoDuracion(m,d){
+    var partes=[];
+    if(m>0) partes.push(m+(m===1?' mes':' meses'));
+    if(d>0 || partes.length===0) partes.push(d+(d===1?' día':' días'));
+    return partes.join(' y ');
+  }
+
+  /* ---- etiquetas de los tres ciclos vigentes, calculadas a partir de la fecha real ---- */
+  var idxHoy=idxCicloDeHoy();          // ciclo que cierra hoy (o el más reciente si hoy no es cierre)
+  var cicA=ciclo(idxHoy-2), cicB=ciclo(idxHoy-1), cicC=ciclo(idxHoy), cicD=ciclo(idxHoy+1);
+
+  function pintarEtiquetasCiclos(){
+    el.lblCA.textContent=cicA.n; el.lblCB.textContent=cicB.n; el.lblCC.textContent=cicC.n;
+    el.lblCD.textContent=cicD.n; el.lblCA2.textContent=cicA.n; el.lblCA3.textContent=cicA.n;
+    el.lblCicloA.textContent='Ciclo C'+cicA.n+' · '+fCorta(cicA.ini)+' → '+fCorta(cicA.fin);
+    el.lblCicloB.textContent='Ciclo C'+cicB.n+' · '+fCorta(cicB.ini)+' → '+fCorta(cicB.fin);
+    el.lblCicloC.textContent='Ciclo C'+cicC.n+' · '+fCorta(cicC.ini)+' → '+fCorta(cicC.fin)+' (hoy o el más reciente)';
+  }
+
+  /* ---- lectura / escritura de controles ---- */
+  function leerControles(){
+    st.cA=Math.max(0,Number(el.cA.value)||0);
+    st.cB=Math.max(0,Number(el.cB.value)||0);
+    st.cC=Math.max(0,Number(el.cC.value)||0);
+    st.rating=Math.min(5,Math.max(0,Number(el.rating.value)||0));
+    st.proyeccionDia=Math.max(0,Number(el.proyeccionDia.value)||0);
+  }
+  function escribirControles(){
+    el.cA.value=st.cA; el.cB.value=st.cB; el.cC.value=st.cC;
+    el.rating.value=st.rating; el.proyeccionDia.value=st.proyeccionDia;
+  }
+
+  /* ---- motor de niveles ---- */
+  function nivelAlcanzado(minutos,rating){
+    var actual=NIVELES[0];
+    for(var i=0;i<NIVELES.length;i++){
+      if(minutos>=NIVELES[i].min && rating>=NIVELES[i].rating) actual=NIVELES[i];
+    }
+    return actual;
+  }
+  function siguienteNivel(actual){
+    var i=NIVELES.findIndex(function(n){return n.id===actual.id;});
+    return (i>=0 && i<NIVELES.length-1) ? NIVELES[i+1] : null;
+  }
+
+  function refrescar(){
+    leerControles();
+    var ventana=st.cA+st.cB+st.cC;
+    el.ventanaTotal.textContent=ventana.toLocaleString('es-BO');
+
+    var actual=nivelAlcanzado(ventana,st.rating);
+    var proximo=siguienteNivel(actual);
+
+    el.selloNivel.textContent=actual.nombre;
+    el.selloMeta.textContent=proximo?proximo.nombre:'Nivel máximo';
+
+    el.lectNivel.textContent=actual.nombre.toUpperCase()+(actual.rumor?' (rumor)':'');
+    if(proximo){
+      var faltanMin=Math.max(0,proximo.min-ventana);
+      var faltanRating=Math.max(0,+(proximo.rating-st.rating).toFixed(2));
+      el.lectSub.innerHTML='Con '+ventana.toLocaleString('es-BO')+' minutos en tu ventana de 3 ciclos y '+st.rating.toFixed(2)+'/5 de calificación'+
+        ((faltanMin>0||faltanRating>0)
+          ? ', te faltan '+(faltanMin>0?'<strong>'+faltanMin.toLocaleString('es-BO')+' minutos</strong>':'')+
+            (faltanMin>0&&faltanRating>0?' y ':'')+
+            (faltanRating>0?'<strong>'+faltanRating.toFixed(2)+' puntos</strong>':'')+' para '+proximo.nombre+'.'
+          : ' — ya cumples ambos requisitos de '+proximo.nombre+'; debería reflejarse en el próximo corte de Propio.');
+      el.kProximo.textContent=proximo.nombre;
+      el.kFaltanMin.textContent=faltanMin>0?faltanMin.toLocaleString('es-BO')+' min':'Cumplido';
+      el.kFaltanRating.textContent=faltanRating>0?faltanRating.toFixed(2):'Cumplido';
+    } else {
+      el.lectSub.textContent='Ya tocas el nivel más alto contemplado en esta calculadora.';
+      el.kProximo.textContent='—'; el.kFaltanMin.textContent='—'; el.kFaltanRating.textContent='—';
+    }
+    el.kVentana.textContent=ventana.toLocaleString('es-BO')+' min';
+    el.kRating.textContent=st.rating.toFixed(2)+'/5';
+    el.kSeOlvida.textContent='C'+cicA.n+' ('+st.cA.toLocaleString('es-BO')+' min)';
+
+    var avisos=[];
+    if(st.cA+st.cB+st.cC<=0) avisos.push('Ingresa los minutos de tus tres últimos ciclos para ver tu ventana real.');
+    if(st.rating>0 && st.rating<3) avisos.push('La calificación ingresada es muy baja; revisa que sea sobre 5, no sobre 10 ni en porcentaje.');
+    el.alerta.innerHTML=avisos.join('<br>');
+
+    pintarNiveles(ventana, actual);
+    pintarCascadaProximo(ventana);
+    pintarSimulador();
+    pintarTarifas();
+  }
+
+  function pintarNiveles(ventana, actual){
+    var idxActual=NIVELES.indexOf(actual);
+    el.niveles.innerHTML=NIVELES.map(function(n){
+      var sinRequisito = (n.min===0 && n.rating===0);
+      var ok = ventana>=n.min && st.rating>=n.rating;
+      var esSiguiente = NIVELES.indexOf(n)===idxActual+1;
+      var cls = ok ? 'alcanzado' : (esSiguiente ? 'enfoque' : '');
+      if(n.rumor) cls+=' rumor';
+      var chip = ok ? '<span class="chip-estado ok">Alcanzado</span>' : (n.rumor?'<span class="chip-estado rumor">Rumor</span>':'<span class="chip-estado falta">Pendiente</span>');
+      var tarifaTxt = n.rumor
+        ? nUSD(n.tarifaBase)+'/min todo el tiempo'
+        : nUSD(n.tarifaSurge)+'/min en surge hours';
+
+      if(sinRequisito){
+        return '<div class="tarjeta-nivel '+cls.trim()+'">'+
+          '<div class="tn-cab"><span class="tn-nombre">'+n.nombre+'</span>'+chip+'</div>'+
+          '<div class="tn-tarifa">'+tarifaTxt+'</div>'+
+          '<div class="tn-gap" style="margin-top:0">Nivel base — disponible siempre que tengas acceso a surge hours, sin mínimo de minutos ni calificación.</div>'+
+          '</div>';
+      }
+
+      var pctMin = Math.min(100, ventana/n.min*100);
+      var pctRating = Math.min(100, st.rating/n.rating*100);
+      var gapMin=Math.max(0,n.min-ventana), gapRating=Math.max(0,+(n.rating-st.rating).toFixed(2));
+      return '<div class="tarjeta-nivel '+cls.trim()+'">'+
+        (n.rumor?'<span class="badge-rumor">No confirmado</span><br>':'')+
+        '<div class="tn-cab"><span class="tn-nombre">'+n.nombre+'</span>'+chip+'</div>'+
+        '<div class="tn-tarifa">'+tarifaTxt+'</div>'+
+        '<div class="tn-linea"><span>Minutos</span><b class="num">'+ventana.toLocaleString('es-BO')+' / '+n.min.toLocaleString('es-BO')+'</b></div>'+
+        '<div class="barra-progreso"><i style="width:'+pctMin.toFixed(1)+'%"></i></div>'+
+        '<div class="tn-linea"><span>Calificación</span><b class="num">'+st.rating.toFixed(2)+' / '+n.rating.toFixed(2)+'</b></div>'+
+        '<div class="barra-progreso"><i style="width:'+pctRating.toFixed(1)+'%"></i></div>'+
+        (ok?'':'<div class="tn-gap">Faltan '+(gapMin>0?'<strong>'+gapMin.toLocaleString('es-BO')+' min</strong>':'0 min')+
+              (gapRating>0?' y <strong>'+gapRating.toFixed(2)+' pts</strong>':'')+'</div>')+
+        '</div>';
+    }).join('');
+  }
+
+  function pintarCascadaProximo(ventana){
+    var restante=st.cB+st.cC;
+    el.restanteVentana.textContent=restante.toLocaleString('es-BO');
+    var html='';
+    NIVELES.forEach(function(n){
+      if(n.id==='bronce') return; // bronce no tiene requisito, se omite en esta lista
+      var necesario=Math.max(0,n.min-restante);
+      var cls = necesario<=0 ? 'ok' : (n.rumor ? 'rumor' : 'falta');
+      html+='<div class="paso '+cls+'"><div class="et"><b>'+n.nombre+(n.rumor?' (rumor)':'')+'</b>'+
+        (necesario<=0
+          ? 'ya tendrías los '+n.min.toLocaleString('es-BO')+' minutos con lo que queda de la ventana'
+          : 'sobre '+restante.toLocaleString('es-BO')+' min. que se mantienen de C'+cicB.n+' y C'+cicC.n)+
+        '</div><div class="vl num">'+(necesario<=0?'Cumplido':necesario.toLocaleString('es-BO')+' min')+'</div></div>';
+    });
+    el.cascadaProximo.innerHTML=html;
+  }
+
+  function pintarSimulador(){
+    var minDia=st.proyeccionDia, minCiclo=minDia*14;
+    el.proyeccionCicloTxt.textContent=minCiclo.toLocaleString('es-BO');
+    var ventanaActual=st.cA+st.cB+st.cC;
+
+    if(minDia<=0){
+      el.notaSimulador.textContent='Ingresa un promedio de minutos por día mayor a cero para ver la proyección.';
+      el.cascadaSimulador.innerHTML=''; el.cuerpoSimulador.innerHTML='';
+      return;
+    }
+    el.notaSimulador.textContent='Asumiendo '+minDia.toLocaleString('es-BO')+' min/día ('+minCiclo.toLocaleString('es-BO')+' min por ciclo de 14 días) de aquí en adelante, y que la calificación ya cumple o alcanza cada nivel a tiempo.';
+
+    /* --- hito analítico: la ventana de 3 ciclos se estabiliza en 3·minCiclo desde el tercer ciclo proyectado --- */
+    function hitoParaNivel(req){
+      if(req<=0 || ventanaActual>=req) return 0; // ya cumplido hoy (o sin requisito, ej. Bronce)
+      var v1=st.cB+st.cC+minCiclo;         if(v1>=req) return 1;
+      var v2=st.cC+minCiclo+minCiclo;      if(v2>=req) return 2;
+      var v3=minCiclo*3;                   if(v3>=req) return 3;
+      return null; // nunca, a este ritmo constante
+    }
+
+    var hoy=hoy0(), htmlCascada='';
+    NIVELES.forEach(function(n){
+      if(n.id==='bronce') return;
+      var k=hitoParaNivel(n.min);
+      var cls, texto, valor;
+      if(k===0){
+        cls='ok'; valor='Ya cumplido'; texto='con la ventana actual de '+ventanaActual.toLocaleString('es-BO')+' min';
+      } else if(k===null){
+        var minDiaNecesario=Math.ceil(n.min/42); // n.min / (3 ciclos · 14 días)
+        cls=n.rumor?'rumor':'falta';
+        valor='Nunca a este ritmo';
+        texto='necesitarías sostener al menos '+minDiaNecesario.toLocaleString('es-BO')+' min/día ('+(minDiaNecesario*14).toLocaleString('es-BO')+' min/ciclo) para que la ventana llegue a '+n.min.toLocaleString('es-BO')+' algún día';
+      } else {
+        var cFin=ciclo(idxHoy+k).fin;
+        var dif=difMesesDias(hoy,cFin);
+        cls=n.rumor?'rumor':'falta';
+        valor=formatoDuracion(dif.meses,dif.dias);
+        texto='cierre de C'+ciclo(idxHoy+k).n+' · '+fCorta(cFin)+' de '+cFin.getFullYear();
+      }
+      htmlCascada+='<div class="paso '+cls+'"><div class="et"><b>'+n.nombre+(n.rumor?' (rumor)':'')+'</b>'+texto+'</div><div class="vl num">'+valor+'</div></div>';
+    });
+    el.cascadaSimulador.innerHTML=htmlCascada;
+
+    /* --- tabla corta de la rampa: C+1, C+2, C+3 (a partir de ahí la ventana ya es constante) --- */
+    var hist=[st.cA,st.cB,st.cC], filas='';
+    for(var k=1;k<=3;k++){
+      hist.push(minCiclo); hist.shift();
+      var ventanaK=hist.reduce(function(a,b){return a+b;},0);
+      var c=ciclo(idxHoy+k);
+      var nivelK=nivelAlcanzado(ventanaK,5);
+      filas+='<tr'+(k===3?' class="fila-hito"':'')+'><td>C'+c.n+'</td><td>'+fCorta(c.ini)+' → '+fCorta(c.fin)+'</td>'+
+        '<td>'+ventanaK.toLocaleString('es-BO')+' min</td><td>'+nivelK.nombre+(nivelK.rumor?' (rumor)':'')+'</td></tr>';
+    }
+    filas+='<tr><td colspan="2" style="color:var(--tinta-38)">C+4 en adelante, sosteniendo el ritmo</td>'+
+      '<td>'+(minCiclo*3).toLocaleString('es-BO')+' min (constante)</td><td>'+nivelAlcanzado(minCiclo*3,5).nombre+'</td></tr>';
+    el.cuerpoSimulador.innerHTML=filas;
+  }
+
+  function pintarTarifas(){
+    el.cuerpoTarifas.innerHTML=NIVELES.map(function(n){
+      return '<tr><td>'+n.nombre+(n.rumor?' <span class="badge-rumor" style="margin:0">rumor</span>':'')+'</td>'+
+        '<td>'+(n.min>0?n.min.toLocaleString('es-BO'):'—')+'</td>'+
+        '<td>'+(n.rating>0?n.rating.toFixed(2):'—')+'</td>'+
+        '<td>'+(n.tarifaSurge?nUSD(n.tarifaSurge)+'/min':'—')+'</td>'+
+        '<td>'+nUSD(n.tarifaBase)+'/min'+(n.rumor?' (todo el tiempo)':'')+'</td></tr>';
+    }).join('');
+  }
+
+  function pintarFormulas(){
+    var f=[
+      ['Ventana móvil de minutos',
+       'V = cₐ + c_b + c_c',
+       'V=c_a+c_b+c_c',
+       'cₐ, c_b y c_c son los minutos interpretados en cada uno de los tres ciclos quincenales más recientes ya cerrados.'],
+      ['Actualización al cerrar un nuevo ciclo',
+       'V_nuevo = c_b + c_c + c_nuevo',
+       'V_{nuevo}=c_b+c_c+c_{nuevo}',
+       'El ciclo cₐ (el más antiguo) se olvida por completo; los otros dos se conservan y se suma el ciclo recién cerrado.'],
+      ['Nivel alcanzado',
+       'nivel = máx { n : V ≥ mínimo(n)  y  calificación ≥ mínimo_rating(n) }',
+       '\\text{nivel}=\\max\\{\\,n : V\\ge m_n \\;\\wedge\\; r\\ge r_n\\,\\}',
+       'Se necesitan ambas condiciones a la vez; superar solo minutos o solo calificación no basta para subir de nivel.'],
+      ['Minutos necesarios en el próximo ciclo',
+       'necesarioᵢ = máx(0, mínimoᵢ − (c_b + c_c))',
+       'necesario_i=\\max(0,\\,m_i-(c_b+c_c))',
+       'Como cₐ va a desaparecer de la ventana, solo c_b y c_c quedan como base; el resto debe salir del ciclo que empieza ahora.'],
+      ['Minutos por ciclo a partir del ritmo diario',
+       'p_ciclo = p_día · 14',
+       'p_{ciclo}=p_{dia}\\cdot 14',
+       'Cada ciclo dura 14 días; p_día es el promedio de minutos interpretados por día que asumes sostener.'],
+      ['Proyección a k ciclos de distancia',
+       'V_k = suma de los 3 valores más recientes tras desplazar la ventana k veces, usando p_ciclo como valor constante',
+       'V_k=\\sum_{j=k-2}^{k} x_j,\\quad x_j=\\begin{cases}c_{A+j} & j\\le 0\\\\ p_{ciclo} & j>0\\end{cases}',
+       'A partir del tercer ciclo simulado, la ventana queda formada solo por p_ciclo, por lo que V_k = 3·p_ciclo para k ≥ 3 — el techo que alcanzas sosteniendo ese ritmo para siempre.'],
+      ['Ritmo diario mínimo para poder alcanzar un nivel algún día',
+       'p_día,mín = mínimoᵢ / 42',
+       'p_{dia,min}=\\dfrac{m_i}{42}',
+       'Si 3·p_ciclo nunca llega al mínimo del nivel (42 = 3 ciclos × 14 días), ese nivel es inalcanzable a un ritmo constante menor a este valor.'],
+      ['Tiempo hasta la meta en meses y días',
+       'k = mín { j : V_j ≥ mínimoᵢ }   ·   fecha_meta = cierre del ciclo (hoy + k)   ·   tiempo = fecha_meta − hoy',
+       'k=\\min\\{\\,j : V_j\\ge m_i\\,\\};\\quad \\text{fecha}_{meta}=\\text{cierre}(C_{hoy+k});\\quad \\Delta t = \\text{fecha}_{meta}-\\text{hoy}',
+       'Δt se reparte en meses y días de calendario real (no meses de 30 días fijos), tomando la fecha de cierre exacta del ciclo donde se cruza el umbral.']
+    ];
+    el.formulas.innerHTML=f.map(function(x){
+      return '<div class="formula"><div class="rotulo">'+x[0]+'</div><div class="fn">'+x[1]+
+             '</div><div class="fl">'+x[2]+'</div><div class="fd">'+x[3]+'</div></div>';
+    }).join('');
+  }
+
+  /* ---- persistencia: archivo local (File System Access API) con respaldo en window.storage ---- */
+  var fsHandle=null;
+  var fsSoportado = (typeof window.showSaveFilePicker==='function' && typeof window.indexedDB!=='undefined');
+  var guardando=false, pendiente=false;
+  var handleRecordado=null;
+
+  var DB_NOMBRE='calculadora-rango-fs', DB_STORE='handles', DB_CLAVE='archivo';
+  function abrirDB(){
+    return new Promise(function(res,rej){
+      var req=indexedDB.open(DB_NOMBRE,1);
+      req.onupgradeneeded=function(){ req.result.createObjectStore(DB_STORE); };
+      req.onsuccess=function(){ res(req.result); };
+      req.onerror=function(){ rej(req.error); };
+    });
+  }
+  function guardarHandleEnDB(handle){
+    return abrirDB().then(function(db){
+      return new Promise(function(res,rej){
+        var tx=db.transaction(DB_STORE,'readwrite');
+        tx.objectStore(DB_STORE).put(handle,DB_CLAVE);
+        tx.oncomplete=function(){ res(true); }; tx.onerror=function(){ rej(tx.error); };
+      });
+    }).catch(function(){ return false; });
+  }
+  function leerHandleDeDB(){
+    return abrirDB().then(function(db){
+      return new Promise(function(res){
+        var tx=db.transaction(DB_STORE,'readonly');
+        var req=tx.objectStore(DB_STORE).get(DB_CLAVE);
+        req.onsuccess=function(){ res(req.result||null); };
+        req.onerror=function(){ res(null); };
+      });
+    }).catch(function(){ return null; });
+  }
+  function borrarHandleDeDB(){
+    return abrirDB().then(function(db){
+      return new Promise(function(res){
+        var tx=db.transaction(DB_STORE,'readwrite');
+        tx.objectStore(DB_STORE).delete(DB_CLAVE);
+        tx.oncomplete=function(){ res(true); }; tx.onerror=function(){ res(false); };
+      });
+    }).catch(function(){ return false; });
+  }
+
+  function pintarEstadoArchivo(estado,detalle){
+    var r={pt:el.archivoTexto,btnPanel:el.btnArchivoPanel,btnCab:el.btnArchivo,btnDesc:el.btnDesconectar,nota:el.notaArchivo};
+    document.getElementById('archivoEstado').className='archivo'+(estado==='ok'?' ok':estado==='error'?' error':'');
+    if(estado==='ok'){
+      r.pt.innerHTML='<b>'+(fsHandle?fsHandle.name:'Conectado')+'</b>Guardando cambios automáticamente';
+    } else if(estado==='error'){
+      r.pt.innerHTML='<b>No se pudo guardar</b>'+(detalle||'Revisa el permiso del archivo');
+    } else if(estado==='recordado'){
+      r.pt.innerHTML='<b>'+(handleRecordado?handleRecordado.name:'archivo recordado')+'</b>Pulsa para reanudar el acceso';
+    } else {
+      r.pt.innerHTML='<b>Sin archivo conectado</b>Los cambios solo viven en esta pestaña';
+    }
+    r.btnDesc.hidden=!fsHandle;
+    if(estado==='recordado'){ r.btnPanel.textContent='Reanudar acceso'; r.btnCab.textContent='Reanudar acceso'; }
+    else if(fsHandle){ r.btnPanel.textContent='Cambiar archivo…'; r.btnCab.textContent='Cambiar archivo'; }
+    else { r.btnPanel.textContent='Abrir mi archivo…'; r.btnCab.textContent='Abrir archivo local'; }
+    if(r.nota){
+      r.nota.textContent = !fsSoportado
+        ? 'Este navegador no admite guardar en un archivo local (funciona en Chrome o Edge de escritorio).'
+        : estado==='recordado'
+          ? 'Este archivo ya estaba conectado antes. Un clic en "Reanudar acceso" confirma el permiso.'
+        : (fsHandle ? 'Conectado a "'+fsHandle.name+'".' : 'Usa "Abrir mi archivo…" si ya tienes uno, o "Crear nuevo" la primera vez.');
+    }
+  }
+
+  function reconstruirTrasCarga(){
+    if(typeof st.proyeccionDia!=='number' && typeof st.proyeccion==='number'){
+      st.proyeccionDia=Math.round(st.proyeccion/14); // migración: la versión anterior guardaba min/ciclo, no min/día
+    }
+    escribirControles(); refrescar();
+  }
+
+  function adoptarHandle(handle){
+    fsHandle=handle;
+    return fsHandle.getFile().then(function(file){ return file.text(); }).then(function(texto){
+      if(texto && texto.trim()){
+        try{ var g=JSON.parse(texto); Object.keys(g).forEach(function(k){ st[k]=g[k]; }); reconstruirTrasCarga(); }catch(e){}
+      }
+      pintarEstadoArchivo('ok');
+      return guardarHandleEnDB(fsHandle).then(function(){ return escribirArchivo(); }).then(function(){ return true; });
+    }).catch(function(err){
+      fsHandle=null;
+      var noEncontrado = err && (err.name==='NotFoundError' || err.name==='NotAllowedError');
+      if(noEncontrado) return borrarHandleDeDB().then(function(){ throw {codigo:'archivo_ausente',original:err}; });
+      throw err;
+    });
+  }
+
+  function intentarReanudar(){
+    if(!fsSoportado) return Promise.resolve(false);
+    return leerHandleDeDB().then(function(handle){
+      if(!handle) return false;
+      return handle.queryPermission({mode:'readwrite'}).then(function(perm){
+        if(perm==='granted'){
+          return adoptarHandle(handle).catch(function(err){
+            if(err && err.codigo==='archivo_ausente'){
+              pintarEstadoArchivo('error','El archivo recordado ya no está en su ubicación. Pulsa el botón para elegirlo de nuevo.');
+              return false;
+            }
+            return false;
+          });
+        }
+        handleRecordado=handle; pintarEstadoArchivo('recordado'); return false;
+      });
+    }).catch(function(){ return false; });
+  }
+
+  function reanudarConClic(){
+    if(!handleRecordado) return Promise.resolve(false);
+    return handleRecordado.requestPermission({mode:'readwrite'}).then(function(perm){
+      if(perm!=='granted'){ pintarEstadoArchivo('error','Permiso denegado. Puedes abrir el archivo de nuevo manualmente.'); return false; }
+      var h=handleRecordado; handleRecordado=null;
+      return adoptarHandle(h);
+    }).catch(function(err){
+      handleRecordado=null;
+      if(err && err.codigo==='archivo_ausente'){
+        pintarEstadoArchivo('error','No se encontró el archivo en su ubicación anterior. Elígelo o créalo de nuevo.');
+        return abrirSelectorManual(false);
+      }
+      pintarEstadoArchivo('error','No se pudo reanudar el acceso. Ábrelo manualmente.');
+      return false;
+    });
+  }
+
+  function abrirSelectorManual(crearNuevo){
+    var pedirHandle = crearNuevo
+      ? window.showSaveFilePicker({ suggestedName:'progreso-rango.json',
+          types:[{description:'Progreso de rango (JSON)',accept:{'application/json':['.json']}}] })
+      : window.showOpenFilePicker({ types:[{description:'Progreso de rango (JSON)',accept:{'application/json':['.json']}}], multiple:false })
+          .then(function(handles){ return handles[0]; });
+
+    return pedirHandle.then(function(handle){
+      return handle.queryPermission({mode:'readwrite'}).then(function(perm){
+        if(perm!=='granted') return handle.requestPermission({mode:'readwrite'});
+        return perm;
+      }).then(function(perm){
+        if(perm!=='granted'){ pintarEstadoArchivo('error','Permiso de escritura denegado.'); return false; }
+        return adoptarHandle(handle);
+      });
+    }).catch(function(err){
+      if(err && err.name==='AbortError'){ return false; }
+      fsHandle=null; pintarEstadoArchivo('error','No se pudo abrir el selector de archivos.'); return false;
+    });
+  }
+
+  function conectarArchivo(crearNuevo){
+    if(!fsSoportado){ pintarEstadoArchivo('error','Usa Chrome o Edge en computadora para esta función.'); return Promise.resolve(false); }
+    if(handleRecordado && !crearNuevo) return reanudarConClic();
+    return abrirSelectorManual(crearNuevo);
+  }
+
+  function desconectarArchivo(){
+    fsHandle=null; handleRecordado=null; borrarHandleDeDB(); pintarEstadoArchivo('idle');
+  }
+
+  function escribirArchivo(){
+    if(!fsHandle) return Promise.resolve(false);
+    if(guardando){ pendiente=true; return Promise.resolve(false); }
+    guardando=true;
+    return fsHandle.createWritable().then(function(w){
+      return w.write(JSON.stringify(st,null,2)).then(function(){ return w.close(); });
+    }).then(function(){
+      guardando=false; pintarEstadoArchivo('ok');
+      if(pendiente){ pendiente=false; return escribirArchivo(); }
+      return true;
+    }).catch(function(err){
+      guardando=false;
+      pintarEstadoArchivo('error', err && err.name==='NotAllowedError' ? 'El permiso del archivo expiró; reconéctalo.' : 'Error al escribir el archivo.');
+      if(err && err.name==='NotAllowedError') fsHandle=null;
+      return false;
+    });
+  }
+
+  function guardar(){
+    if(fsHandle){ escribirArchivo(); return; }
+    try{
+      if(window.storage&&typeof window.storage.set==='function'){
+        window.storage.set(CLAVE,JSON.stringify(st)).catch(function(){});
+      }
+    }catch(e){}
+  }
+  function cargar(){
+    return new Promise(function(res){
+      try{
+        if(window.storage&&typeof window.storage.get==='function'){
+          window.storage.get(CLAVE).then(function(r){
+            if(r&&r.value){ var g=JSON.parse(r.value); Object.keys(g).forEach(function(k){ st[k]=g[k]; }); res(true); }
+            else res(false);
+          }).catch(function(){res(false);});
+          return;
+        }
+      }catch(e){}
+      res(false);
+    });
+  }
+
+  /* ---- eventos ---- */
+  ['cA','cB','cC','rating','proyeccionDia'].forEach(function(id){
+    el[id].addEventListener('input',function(){ refrescar(); guardar(); });
+  });
+  el.btnArchivo.addEventListener('click',function(){ conectarArchivo(false); });
+  el.btnArchivoPanel.addEventListener('click',function(){ conectarArchivo(false); });
+  el.btnArchivoNuevo.addEventListener('click',function(){ conectarArchivo(true); });
+  el.btnDesconectar.addEventListener('click',desconectarArchivo);
+
+  /* ---- arranque ---- */
+  pintarEtiquetasCiclos();
+  pintarEstadoArchivo('idle');
+  pintarFormulas();
+  cargar().then(function(){
+    if(typeof st.proyeccionDia!=='number' && typeof st.proyeccion==='number'){
+      st.proyeccionDia=Math.round(st.proyeccion/14);
+    }
+    escribirControles();
+    refrescar();
+    intentarReanudar().then(function(reconectado){ if(reconectado){ escribirControles(); refrescar(); } });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="es-BO">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Medidor de ciclo 2026 — Interpretación remota</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --tinta:#0B1B2B; --tinta-60:rgba(11,27,43,.60); --tinta-38:rgba(11,27,43,.38);
+  --papel:#E7ECEF; --tarjeta:#FFFFFF;
+  --guindo:#7A1F2B; --guindo-suave:rgba(122,31,43,.10);
+  --acero:#2F5F86; --musgo:#3E6B4E; --ambar:#A9760F;
+  --linea:rgba(11,27,43,.14); --linea-fuerte:rgba(11,27,43,.30);
+  --texto:'Century Gothic','Montserrat','Lato',system-ui,sans-serif;
+  --display:'Montserrat','Century Gothic','Lato',sans-serif;
+  --radio:3px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--texto); color:var(--tinta); background-color:var(--papel);
+  background-image:repeating-linear-gradient(to bottom,rgba(11,27,43,.055) 0 1px,transparent 1px 29px);
+  font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased;
+}
+.num{font-variant-numeric:tabular-nums;letter-spacing:.01em}
+h1,h2,h3{font-family:var(--display);margin:0;font-weight:800;letter-spacing:-.015em}
+a{color:var(--acero)}
+.rotulo{font-family:var(--display);font-weight:600;font-size:10px;text-transform:uppercase;
+  letter-spacing:.18em;color:var(--tinta-60)}
+
+/* cabecera */
+.barra{border-bottom:1.5px solid var(--tinta);background:var(--tarjeta);padding:22px clamp(16px,4vw,48px) 18px}
+.barra-int{max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;justify-content:space-between}
+.barra h1{font-size:clamp(26px,3.6vw,40px);line-height:1;text-transform:uppercase}
+.barra h1 span{color:var(--guindo)}
+.sellos{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-end}
+.sello{font-family:var(--display);font-weight:600;font-size:12px;border-left:3px solid var(--guindo);
+  padding-left:12px;color:var(--tinta-60)}
+.sello strong{display:block;color:var(--tinta);font-size:15px;font-weight:800}
+.sello.pago{border-left-color:var(--musgo)}
+
+/* archivo local */
+.archivo{display:flex;align-items:center;gap:10px;border-left:3px solid var(--linea-fuerte);padding-left:12px}
+.archivo .punto{width:8px;height:8px;border-radius:50%;background:var(--tinta-38);flex-shrink:0}
+.archivo.ok .punto{background:var(--musgo)}
+.archivo.error .punto{background:var(--guindo)}
+.archivo .txt{font-size:11.5px;color:var(--tinta-60);line-height:1.35}
+.archivo .txt b{display:block;color:var(--tinta);font-size:12.5px;font-weight:700}
+.btn-archivo{font-family:var(--texto);font-size:12px;font-weight:600;padding:8px 13px;cursor:pointer;
+  background:var(--tarjeta);border:1px solid var(--tinta);border-radius:var(--radio);color:var(--tinta);white-space:nowrap}
+.btn-archivo:hover{background:var(--tinta);color:#fff}
+.btn-archivo[disabled]{opacity:.4;cursor:not-allowed}
+.btn-archivo.chico{font-size:11px;padding:6px 10px}
+
+/* estructura */
+.marco{max-width:1280px;margin:0 auto;padding:clamp(18px,3vw,34px) clamp(16px,4vw,48px) 60px;
+  display:grid;grid-template-columns:320px minmax(0,1fr);gap:clamp(18px,2.4vw,32px);align-items:start}
+@media(max-width:960px){.marco{grid-template-columns:1fr}}
+.panel{position:sticky;top:16px}
+@media(max-width:960px){.panel{position:static}}
+.bloque{background:var(--tarjeta);border:1px solid var(--linea);border-radius:var(--radio);
+  padding:18px 18px 20px;margin-bottom:18px}
+.bloque > .rotulo{display:block;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--linea)}
+
+/* controles */
+label.campo{display:block;margin-bottom:13px}
+label.campo > span{display:block;font-size:12px;font-weight:600;margin-bottom:5px;color:var(--tinta-60)}
+input[type=number],input[type=text],select{
+  width:100%;font-family:var(--texto);font-size:15px;color:var(--tinta);background:#F7F9FA;
+  border:1px solid var(--linea-fuerte);border-radius:var(--radio);padding:8px 10px;font-variant-numeric:tabular-nums}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--guindo);outline-offset:1px}
+.par{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.segmento{display:flex;border:1px solid var(--linea-fuerte);border-radius:var(--radio);overflow:hidden;margin-bottom:13px}
+.segmento button{flex:1;border:0;background:#F7F9FA;font-family:var(--texto);font-size:12px;font-weight:600;
+  color:var(--tinta-60);padding:9px 4px;cursor:pointer;border-right:1px solid var(--linea)}
+.segmento button:last-child{border-right:0}
+.segmento button[aria-pressed=true]{background:var(--tinta);color:#fff}
+.nav-ciclo{display:grid;grid-template-columns:38px 1fr 38px;gap:8px;margin-bottom:12px}
+.nav-ciclo button{border:1px solid var(--linea-fuerte);background:#F7F9FA;border-radius:var(--radio);
+  font-size:15px;font-weight:700;color:var(--tinta);cursor:pointer;font-family:var(--display)}
+.nav-ciclo button:hover:not(:disabled){background:var(--tinta);color:#fff}
+.nav-ciclo button:disabled{opacity:.3;cursor:not-allowed}
+.nota{font-size:11.5px;color:var(--tinta-60);line-height:1.45;margin:6px 0 0}
+.enlace-tasa{display:inline-block;margin-top:6px;font-size:12px;font-weight:600;color:var(--guindo);
+  text-decoration:none;border-bottom:1px solid var(--guindo-suave)}
+.enlace-tasa:hover{border-bottom-color:var(--guindo)}
+
+/* lectura */
+.lectura{background:var(--tinta);color:#fff;border-radius:var(--radio);padding:24px clamp(18px,2.6vw,30px);margin-bottom:18px}
+.lectura .rotulo{color:rgba(255,255,255,.55)}
+.lectura-grande{font-family:var(--display);font-weight:800;font-size:clamp(46px,8vw,78px);line-height:.92;
+  letter-spacing:-.03em;margin:10px 0 4px;font-variant-numeric:tabular-nums}
+.lectura-grande small{font-size:.34em;font-weight:600;letter-spacing:.02em;margin-left:.12em;color:rgba(255,255,255,.6)}
+.lectura-sub{font-size:13.5px;color:rgba(255,255,255,.72);max-width:52ch;margin:0}
+.mini-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:1px;margin-top:22px;
+  background:rgba(255,255,255,.18);border-top:1px solid rgba(255,255,255,.18)}
+.mini{background:var(--tinta);padding:13px 12px 11px}
+.mini .rotulo{font-size:9px}
+.mini b{display:block;font-family:var(--display);font-weight:800;font-size:19px;margin-top:5px;font-variant-numeric:tabular-nums}
+
+/* franja */
+.franja{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:5px}
+@media(max-width:1100px){.franja{grid-template-columns:repeat(7,minmax(0,1fr))}}
+@media(max-width:560px){.franja{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.dia{border:1px solid var(--linea);border-radius:var(--radio);background:#FAFBFC;padding:7px 4px 6px;
+  text-align:center;cursor:pointer;position:relative;transition:border-color .12s ease,background .12s ease}
+.dia:hover{border-color:var(--tinta)}
+.dia .dsem{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--tinta-38)}
+.dia .dnum{font-family:var(--display);font-weight:800;font-size:17px;line-height:1.1;font-variant-numeric:tabular-nums}
+.tubo{height:78px;margin:6px 3px 5px;background:rgba(11,27,43,.07);border-radius:2px;display:flex;align-items:flex-end;overflow:hidden}
+.relleno{width:100%;background:var(--acero);border-radius:2px 2px 0 0;transition:height .25s ease}
+.dia .hm{font-size:10.5px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--tinta-60)}
+.dia.hoy{border-color:var(--guindo);border-width:2px;background:#fff}
+.dia.hoy::after{content:'HOY';position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+  background:var(--guindo);color:#fff;font-size:8px;font-weight:700;letter-spacing:.1em;padding:2px 5px;border-radius:2px}
+.dia.libre{background:repeating-linear-gradient(135deg,transparent 0 5px,rgba(11,27,43,.07) 5px 10px)}
+.dia.libre .dnum,.dia.libre .hm{color:var(--tinta-38);text-decoration:line-through}
+.dia.libre .relleno{background:transparent}
+.dia.fija .relleno{background:var(--musgo)}
+.dia.rec .relleno{background:var(--guindo)}
+.dia.exceso .relleno{background:var(--ambar)}
+.leyenda{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:11px;color:var(--tinta-60)}
+.leyenda i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+
+/* tablas */
+.tabla-env{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-family:var(--display);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--tinta-60);text-align:right;padding:0 8px 8px;border-bottom:1.5px solid var(--tinta);white-space:nowrap}
+th:first-child,th:nth-child(2){text-align:left}
+td{padding:5px 8px;border-bottom:1px solid var(--linea);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td:first-child,td:nth-child(2){text-align:left}
+tr.fila-libre td{color:var(--tinta-38)}
+tr.fila-hoy{background:var(--guindo-suave)}
+td select,td input{padding:4px 6px;font-size:12.5px}
+td select{min-width:82px}
+td input.minfija{width:74px;text-align:right}
+tfoot td{border-bottom:0;border-top:1.5px solid var(--tinta);font-weight:700;padding-top:9px}
+
+/* calendario anual */
+details.cal{background:var(--tarjeta);border:1px solid var(--linea);border-radius:var(--radio);margin-bottom:18px}
+details.cal > summary{list-style:none;cursor:pointer;padding:16px 18px;font-family:var(--display);font-weight:600;
+  font-size:10px;text-transform:uppercase;letter-spacing:.18em;color:var(--tinta-60);display:flex;
+  justify-content:space-between;align-items:center;gap:12px}
+details.cal > summary::-webkit-details-marker{display:none}
+details.cal > summary::after{content:'▾';font-size:14px;letter-spacing:0}
+details.cal[open] > summary{border-bottom:1px solid var(--linea)}
+details.cal[open] > summary::after{content:'▴'}
+.cal-cuerpo{padding:14px 18px 18px;max-height:420px;overflow:auto}
+.cal-cuerpo table td{cursor:pointer}
+#mesCuerpo td{cursor:pointer}
+tr.c-activo td{background:var(--tinta);color:#fff;font-weight:700}
+tr.c-pasado td{color:var(--tinta-38)}
+.chip{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.08em;padding:2px 6px;border-radius:2px;
+  background:rgba(11,27,43,.08);color:var(--tinta-60)}
+tr.c-activo .chip{background:var(--guindo);color:#fff}
+
+/* cascada */
+.cascada{display:grid;gap:2px}
+.paso{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:baseline;padding:11px 14px;
+  background:#FAFBFC;border-left:3px solid var(--linea-fuerte)}
+.paso .et{font-size:12.5px;color:var(--tinta-60)}
+.paso .et b{display:block;color:var(--tinta);font-size:13.5px;font-weight:600}
+.paso .vl{font-family:var(--display);font-weight:800;font-size:19px;font-variant-numeric:tabular-nums}
+.paso.merma{border-left-color:var(--guindo)}
+.paso.merma .vl{color:var(--guindo);font-size:15px}
+.paso.final{background:var(--tinta);border-left-color:var(--guindo)}
+.paso.final .et,.paso.final .et b{color:#fff}
+.paso.final .vl{color:#fff;font-size:26px}
+
+/* fórmulas */
+.formula{border-left:3px solid var(--linea-fuerte);padding:9px 0 9px 14px;margin:0 0 16px}
+.formula .fn{font-size:14.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.formula .fl{font-size:12.5px;color:var(--tinta-60);margin-top:3px;font-family:ui-monospace,Consolas,monospace}
+.formula .fd{font-size:12px;color:var(--tinta-60);margin-top:5px}
+
+.alerta{background:#FDF6E6;border:1px solid var(--ambar);border-radius:var(--radio);padding:10px 13px;
+  font-size:12.5px;margin-bottom:14px;color:#6B4A05}
+.alerta:empty{display:none}
+.acciones{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.acciones button{font-family:var(--texto);font-size:12.5px;font-weight:600;padding:9px 15px;cursor:pointer;
+  background:var(--tarjeta);border:1px solid var(--tinta);border-radius:var(--radio);color:var(--tinta)}
+.acciones button:hover{background:var(--tinta);color:#fff}
+footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-size:11.5px;color:var(--tinta-60)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{
+  body{background:#fff}
+  .panel,.acciones,details.cal{display:none}
+  .marco{display:block}
+  .lectura{background:#fff;color:#000;border:1.5px solid #000}
+  .lectura .rotulo,.lectura-sub{color:#333}
+  .mini{background:#fff}
+}
+</style>
+</head>
+<body>
+
+<header class="barra">
+  <div class="barra-int">
+    <div>
+      <p class="rotulo" style="margin:0 0 6px">Calendario de pagos 2026 · interpretación remota</p>
+      <h1>Medidor de <span>ciclo</span></h1>
+    </div>
+    <div class="sellos">
+      <div class="sello">Ciclo activo<strong id="selloCiclo">—</strong></div>
+      <div class="sello pago">Fecha de pago<strong id="selloPago">—</strong></div>
+      <div class="archivo" id="archivoEstado">
+        <span class="punto"></span>
+        <span class="txt" id="archivoTexto"><b>Sin archivo conectado</b>Los cambios solo viven en esta pestaña</span>
+      </div>
+      <button type="button" class="btn-archivo" id="btnArchivo">Abrir archivo local</button>
+    </div>
+  </div>
+</header>
+
+<div class="marco">
+
+  <aside class="panel">
+    <div class="bloque">
+      <span class="rotulo">Almacenamiento</span>
+      <p class="nota" style="margin:0 0 12px">
+        Chrome puede guardar tu progreso en un archivo <code>.json</code> de tu disco. La primera vez, elige dónde
+        crearlo o ábrelo si ya existe. Desde ahí, la página <strong>recuerda ese archivo</strong> — al volver a
+        abrir esta pestaña no tendrás que buscarlo de nuevo: bastará un clic en "Reanudar acceso" para confirmar
+        el permiso, que es lo mínimo que Chrome exige por seguridad. El recuerdo depende de que este mismo archivo
+        HTML se abra siempre desde la misma ubicación en el disco.
+      </p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button type="button" class="btn-archivo" id="btnArchivoPanel" style="flex:1">Abrir mi archivo…</button>
+        <button type="button" class="btn-archivo chico" id="btnArchivoNuevo">Crear nuevo</button>
+        <button type="button" class="btn-archivo chico" id="btnDesconectar" hidden>Desconectar</button>
+      </div>
+      <p class="nota" id="notaArchivo" style="margin-top:10px"></p>
+      <button type="button" class="btn-archivo" id="btnRespaldo" style="width:100%;margin-top:10px">Descargar copia de respaldo</button>
+      <p class="nota" style="margin-top:6px">Guarda un segundo archivo con la fecha y hora de hoy, aparte del que se actualiza solo — útil antes de un cambio grande.</p>
+    </div>
+
+    <div class="bloque">
+      <span class="rotulo">Ciclo del calendario</span>
+      <div class="nav-ciclo">
+        <button type="button" id="btnPrev" aria-label="Ciclo anterior">‹</button>
+        <select id="selCiclo" aria-label="Seleccionar ciclo"></select>
+        <button type="button" id="btnNext" aria-label="Ciclo siguiente">›</button>
+      </div>
+      <button type="button" id="btnHoy" style="width:100%;font-family:var(--texto);font-size:12.5px;font-weight:600;
+        padding:8px;cursor:pointer;background:#F7F9FA;border:1px solid var(--linea-fuerte);border-radius:var(--radio);color:var(--tinta)">Ir al ciclo en curso</button>
+      <p class="nota" id="notaCiclo"></p>
+    </div>
+
+    <div class="bloque">
+      <span class="rotulo">Meta</span>
+      <div class="segmento" id="segMetaModo">
+        <button data-v="semestre" aria-pressed="true">Semestral</button>
+        <button data-v="ciclo" aria-pressed="false">Por ciclo</button>
+      </div>
+      <label class="campo"><span id="lblMonto">Monto de la meta semestral</span>
+        <div style="position:relative">
+          <input type="number" id="metaMonto" min="0" step="10" value="6000" style="padding-right:38px">
+          <span id="unidadMonto" class="rotulo" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);
+            font-size:11px;letter-spacing:.04em;pointer-events:none;color:var(--tinta-38)">USD</span>
+        </div>
+      </label>
+      <label class="campo"><span>La meta está expresada como…</span>
+        <select id="metaTipo">
+          <option value="bruto">Bruto facturado en Deel (USD)</option>
+          <option value="netoUSD">Neto recibido en USDT, Binance (USD)</option>
+          <option value="netoBOB">Neto recibido en bolivianos (Bs)</option>
+        </select></label>
+      <p class="nota" id="notaMeta"></p>
+    </div>
+
+    <div class="bloque">
+      <span class="rotulo">Tarifa</span>
+      <label class="campo"><span>USD por minuto interpretado</span>
+        <input type="number" id="tarifa" min="0.001" step="0.01" value="0.12"></label>
+      <p class="nota" id="notaTarifa"></p>
+    </div>
+
+    <div class="bloque">
+      <span class="rotulo">Reparto de la carga</span>
+      <div class="segmento" id="segModo">
+        <button data-v="equitativo" aria-pressed="true">Repartir parejo</button>
+        <button data-v="concentrado" aria-pressed="false">Cargar a un día</button>
+      </div>
+      <label class="campo" id="campoRec" hidden><span>Día que absorbe lo pendiente</span>
+        <select id="diaRec"></select></label>
+      <p class="nota" id="notaModo"></p>
+    </div>
+
+    <div class="bloque">
+      <span class="rotulo">Retiro cripto y tipo de cambio</span>
+      <div class="par">
+        <label class="campo"><span>Comisión retiro a USDT (Binance)</span>
+          <input type="number" id="feeCripto" min="0" max="50" step="0.1" value="2"></label>
+        <label class="campo"><span>Comisión fija por retiro (USD)</span>
+          <input type="number" id="feeFijo" min="0" step="0.01" value="1"></label>
+      </div>
+      <label class="campo"><span>Tasa P2P Binance — VENTA (Bs por USD)</span>
+        <input type="number" id="tasa" min="0" step="0.01" value="11.75"></label>
+      <a class="enlace-tasa" href="https://dolarboliviahoy.com/" target="_blank" rel="noopener">Consultar la tasa de hoy en dolarboliviahoy.com →</a>
+      <p class="nota">La tasa se carga a mano: los anuncios P2P cambian todo el día y no se pueden leer desde aquí. Copia el precio de <strong>venta</strong> más conveniente antes de calcular.</p>
+    </div>
+
+    <div class="bloque">
+      <span class="rotulo">Surge hours</span>
+      <p class="nota" style="margin:0 0 12px">Tarifa por minuto durante los horarios de alto tráfico que habilite Propio. Se activa día por día en la tabla de detalle, eligiendo el nivel logrado y cuántos minutos de ese día corresponden al surge.</p>
+      <label class="campo"><span>Nivel Bronce (USD/min)</span>
+        <input type="number" id="tarifaBronce" min="0" step="0.001" value="0.13"></label>
+      <label class="campo"><span>Nivel Plata (USD/min)</span>
+        <input type="number" id="tarifaPlata" min="0" step="0.001" value="0.14"></label>
+      <label class="campo"><span>Nivel Oro (USD/min)</span>
+        <input type="number" id="tarifaOro" min="0" step="0.001" value="0.15"></label>
+    </div>
+  </aside>
+
+  <section>
+    <div class="lectura">
+      <span class="rotulo">Producción diaria requerida</span>
+      <div class="lectura-grande num" id="lectHoy">—</div>
+      <p class="lectura-sub" id="lectSub">—</p>
+      <div class="mini-kpis">
+        <div class="mini"><span class="rotulo">Total del ciclo</span><b class="num" id="kTotal">—</b></div>
+        <div class="mini"><span class="rotulo">Bruto a facturar</span><b class="num" id="kBruto">—</b></div>
+        <div class="mini"><span class="rotulo">Llega en bolivianos</span><b class="num" id="kBob">—</b></div>
+        <div class="mini"><span class="rotulo">Hora efectiva</span><b class="num" id="kHora">—</b></div>
+        <div class="mini"><span class="rotulo">Cobro</span><b class="num" id="kCobro">—</b></div>
+        <div class="mini"><span class="rotulo">Días libres</span><b class="num" id="kLibres">—</b></div>
+      </div>
+    </div>
+
+    <div class="alerta" id="alerta"></div>
+
+    <div class="bloque">
+      <span class="rotulo">Franja del ciclo — toca un día para marcarlo libre</span>
+      <div class="franja" id="franja"></div>
+      <div class="leyenda">
+        <span><i style="background:var(--acero)"></i>Carga automática</span>
+        <span><i style="background:var(--musgo)"></i>Minutos fijados por ti</span>
+        <span><i style="background:var(--guindo)"></i>Día de recuperación</span>
+        <span><i style="background:var(--ambar)"></i>Más de 8 h</span>
+        <span><i style="background:repeating-linear-gradient(135deg,transparent 0 3px,rgba(11,27,43,.25) 3px 6px)"></i>Libre</span>
+      </div>
+    </div>
+
+    <div class="bloque">
+      <span class="rotulo">Detalle día por día</span>
+      <div class="tabla-env">
+        <table>
+          <thead><tr>
+            <th>Día</th><th>Fecha</th><th>Estado</th><th>Min. fija</th><th>Real (si superó meta)</th>
+            <th>Surge</th><th>Min. surge</th>
+            <th>Minutos</th><th>Tiempo</th><th>USD bruto</th><th>Acumulado</th>
+          </tr></thead>
+          <tbody id="cuerpo"></tbody>
+          <tfoot><tr>
+            <td colspan="7">Total del ciclo</td>
+            <td id="tMin">—</td><td id="tHm">—</td><td id="tUsd">—</td><td></td>
+          </tr></tfoot>
+        </table>
+      </div>
+      <div class="acciones">
+        <button type="button" id="btnLimpiar">Volver todo a automático</button>
+        <button type="button" id="btnCsv">Descargar CSV</button>
+        <button type="button" id="btnImprimir">Imprimir o guardar PDF</button>
+      </div>
+    </div>
+
+    <details class="cal">
+      <summary>Calendario de ciclos 2026 — 26 pagos · sábado a viernes · se cobra el viernes siguiente</summary>
+      <div class="cal-cuerpo">
+        <div class="tabla-env">
+          <table>
+            <thead><tr>
+              <th>Ciclo</th><th>Inicio</th><th>Cierre</th><th>Pago</th><th>Sem.</th><th>Estado</th>
+            </tr></thead>
+            <tbody id="calCuerpo"></tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+
+    <div class="bloque">
+      <span class="rotulo">Registro mensual — dos ciclos combinados</span>
+      <div class="nav-ciclo" style="grid-template-columns:38px 1fr 38px;max-width:420px">
+        <button type="button" id="btnMesPrev" aria-label="Mes anterior">‹</button>
+        <select id="selMes" aria-label="Seleccionar mes"></select>
+        <button type="button" id="btnMesNext" aria-label="Mes siguiente">›</button>
+      </div>
+      <p class="nota" id="notaMes" style="margin-bottom:14px"></p>
+      <div class="tabla-env">
+        <table>
+          <thead><tr>
+            <th>Ciclo</th><th>Período</th><th>Pago</th><th>Días</th><th>Libres</th>
+            <th>Minutos</th><th>Tiempo</th><th>USD bruto</th><th>Bs netos</th>
+          </tr></thead>
+          <tbody id="mesCuerpo"></tbody>
+          <tfoot><tr>
+            <td colspan="5">Total del mes</td>
+            <td id="mMin">—</td><td id="mHm">—</td><td id="mUsd">—</td><td id="mBob">—</td>
+          </tr></tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="bloque">
+      <span class="rotulo">Del minuto facturado al boliviano en mano</span>
+      <div class="cascada" id="cascada"></div>
+    </div>
+
+    <div class="bloque">
+      <span class="rotulo">Cómo se calcula</span>
+      <div id="formulas"></div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  El calendario replica el patrón de tu planilla de pagos: períodos de 14 días de sábado a viernes, con depósito el viernes siguiente al cierre (fin + 7 días). Los 26 pagos de 2026 van del 2 de enero al 18 de diciembre; el ciclo C27 cierra el 25 de diciembre y se cobra el 1 de enero de 2027. La comisión de retiro a USDT en Binance y la tasa de venta P2P varían según el horario y el volumen de anuncios disponibles en cada momento.
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var CLAVE='medidor-ciclo-2026-v2';
+  var DIAS_SEM=['dom','lun','mar','mié','jue','vie','sáb'];
+  var MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  var N_CICLOS_SEM=13;
+
+  /* ---- calendario: sábado a viernes, pago = cierre + 7 días ---- */
+  var CICLOS=(function(){
+    var base=new Date(2025,11,13), out=[];
+    for(var i=0;i<27;i++){
+      var ini=new Date(base.getFullYear(),base.getMonth(),base.getDate()+i*14);
+      var fin=new Date(ini.getFullYear(),ini.getMonth(),ini.getDate()+13);
+      var pago=new Date(fin.getFullYear(),fin.getMonth(),fin.getDate()+7);
+      out.push({n:i+1,ini:ini,fin:fin,pago:pago,sem:(i<13?1:2)});
+    }
+    return out;
+  })();
+
+  /* ---- agrupación mensual: pares de ciclos consecutivos ---- */
+  var MESES_REG=(function(){
+    var out=[];
+    for(var i=0;i<CICLOS.length;i+=2){
+      var par=[i]; if(i+1<CICLOS.length) par.push(i+1);
+      out.push(par);
+    }
+    return out;
+  })();
+  function mesEnCurso(){
+    var i=cicloEnCurso();
+    if(i<0) return -1;
+    for(var m=0;m<MESES_REG.length;m++) if(MESES_REG[m].indexOf(i)>=0) return m;
+    return -1;
+  }
+
+  var st={
+    ciclo:16, mes:8, metaModo:'semestre', metaMonto:6000, metaTipo:'bruto',
+    tarifa:0.12, modo:'equitativo', diaRec:0,
+    feeCripto:2, feeFijo:1, tasa:11.75,
+    tarifaBronce:0.13, tarifaPlata:0.14, tarifaOro:0.15,
+    porCiclo:{}
+  };
+  var DIAS=14, filas=[], el={};
+  ['selloCiclo','selloPago','selCiclo','btnPrev','btnNext','btnHoy','notaCiclo','metaMonto','lblMonto',
+   'metaTipo','unidadMonto','notaMeta','tarifa','notaTarifa','campoRec','diaRec','notaModo','feeCripto','feeFijo','tasa',
+   'tarifaBronce','tarifaPlata','tarifaOro',
+   'lectHoy','lectSub','kTotal','kBruto','kBob','kHora','kCobro','kLibres','alerta','franja','cuerpo',
+   'tMin','tHm','tUsd','calCuerpo','cascada','formulas','btnLimpiar','btnCsv','btnImprimir',
+   'selMes','btnMesPrev','btnMesNext','notaMes','mesCuerpo','mMin','mHm','mUsd','mBob']
+   .forEach(function(id){ el[id]=document.getElementById(id); });
+
+  /* ---- utilidades ---- */
+  function nUSD(v){ return '$ '+(isFinite(v)?v:0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function nBOB(v){ return 'Bs '+(isFinite(v)?v:0).toLocaleString('es-BO',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function hm(m){ m=Math.max(0,Math.round(m)); return Math.floor(m/60)+' h '+String(m%60).padStart(2,'0')+' min'; }
+  function hmCorto(m){ m=Math.max(0,Math.round(m)); return Math.floor(m/60)+':'+String(m%60).padStart(2,'0'); }
+  function fCorta(d){ return DIAS_SEM[d.getDay()]+' '+d.getDate()+' '+MESES[d.getMonth()].slice(0,3); }
+  function fLarga(d){ return DIAS_SEM[d.getDay()]+' '+d.getDate()+' '+MESES[d.getMonth()]+' '+d.getFullYear(); }
+  function iso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function hoy0(){ var h=new Date(); return new Date(h.getFullYear(),h.getMonth(),h.getDate()); }
+  function cic(){ return CICLOS[Math.min(CICLOS.length-1,Math.max(0,st.ciclo))]; }
+  function fecha(i){ var c=cic(); return new Date(c.ini.getFullYear(),c.ini.getMonth(),c.ini.getDate()+i); }
+  function cicloEnCurso(){
+    var h=hoy0().getTime();
+    for(var i=0;i<CICLOS.length;i++){
+      if(h>=CICLOS[i].ini.getTime() && h<=CICLOS[i].fin.getTime()) return i;
+    }
+    return -1;
+  }
+  function hoyIdx(){
+    var h=hoy0().getTime();
+    for(var i=0;i<DIAS;i++){ if(fecha(i).getTime()===h) return i; }
+    return -1;
+  }
+  function estados(idxCiclo){
+    var k=String(idxCiclo===undefined?st.ciclo:idxCiclo);
+    if(!st.porCiclo[k]) st.porCiclo[k]=[];
+    var a=st.porCiclo[k];
+    while(a.length<DIAS) a.push({tipo:'auto',min:0,real:0,surge:'no',surgeMin:0});
+    a.length=DIAS;
+    /* migración: los ciclos guardados antes de sumar "real" y "surge" no traen esos campos */
+    for(var i=0;i<a.length;i++){
+      if(typeof a[i].real!=='number') a[i].real=0;
+      if(!a[i].surge) a[i].surge='no';
+      if(typeof a[i].surgeMin!=='number') a[i].surgeMin=0;
+    }
+    return a;
+  }
+
+  function tarifaSurge(nivel){
+    if(nivel==='bronce') return st.tarifaBronce;
+    if(nivel==='plata') return st.tarifaPlata;
+    if(nivel==='oro') return st.tarifaOro;
+    return st.tarifa;
+  }
+  function usdDelDia(e,minutos){
+    minutos=Math.max(0,minutos);
+    if(!e.surge || e.surge==='no' || !e.surgeMin) return minutos*st.tarifa;
+    var sm=Math.min(Math.max(0,Math.round(e.surgeMin||0)), minutos);
+    var nm=minutos-sm;
+    return nm*st.tarifa + sm*tarifaSurge(e.surge);
+  }
+
+  /* ---- motor ---- */
+  function calcularPlan(idxCiclo){
+    var E=estados(idxCiclo);
+    var factor=(1-st.feeCripto/100);
+    var divisor = st.metaModo==='semestre' ? N_CICLOS_SEM : 1;
+    var metaCiclo = st.metaMonto/divisor;
+    var bruto;
+    if(st.metaTipo==='bruto')        bruto=metaCiclo;
+    else if(st.metaTipo==='netoUSD') bruto=factor>0?(metaCiclo+st.feeFijo)/factor:0;
+    else                             bruto=(factor>0&&st.tasa>0)?((metaCiclo/st.tasa)+st.feeFijo)/factor:0;
+
+    var minTot = st.tarifa>0 ? Math.ceil(bruto/st.tarifa) : 0;
+    var autos=[], sumaFijos=0, libres=0, asign=new Array(DIAS).fill(0);
+    for(var i=0;i<DIAS;i++){
+      var e=E[i];
+      if(e.tipo==='libre') libres++;
+      else if(e.tipo==='fijo'){ var v=Math.max(0,Math.round(e.min||0)); sumaFijos+=v; asign[i]=v; }
+      else autos.push(i);
+    }
+
+    var restante=minTot-sumaFijos, avisos=[];
+    if(restante<0){
+      avisos.push('Los minutos que fijaste a mano ('+hm(sumaFijos)+') ya superan la meta del ciclo ('+hm(minTot)+'). Los días automáticos quedan en cero.');
+      restante=0;
+    }
+    var base = minTot/DIAS;
+
+    if(autos.length===0){
+      if(restante>0) avisos.push('No queda ningún día automático donde repartir '+hm(restante)+'. Libera un día o baja los minutos fijos.');
+    } else if(st.modo==='equitativo'){
+      var q=Math.floor(restante/autos.length), r=restante-q*autos.length;
+      autos.forEach(function(idx,k){ asign[idx]=q+(k<r?1:0); });
+    } else {
+      var rec=st.diaRec;
+      if(autos.indexOf(rec)===-1){ rec=autos[0]; st.diaRec=rec; }
+      var nominal=Math.round(base), suma=0;
+      autos.forEach(function(idx){ if(idx!==rec){ asign[idx]=nominal; suma+=nominal; } });
+      var enRec=restante-suma;
+      if(enRec<0){ avisos.push('Con la carga estándar de '+hm(nominal)+' en los demás días ya se cubre la meta. El día de recuperación queda en cero.'); enRec=0; }
+      asign[rec]=enRec;
+    }
+
+    var total=asign.reduce(function(a,b){return a+b;},0);
+
+    /* --- registro efectivo: si lo realmente interpretado un día supera la meta que le tocaba,
+       se cuenta lo real (nunca se recorta a la meta); además separa los minutos de surge hours
+       a su tarifa correspondiente para el cálculo de USD de cada día --- */
+    var asignEfectivo=asign.slice(), usdEfectivo=new Array(DIAS).fill(0);
+    for(var i=0;i<DIAS;i++){
+      var e=E[i];
+      if(e.tipo==='libre'){ asignEfectivo[i]=0; usdEfectivo[i]=0; continue; }
+      var real=Math.max(0,Math.round(e.real||0));
+      var m=(real>asign[i])?real:asign[i];
+      asignEfectivo[i]=m;
+      usdEfectivo[i]=usdDelDia(e,m);
+    }
+    var totalEfectivo=asignEfectivo.reduce(function(a,b){return a+b;},0);
+    var totalUsdEfectivo=usdEfectivo.reduce(function(a,b){return a+b;},0);
+
+    var pico=Math.max.apply(null,asignEfectivo.concat([1]));
+    if(pico>720) avisos.push('Algún día pasa de 12 horas de interpretación. Conviene repartir mejor o revisar la meta.');
+    else if(pico>480) avisos.push('Hay días por encima de 8 horas de producción. Revisa si es sostenible.');
+
+    var netoUsdtEfectivo=Math.max(0, totalUsdEfectivo*factor - st.feeFijo);
+    var bobEfectivo=netoUsdtEfectivo*st.tasa;
+
+    return {factor:factor,metaCiclo:metaCiclo,bruto:bruto,minTot:minTot,asign:asign,autos:autos,
+            libres:libres,base:base,total:total,pico:pico,avisos:avisos,divisor:divisor,
+            asignEfectivo:asignEfectivo,usdEfectivo:usdEfectivo,totalEfectivo:totalEfectivo,
+            totalUsdEfectivo:totalUsdEfectivo,netoUsdtEfectivo:netoUsdtEfectivo,bobEfectivo:bobEfectivo};
+  }
+
+  /* ---- construcción ---- */
+  function construirSelector(){
+    el.selCiclo.innerHTML='';
+    CICLOS.forEach(function(c,i){
+      var o=document.createElement('option');
+      o.value=i;
+      o.textContent='C'+String(c.n).padStart(2,'0')+' · '+c.ini.getDate()+' '+MESES[c.ini.getMonth()].slice(0,3)+
+                    ' → '+c.fin.getDate()+' '+MESES[c.fin.getMonth()].slice(0,3);
+      el.selCiclo.appendChild(o);
+    });
+  }
+
+  function construirCalendario(){
+    var enCurso=cicloEnCurso(), h=hoy0().getTime();
+    el.calCuerpo.innerHTML='';
+    CICLOS.forEach(function(c,i){
+      var tr=document.createElement('tr');
+      var estado = (i===enCurso)?'En curso':(c.fin.getTime()<h?'Cerrado':'Por venir');
+      var cls = (i===st.ciclo)?'c-activo':(c.fin.getTime()<h?'c-pasado':'');
+      tr.className=cls;
+      tr.innerHTML='<td>C'+String(c.n).padStart(2,'0')+'</td><td>'+fCorta(c.ini)+'</td><td>'+fCorta(c.fin)+
+        '</td><td>'+fCorta(c.pago)+' '+c.pago.getFullYear()+'</td><td>S'+c.sem+'</td><td><span class="chip">'+estado+'</span></td>';
+      tr.addEventListener('click',function(){ st.ciclo=i; el.selCiclo.value=i; construir(); refrescar(); });
+      el.calCuerpo.appendChild(tr);
+    });
+  }
+
+  function construir(){
+    var E=estados();
+    el.franja.innerHTML=''; el.cuerpo.innerHTML=''; filas=[];
+    var hi=hoyIdx();
+
+    for(var i=0;i<DIAS;i++){
+      (function(i){
+        var d=fecha(i);
+        var cel=document.createElement('button');
+        cel.type='button'; cel.className='dia'; cel.setAttribute('aria-label','Día '+(i+1)+', '+fLarga(d));
+        cel.innerHTML='<div class="dsem">'+DIAS_SEM[d.getDay()]+'</div>'+
+          '<div class="dnum num">'+d.getDate()+'</div>'+
+          '<div class="tubo"><div class="relleno"></div></div>'+
+          '<div class="hm num">0:00</div>';
+        cel.addEventListener('click',function(){
+          var e=estados()[i];
+          e.tipo=(e.tipo==='libre')?'auto':'libre';
+          sel.value=e.tipo; refrescar(true);
+        });
+        el.franja.appendChild(cel);
+
+        var tr=document.createElement('tr');
+        var tdDia=document.createElement('td'); tdDia.textContent='D'+(i+1);
+        var tdFec=document.createElement('td'); tdFec.textContent=fCorta(d);
+        var tdEst=document.createElement('td');
+        var sel=document.createElement('select');
+        [['auto','Automático'],['fijo','Minutos fijos'],['libre','Libre']].forEach(function(o){
+          var op=document.createElement('option'); op.value=o[0]; op.textContent=o[1]; sel.appendChild(op);
+        });
+        sel.value=E[i].tipo;
+        sel.addEventListener('change',function(){ estados()[i].tipo=sel.value; refrescar(true); });
+        tdEst.appendChild(sel);
+
+        var tdFij=document.createElement('td');
+        var inp=document.createElement('input');
+        inp.type='number'; inp.min='0'; inp.step='5'; inp.className='minfija'; inp.value=E[i].min||0;
+        inp.addEventListener('input',function(){ estados()[i].min=Number(inp.value)||0; refrescar(true); });
+        tdFij.appendChild(inp);
+
+        var tdReal=document.createElement('td');
+        var inpReal=document.createElement('input');
+        inpReal.type='number'; inpReal.min='0'; inpReal.step='5'; inpReal.className='minfija'; inpReal.value=E[i].real||0;
+        inpReal.title='Minutos realmente interpretados ese día; solo cuentan si superan la meta asignada.';
+        inpReal.addEventListener('input',function(){ estados()[i].real=Number(inpReal.value)||0; refrescar(true); });
+        tdReal.appendChild(inpReal);
+
+        var tdSurge=document.createElement('td');
+        var selSurge=document.createElement('select');
+        [['no','Sin surge'],['bronce','Bronce'],['plata','Plata'],['oro','Oro']].forEach(function(o){
+          var op=document.createElement('option'); op.value=o[0]; op.textContent=o[1]; selSurge.appendChild(op);
+        });
+        selSurge.value=E[i].surge||'no';
+        selSurge.addEventListener('change',function(){ estados()[i].surge=selSurge.value; refrescar(true); });
+        tdSurge.appendChild(selSurge);
+
+        var tdSurgeMin=document.createElement('td');
+        var inpSurgeMin=document.createElement('input');
+        inpSurgeMin.type='number'; inpSurgeMin.min='0'; inpSurgeMin.step='5'; inpSurgeMin.className='minfija'; inpSurgeMin.value=E[i].surgeMin||0;
+        inpSurgeMin.addEventListener('input',function(){ estados()[i].surgeMin=Number(inpSurgeMin.value)||0; refrescar(true); });
+        tdSurgeMin.appendChild(inpSurgeMin);
+
+        var tdMin=document.createElement('td'),tdHm=document.createElement('td'),
+            tdUsd=document.createElement('td'),tdAcum=document.createElement('td');
+        [tdDia,tdFec,tdEst,tdFij,tdReal,tdSurge,tdSurgeMin,tdMin,tdHm,tdUsd,tdAcum].forEach(function(t){tr.appendChild(t);});
+        el.cuerpo.appendChild(tr);
+
+        filas.push({cel:cel,relleno:cel.querySelector('.relleno'),hmCel:cel.querySelector('.hm'),
+                    tr:tr,sel:sel,inp:inp,inpReal:inpReal,selSurge:selSurge,inpSurgeMin:inpSurgeMin,
+                    min:tdMin,hm:tdHm,usd:tdUsd,acum:tdAcum});
+        if(i===hi){ cel.classList.add('hoy'); tr.classList.add('fila-hoy'); }
+      })(i);
+    }
+  }
+
+  function construirSelectorMes(){
+    el.selMes.innerHTML='';
+    MESES_REG.forEach(function(par,m){
+      var c1=CICLOS[par[0]], cN=CICLOS[par[par.length-1]];
+      var o=document.createElement('option');
+      o.value=m;
+      o.textContent='C'+String(c1.n).padStart(2,'0')+(par.length>1?'–C'+String(cN.n).padStart(2,'0'):'')+
+        ' · '+c1.ini.getDate()+' '+MESES[c1.ini.getMonth()].slice(0,3)+' → '+cN.fin.getDate()+' '+MESES[cN.fin.getMonth()].slice(0,3);
+      el.selMes.appendChild(o);
+    });
+  }
+
+  function refrescarMes(){
+    var par=MESES_REG[st.mes], h=hoy0().getTime();
+    el.selMes.value=st.mes;
+    el.btnMesPrev.disabled=(st.mes<=0);
+    el.btnMesNext.disabled=(st.mes>=MESES_REG.length-1);
+
+    var enCurso=mesEnCurso();
+    el.notaMes.textContent = par.length<2
+      ? 'Este período cierra el año con un solo ciclo suelto (C'+String(CICLOS[par[0]].n).padStart(2,'0')+'), fuera de los 26 pagos regulares.'
+      : 'Agrupa dos ciclos consecutivos de 14 días — el equivalente a un mes de producción.'+
+        (st.mes===enCurso?' Es el mes en curso.':'');
+
+    var tMin=0, tUsd=0, tBob=0;
+    el.mesCuerpo.innerHTML='';
+    par.forEach(function(idx){
+      var c=CICLOS[idx], p=calcularPlan(idx);
+      var libres=0; estados(idx).forEach(function(e){ if(e.tipo==='libre') libres++; });
+      tMin+=p.totalEfectivo; tUsd+=p.totalUsdEfectivo; tBob+=p.bobEfectivo;
+      var tr=document.createElement('tr');
+      if(idx===st.ciclo) tr.className='c-activo';
+      else if(c.fin.getTime()<h) tr.className='c-pasado';
+      tr.innerHTML='<td>C'+String(c.n).padStart(2,'0')+'</td><td>'+fCorta(c.ini)+' → '+fCorta(c.fin)+
+        '</td><td>'+fCorta(c.pago)+'</td><td>'+DIAS+'</td><td>'+libres+'</td>'+
+        '<td>'+p.totalEfectivo.toLocaleString('es-BO')+'</td><td>'+hm(p.totalEfectivo)+'</td>'+
+        '<td>'+nUSD(p.totalUsdEfectivo)+'</td><td>'+nBOB(p.bobEfectivo)+'</td>';
+      tr.addEventListener('click',function(){ st.ciclo=idx; el.selCiclo.value=idx; construir(); refrescar(); });
+      el.mesCuerpo.appendChild(tr);
+    });
+    el.mMin.textContent=tMin.toLocaleString('es-BO');
+    el.mHm.textContent=hm(tMin);
+    el.mUsd.textContent=nUSD(tUsd);
+    el.mBob.textContent=nBOB(tBob);
+  }
+
+
+  function refrescar(){
+    leerControles();
+    var E=estados(), c=cic(), p=calcularPlan();
+
+    /* cabecera */
+    el.selloCiclo.textContent='C'+String(c.n).padStart(2,'0')+' · '+c.ini.getDate()+' '+MESES[c.ini.getMonth()]+
+      ' → '+c.fin.getDate()+' '+MESES[c.fin.getMonth()];
+    el.selloPago.textContent=fLarga(c.pago);
+    el.selCiclo.value=st.ciclo;
+    el.btnPrev.disabled=(st.ciclo<=0);
+    el.btnNext.disabled=(st.ciclo>=CICLOS.length-1);
+
+    var enCurso=cicloEnCurso();
+    var posSem=((st.ciclo%13)+1);
+    el.notaCiclo.textContent='Ciclo '+posSem+' de 13 del semestre '+c.sem+' de 2026.'+
+      (st.ciclo===enCurso?' Es el ciclo en curso.':(enCurso>=0?' El ciclo en curso es el C'+String(CICLOS[enCurso].n).padStart(2,'0')+'.':''));
+
+    for(var mi=0;mi<MESES_REG.length;mi++){ if(MESES_REG[mi].indexOf(st.ciclo)>=0){ st.mes=mi; break; } }
+
+    /* selector de día de recuperación */
+    var prev=st.diaRec;
+    el.diaRec.innerHTML='';
+    p.autos.forEach(function(idx){
+      var d=fecha(idx), o=document.createElement('option');
+      o.value=idx; o.textContent='D'+(idx+1)+' — '+fCorta(d);
+      el.diaRec.appendChild(o);
+    });
+    el.diaRec.value=String(p.autos.indexOf(prev)>=0?prev:(p.autos[0]!==undefined?p.autos[0]:0));
+    st.diaRec=Number(el.diaRec.value)||0;
+    el.campoRec.hidden=(st.modo!=='concentrado');
+
+    /* franja y tabla — usan los minutos y USD efectivos (reales cuando superan la meta, con surge aplicado) */
+    var acumMin=0, acumUsd=0, hi=hoyIdx();
+    for(var i=0;i<DIAS;i++){
+      var f=filas[i], m=p.asignEfectivo[i], e=E[i];
+      acumMin+=m; acumUsd+=p.usdEfectivo[i];
+      f.cel.className='dia'+(e.tipo==='libre'?' libre':'')+(e.tipo==='fijo'?' fija':'')+
+        ((st.modo==='concentrado'&&i===st.diaRec&&e.tipo==='auto')?' rec':'')+
+        ((m>480&&e.tipo!=='libre')?' exceso':'')+(i===hi?' hoy':'');
+      f.relleno.style.height=(p.pico>0?Math.max(2,(m/p.pico)*100):0)+'%';
+      f.hmCel.textContent=(e.tipo==='libre')?'libre':hmCorto(m);
+      f.sel.value=e.tipo;
+      f.inp.disabled=(e.tipo!=='fijo');
+      f.inp.style.opacity=(e.tipo!=='fijo')?.35:1;
+      f.inpReal.value=e.real||0;
+      f.inpReal.disabled=(e.tipo==='libre');
+      f.inpReal.style.opacity=(e.tipo==='libre')?.35:1;
+      f.selSurge.value=e.surge||'no';
+      f.selSurge.disabled=(e.tipo==='libre');
+      f.inpSurgeMin.value=e.surgeMin||0;
+      f.inpSurgeMin.disabled=(e.tipo==='libre'||!e.surge||e.surge==='no');
+      f.inpSurgeMin.style.opacity=f.inpSurgeMin.disabled?.35:1;
+      f.tr.className=(e.tipo==='libre'?'fila-libre ':'')+(i===hi?'fila-hoy':'');
+      f.min.textContent=(e.tipo==='libre')?'—':m.toLocaleString('es-BO');
+      f.hm.textContent=(e.tipo==='libre')?'—':hm(m);
+      f.usd.textContent=nUSD(p.usdEfectivo[i]);
+      f.acum.textContent=nUSD(acumUsd);
+    }
+    el.tMin.textContent=p.totalEfectivo.toLocaleString('es-BO');
+    el.tHm.textContent=hm(p.totalEfectivo);
+    el.tUsd.textContent=nUSD(p.totalUsdEfectivo);
+
+    /* lectura principal */
+    var idxRef=hi>=0?hi:0, mRef=p.asign[idxRef], libreRef=(E[idxRef].tipo==='libre');
+    if(libreRef){ el.lectHoy.textContent='Día libre'; }
+    else{
+      el.lectHoy.innerHTML=Math.floor(mRef/60)+'<small>h</small> '+String(Math.round(mRef%60)).padStart(2,'0')+'<small>min</small>';
+    }
+    el.lectSub.textContent=(hi>=0?'Hoy, '+fLarga(fecha(hi)):'Primer día del ciclo (D1), '+fLarga(fecha(0)))+
+      (libreRef?' está marcado como libre; su carga ya se repartió en los demás días.'
+              :' equivale a '+nUSD(mRef*st.tarifa)+' facturados a '+nUSD(st.tarifa).replace('$ ','$')+' por minuto.');
+
+    var faltan=Math.round((c.pago.getTime()-hoy0().getTime())/86400000);
+    el.kTotal.textContent=hm(p.totalEfectivo);
+    el.kBruto.textContent=nUSD(p.totalUsdEfectivo);
+    el.kBob.textContent=nBOB(p.bobEfectivo);
+    el.kHora.textContent=nBOB(st.tarifa*60*p.factor*st.tasa);
+    el.kCobro.textContent=(faltan>0?'en '+faltan+' d':(faltan===0?'hoy':'hace '+Math.abs(faltan)+' d'));
+    el.kLibres.textContent=p.libres+' de '+DIAS;
+
+    el.alerta.innerHTML=p.avisos.length?p.avisos.join('<br>'):'';
+
+    /* notas del panel */
+    el.lblMonto.textContent = st.metaModo==='semestre'?'Monto de la meta semestral':'Monto de la meta del ciclo';
+    var esBs=(st.metaTipo==='netoBOB');
+    var fmt=function(v){ return esBs?nBOB(v):nUSD(v); };
+    el.unidadMonto.textContent = esBs?'Bs':'USD';
+    el.notaMeta.textContent = st.metaModo==='ciclo'
+      ? 'Meta de este ciclo: '+fmt(p.metaCiclo)+'.'
+      : 'El calendario 2026 tiene 26 pagos, 13 por semestre. A cada ciclo le tocan '+fmt(p.metaCiclo)+'.';
+    el.notaTarifa.textContent='A '+nUSD(st.tarifa).replace('$ ','$')+' por minuto, una hora completa factura '+nUSD(st.tarifa*60)+'.';
+    el.notaModo.textContent = st.modo==='equitativo'
+      ? 'Los minutos que dejan los días libres se reparten en partes iguales entre todos los días automáticos.'
+      : 'Los demás días mantienen la carga estándar de '+hm(p.base)+' y el día elegido absorbe todo lo pendiente.';
+
+    pintarCascada(p);
+    marcarCalendario();
+    refrescarMes();
+    guardar();
+  }
+
+  function marcarCalendario(){
+    var h=hoy0().getTime();
+    Array.prototype.forEach.call(el.calCuerpo.children,function(tr,i){
+      tr.className=(i===st.ciclo)?'c-activo':(CICLOS[i].fin.getTime()<h?'c-pasado':'');
+    });
+  }
+
+  function pintarCascada(p){
+    var c=cic(), html='';
+    var fPct=p.totalUsdEfectivo*(st.feeCripto/100);
+    var mermaTotal=fPct+st.feeFijo;
+    var pctMerma=p.totalUsdEfectivo>0?(mermaTotal/p.totalUsdEfectivo*100):0;
+    function paso(cls,tit,sub,val){
+      html+='<div class="paso '+cls+'"><div class="et"><b>'+tit+'</b>'+sub+'</div><div class="vl num">'+val+'</div></div>';
+    }
+    paso('','Facturado en Deel',hm(p.totalEfectivo)+' de interpretación en el ciclo C'+String(c.n).padStart(2,'0'),nUSD(p.totalUsdEfectivo));
+    paso('merma','Comisión retiro cripto (Binance)',st.feeCripto+' % del monto retirado','− '+nUSD(fPct));
+    paso('merma','Comisión fija de servicio','tarifa fija por operación de retiro','− '+nUSD(st.feeFijo));
+    paso('','Saldo en USDT (Binance)','',nUSD(p.netoUsdtEfectivo));
+    paso('merma','Venta P2P en Binance','tasa del día, cargada a mano','× '+nBOB(st.tasa));
+    paso('final','En tu cuenta el '+fCorta(c.pago),'pérdida total en comisiones: '+nUSD(mermaTotal)+' ('+pctMerma.toFixed(2)+' %)',nBOB(p.bobEfectivo));
+    el.cascada.innerHTML=html;
+  }
+
+  function pintarFormulas(){
+    var f=[
+      ['Calendario del ciclo',
+       'F_inicio = 13 dic 2025 + 14·(k − 1)   ·   F_cierre = F_inicio + 13   ·   F_pago = F_cierre + 7',
+       'F_{inicio}=13\\,\\text{dic}\\,2025+14(k-1);\\quad F_{cierre}=F_{inicio}+13;\\quad F_{pago}=F_{cierre}+7',
+       'k es el número de ciclo. Todos empiezan sábado, cierran viernes y se cobran el viernes siguiente.'],
+      ['Meta del ciclo según el horizonte elegido',
+       'M_ciclo = M_semestral / 13   |   M_ciclo = M_ciclo',
+       'M_{ciclo}=\\dfrac{M_{semestral}}{13}',
+       'En 2026 hay 26 fechas de pago, 13 por semestre.'],
+      ['Bruto a facturar según cómo expreses la meta',
+       'B = M_ciclo   |   B = (M_ciclo + F) / (1−fc)   |   B = (M_ciclo/TC + F) / (1−fc)',
+       'B=M_{ciclo}\\quad\\big|\\quad B=\\dfrac{M_{ciclo}+F}{1-f_c}\\quad\\big|\\quad B=\\dfrac{\\frac{M_{ciclo}}{TC}+F}{1-f_c}',
+       'Las tres formas corresponden a meta bruta en Deel, meta neta en USDT (Binance) y meta neta en bolivianos. f_c es la comisión de retiro cripto y F la comisión fija por operación.'],
+      ['Minutos totales del ciclo',
+       'T = ⌈ B / r ⌉',
+       'T=\\left\\lceil \\dfrac{B}{r} \\right\\rceil',
+       'r es la tarifa en USD por minuto. El resultado se redondea al minuto superior.'],
+      ['Reparto parejo entre días automáticos',
+       'mᵢ = (T − Σ fijos) / n',
+       'm_i=\\dfrac{T-\\sum_{j\\in F} m_j}{n}',
+       'n es el número de días automáticos y F el conjunto de días con minutos fijados a mano.'],
+      ['Carga concentrada en un día',
+       'mᵢ = T / 14  para los demás     ·     m_rec = (T − Σ fijos) − (T/14)·(n − 1)',
+       'm_i=\\dfrac{T}{14}\\;;\\qquad m_{rec}=\\left(T-\\sum_{j\\in F} m_j\\right)-\\dfrac{T}{14}(n-1)',
+       'Cada día automático conserva la carga estándar y el día de recuperación absorbe el resto.'],
+      ['Registro efectivo por día',
+       'mᵢ,efectivo = máx(mᵢ, realᵢ)',
+       'm_{i,efectivo}=\\max(m_i,\\,real_i)',
+       'Si los minutos realmente interpretados un día superan lo que el reparto automático le había asignado, se cuentan los reales; si no llegan a la meta del día, esta se mantiene sin reducirse.'],
+      ['USD por día con surge hours',
+       'USDᵢ = (mᵢ,efectivo − sᵢ)·r + sᵢ·r_nivel',
+       'USD_i=(m_{i,efectivo}-s_i)\\,r+s_i\\,r_{nivel}',
+       'sᵢ son los minutos de ese día pagados a tarifa de surge (Bronce, Plata u Oro) y r la tarifa normal por minuto.'],
+      ['Cadena de conversión hasta bolivianos',
+       'N_Bs = (Σ USDᵢ · (1 − fc) − F) · TC_venta',
+       'N_{Bs}=\\Big(\\textstyle\\sum_i USD_i\\,(1-f_c)-F\\Big)\\,TC_{venta}',
+       'fc es la comisión de retiro a USDT en Binance, F la comisión fija por operación y TC_venta la tasa P2P de venta del día.'],
+      ['Registro mensual como suma de dos ciclos',
+       'Mes = Ciclo(k) + Ciclo(k+1)',
+       'Mes_j = C_{2j-1} + C_{2j}',
+       'Cada mes agrupa dos ciclos consecutivos de 14 días; sus totales de minutos, USD y Bs se suman fila por fila, ya con los ajustes de real y surge incluidos.'],
+      ['Valor real de una hora de interpretación',
+       'V_hora = r · 60 · (1 − fc) · TC_venta',
+       'V_{hora}=r\\cdot 60\\,(1-f_c)\\,TC_{venta}',
+       'Es el valor marginal de una hora a tarifa normal; la comisión fija F no se prorratea porque se paga una sola vez por retiro, no por cada minuto adicional.']
+    ];
+    el.formulas.innerHTML=f.map(function(x){
+      return '<div class="formula"><div class="rotulo">'+x[0]+'</div><div class="fn">'+x[1]+
+             '</div><div class="fl">'+x[2]+'</div><div class="fd">'+x[3]+'</div></div>';
+    }).join('');
+  }
+
+  /* ---- controles ---- */
+  function leerControles(){
+    st.metaMonto=Math.max(0,Number(el.metaMonto.value)||0);
+    st.metaTipo=el.metaTipo.value;
+    st.tarifa=Math.max(0.0001,Number(el.tarifa.value)||0.12);
+    st.feeCripto=Math.min(50,Math.max(0,Number(el.feeCripto.value)||0));
+    st.feeFijo=Math.max(0,Number(el.feeFijo.value)||0);
+    st.tasa=Math.max(0,Number(el.tasa.value)||0);
+    st.tarifaBronce=Math.max(0,Number(el.tarifaBronce.value)||0.13);
+    st.tarifaPlata=Math.max(0,Number(el.tarifaPlata.value)||0.14);
+    st.tarifaOro=Math.max(0,Number(el.tarifaOro.value)||0.15);
+    if(el.diaRec.value!=='') st.diaRec=Number(el.diaRec.value)||0;
+  }
+  function escribirControles(){
+    el.metaMonto.value=st.metaMonto; el.metaTipo.value=st.metaTipo; el.tarifa.value=st.tarifa;
+    el.feeCripto.value=st.feeCripto; el.feeFijo.value=st.feeFijo; el.tasa.value=st.tasa;
+    el.tarifaBronce.value=st.tarifaBronce; el.tarifaPlata.value=st.tarifaPlata; el.tarifaOro.value=st.tarifaOro;
+    segmento('segMetaModo',st.metaModo); segmento('segModo',st.modo);
+  }
+  function segmento(id,valor){
+    Array.prototype.forEach.call(document.getElementById(id).querySelectorAll('button'),function(b){
+      b.setAttribute('aria-pressed',String(b.dataset.v===valor));
+    });
+  }
+
+  /* ---- persistencia: archivo local (File System Access API) con respaldo en window.storage ---- */
+  var fsHandle=null;      // FileSystemFileHandle del archivo conectado
+  var fsSoportado = (typeof window.showSaveFilePicker==='function' && typeof window.indexedDB!=='undefined');
+  var guardando=false, pendiente=false;
+  var handleRecordado=null; // handle recuperado de IndexedDB, aún sin permiso confirmado en esta sesión
+
+  /* --- mini almacén en IndexedDB solo para guardar el handle del archivo (no el contenido) --- */
+  var DB_NOMBRE='medidor-ciclo-fs', DB_TIENDA='handles', DB_LLAVE='archivoPrincipal';
+  function abrirDB(){
+    return new Promise(function(res,rej){
+      if(!window.indexedDB){ rej(new Error('sin indexedDB')); return; }
+      var req=indexedDB.open(DB_NOMBRE,1);
+      req.onupgradeneeded=function(){ req.result.createObjectStore(DB_TIENDA); };
+      req.onsuccess=function(){ res(req.result); };
+      req.onerror=function(){ rej(req.error); };
+    });
+  }
+  function guardarHandleEnDB(handle){
+    return abrirDB().then(function(db){
+      return new Promise(function(res,rej){
+        var tx=db.transaction(DB_TIENDA,'readwrite');
+        tx.objectStore(DB_TIENDA).put(handle,DB_LLAVE);
+        tx.oncomplete=function(){ res(true); };
+        tx.onerror=function(){ rej(tx.error); };
+      });
+    }).catch(function(){ return false; });
+  }
+  function leerHandleDeDB(){
+    return abrirDB().then(function(db){
+      return new Promise(function(res){
+        var tx=db.transaction(DB_TIENDA,'readonly');
+        var req=tx.objectStore(DB_TIENDA).get(DB_LLAVE);
+        req.onsuccess=function(){ res(req.result||null); };
+        req.onerror=function(){ res(null); };
+      });
+    }).catch(function(){ return null; });
+  }
+  function borrarHandleDeDB(){
+    return abrirDB().then(function(db){
+      return new Promise(function(res){
+        var tx=db.transaction(DB_TIENDA,'readwrite');
+        tx.objectStore(DB_TIENDA).delete(DB_LLAVE);
+        tx.oncomplete=function(){ res(true); };
+        tx.onerror=function(){ res(false); };
+      });
+    }).catch(function(){ return false; });
+  }
+
+  function elArchivo(){
+    var pt=document.getElementById('archivoTexto'), est=document.getElementById('archivoEstado'),
+        nota=document.getElementById('notaArchivo'), btnDesc=document.getElementById('btnDesconectar'),
+        btnPanel=document.getElementById('btnArchivoPanel'), btnCab=document.getElementById('btnArchivo');
+    return {pt:pt,est:est,nota:nota,btnDesc:btnDesc,btnPanel:btnPanel,btnCab:btnCab};
+  }
+
+  function pintarEstadoArchivo(estado,detalle){
+    var r=elArchivo();
+    r.est.className='archivo'+(estado==='ok'?' ok':estado==='error'?' error':'');
+    if(estado==='ok'){
+      r.pt.innerHTML='<b>'+ (fsHandle?fsHandle.name:'progreso-ciclos.json') +'</b>Guardando cambios automáticamente';
+    } else if(estado==='error'){
+      r.pt.innerHTML='<b>No se pudo guardar</b>'+(detalle||'Revisa el permiso del archivo');
+    } else if(estado==='recordado'){
+      r.pt.innerHTML='<b>'+(handleRecordado?handleRecordado.name:'archivo recordado')+'</b>Pulsa para reanudar el acceso';
+    } else {
+      r.pt.innerHTML='<b>Sin archivo conectado</b>Los cambios solo viven en esta pestaña';
+    }
+    r.btnDesc.hidden=!fsHandle;
+
+    if(estado==='recordado'){
+      r.btnPanel.textContent='Reanudar acceso'; r.btnCab.textContent='Reanudar acceso';
+    } else if(fsHandle){
+      r.btnPanel.textContent='Cambiar archivo…'; r.btnCab.textContent='Cambiar archivo';
+    } else {
+      r.btnPanel.textContent='Abrir mi archivo…'; r.btnCab.textContent='Abrir archivo local';
+    }
+
+    if(r.nota){
+      r.nota.textContent = !fsSoportado
+        ? 'Este navegador no admite guardar en un archivo local (funciona en Chrome o Edge de escritorio). Se está usando el respaldo interno.'
+        : estado==='recordado'
+          ? 'Este archivo ya estaba conectado en una sesión anterior. Un solo clic en "Reanudar acceso" confirma el permiso — no hace falta volver a buscarlo.'
+        : (fsHandle ? 'Conectado a "'+fsHandle.name+'". Cada cambio se escribe ahí solo, y se recordará la próxima vez que abras esta página.'
+                    : 'Usa "Abrir mi archivo…" si ya tienes uno guardado de una sesión anterior, o "Crear nuevo" la primera vez.');
+    }
+  }
+
+  function reconstruirTrasCarga(){
+    if(!st.porCiclo) st.porCiclo={};
+    if(st.ciclo===undefined||st.ciclo===null) st.ciclo=16;
+    for(var mi=0;mi<MESES_REG.length;mi++){ if(MESES_REG[mi].indexOf(st.ciclo)>=0){ st.mes=mi; break; } }
+    escribirControles();
+    construir();
+    refrescar();
+  }
+
+  function adoptarHandle(handle){
+    fsHandle=handle;
+    return fsHandle.getFile().then(function(file){
+      return file.text();
+    }).then(function(texto){
+      if(texto && texto.trim()){
+        try{
+          var g=JSON.parse(texto);
+          Object.keys(g).forEach(function(k){ st[k]=g[k]; });
+          reconstruirTrasCarga();
+        }catch(e){ /* archivo vacío o corrupto: seguimos con el estado actual */ }
+      }
+      pintarEstadoArchivo('ok');
+      return guardarHandleEnDB(fsHandle).then(function(){ return escribirArchivo(); }).then(function(){ return true; });
+    }).catch(function(err){
+      fsHandle=null;
+      var noEncontrado = err && (err.name==='NotFoundError' || err.name==='NotAllowedError');
+      if(noEncontrado){
+        return borrarHandleDeDB().then(function(){ throw {codigo:'archivo_ausente',original:err}; });
+      }
+      throw err;
+    });
+  }
+
+  /* intenta recuperar el permiso de un handle guardado, sin abrir ningún selector */
+  function intentarReanudar(){
+    if(!fsSoportado) return Promise.resolve(false);
+    return leerHandleDeDB().then(function(handle){
+      if(!handle) return false;
+      return handle.queryPermission({mode:'readwrite'}).then(function(perm){
+        if(perm==='granted'){
+          return adoptarHandle(handle).catch(function(err){
+            // el archivo respondía en permisos pero ya no existe en disco: no podemos abrir
+            // el selector solos (requiere un clic humano), así que dejamos el aviso listo
+            if(err && err.codigo==='archivo_ausente'){
+              pintarEstadoArchivo('error','El archivo recordado ya no está en su ubicación. Pulsa el botón para elegirlo de nuevo.');
+              return false;
+            }
+            return false;
+          });
+        }
+        // el permiso ya no está concedido: lo dejamos "recordado" para pedir un solo clic
+        handleRecordado=handle;
+        pintarEstadoArchivo('recordado');
+        return false;
+      });
+    }).catch(function(){ return false; });
+  }
+
+  /* pide permiso sobre el handle recordado con un solo clic, sin picker.
+     Si el archivo ya no existe en su ubicación original, cae automáticamente al selector manual. */
+  function reanudarConClic(){
+    if(!handleRecordado) return Promise.resolve(false);
+    return handleRecordado.requestPermission({mode:'readwrite'}).then(function(perm){
+      if(perm!=='granted'){ pintarEstadoArchivo('error','Permiso denegado. Puedes abrir el archivo de nuevo manualmente.'); return false; }
+      var h=handleRecordado; handleRecordado=null;
+      return adoptarHandle(h);
+    }).catch(function(err){
+      handleRecordado=null;
+      if(err && err.codigo==='archivo_ausente'){
+        pintarEstadoArchivo('error','No se encontró el archivo en su ubicación anterior. Elígelo o créalo de nuevo.');
+        return abrirSelectorManual(false);
+      }
+      pintarEstadoArchivo('error','No se pudo reanudar el acceso. Ábrelo manualmente.');
+      return false;
+    });
+  }
+
+  /* abre el picker manual de Chrome — único punto del código donde aparece esa ventana */
+  function abrirSelectorManual(crearNuevo){
+    var pedirHandle = crearNuevo
+      ? window.showSaveFilePicker({
+          suggestedName:'progreso-ciclos.json',
+          types:[{description:'Progreso del medidor (JSON)',accept:{'application/json':['.json']}}]
+        })
+      : window.showOpenFilePicker({
+          types:[{description:'Progreso del medidor (JSON)',accept:{'application/json':['.json']}}],
+          multiple:false
+        }).then(function(handles){ return handles[0]; });
+
+    return pedirHandle.then(function(handle){
+      return handle.queryPermission({mode:'readwrite'}).then(function(perm){
+        if(perm!=='granted') return handle.requestPermission({mode:'readwrite'});
+        return perm;
+      }).then(function(perm){
+        if(perm!=='granted'){ pintarEstadoArchivo('error','Permiso de escritura denegado.'); return false; }
+        return adoptarHandle(handle);
+      });
+    }).catch(function(err){
+      if(err && err.name==='AbortError'){ return false; } // el usuario canceló el diálogo
+      fsHandle=null;
+      pintarEstadoArchivo('error','No se pudo abrir el selector de archivos.');
+      return false;
+    });
+  }
+
+  function conectarArchivo(crearNuevo){
+    if(!fsSoportado){
+      pintarEstadoArchivo('error','Usa Chrome o Edge en computadora para esta función.');
+      return Promise.resolve(false);
+    }
+    // si hay un handle recordado esperando confirmación, este clic lo confirma directamente sin picker
+    if(handleRecordado && !crearNuevo){
+      return reanudarConClic();
+    }
+    return abrirSelectorManual(crearNuevo);
+  }
+
+  function desconectarArchivo(){
+    fsHandle=null;
+    handleRecordado=null;
+    borrarHandleDeDB();
+    pintarEstadoArchivo('idle');
+  }
+
+  function escribirArchivo(){
+    if(!fsHandle) return Promise.resolve(false);
+    if(guardando){ pendiente=true; return Promise.resolve(false); }
+    guardando=true;
+    return fsHandle.createWritable().then(function(w){
+      return w.write(JSON.stringify(st,null,2)).then(function(){ return w.close(); });
+    }).then(function(){
+      guardando=false;
+      pintarEstadoArchivo('ok');
+      if(pendiente){ pendiente=false; return escribirArchivo(); }
+      return true;
+    }).catch(function(err){
+      guardando=false;
+      pintarEstadoArchivo('error', err && err.name==='NotAllowedError' ? 'El permiso del archivo expiró; reconéctalo.' : 'Error al escribir el archivo.');
+      if(err && err.name==='NotAllowedError') fsHandle=null;
+      return false;
+    });
+  }
+
+  function guardar(){
+    if(fsHandle){ escribirArchivo(); return; }
+    var datos=JSON.stringify(st);
+    try{
+      if(window.storage&&typeof window.storage.set==='function'){
+        window.storage.set(CLAVE,datos).catch(function(){});
+        return;
+      }
+    }catch(e){}
+    /* fuera del entorno de artefactos (p. ej. publicado en la web) se usa localStorage */
+    try{ if(window.localStorage) window.localStorage.setItem(CLAVE,datos); }catch(e){}
+  }
+  function cargar(){
+    return new Promise(function(res){
+      try{
+        if(window.storage&&typeof window.storage.get==='function'){
+          window.storage.get(CLAVE).then(function(r){
+            if(r&&r.value){ var g=JSON.parse(r.value); Object.keys(g).forEach(function(k){ st[k]=g[k]; }); res(true); }
+            else res(false);
+          }).catch(function(){res(false);});
+          return;
+        }
+      }catch(e){}
+      try{
+        var crudo=window.localStorage?window.localStorage.getItem(CLAVE):null;
+        if(crudo){ var g2=JSON.parse(crudo); Object.keys(g2).forEach(function(k){ st[k]=g2[k]; }); res(true); return; }
+      }catch(e){}
+      res(false);
+    });
+  }
+
+  /* ---- exportación ---- */
+  function descargarRespaldo(){
+    try{
+      var ahora=new Date();
+      var sello=ahora.getFullYear()+String(ahora.getMonth()+1).padStart(2,'0')+String(ahora.getDate()).padStart(2,'0')+
+        '-'+String(ahora.getHours()).padStart(2,'0')+String(ahora.getMinutes()).padStart(2,'0');
+      var copia = JSON.parse(JSON.stringify(st));
+      copia._respaldoDe = fsHandle ? fsHandle.name : 'sin archivo conectado';
+      copia._fechaRespaldo = ahora.toISOString();
+      var blob=new Blob([JSON.stringify(copia,null,2)],{type:'application/json'});
+      var a=document.createElement('a');
+      a.href=URL.createObjectURL(blob); a.download='respaldo-ciclos-'+sello+'.json';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+    }catch(e){
+      el.alerta.textContent='No se pudo generar la copia de respaldo en este navegador.';
+    }
+  }
+
+  function csv(){
+    var p=calcularPlan(), c=cic(), E=estados();
+    var lin=['Ciclo;C'+String(c.n).padStart(2,'0'),'Inicio;'+iso(c.ini),'Cierre;'+iso(c.fin),'Pago;'+iso(c.pago),'',
+             'Dia;Fecha;Estado;Minutos;Tiempo;Surge;Min surge;USD bruto'];
+    for(var i=0;i<DIAS;i++){
+      var e=E[i];
+      lin.push(['D'+(i+1),iso(fecha(i)),e.tipo,p.asignEfectivo[i],hm(p.asignEfectivo[i]),
+                 (e.surge&&e.surge!=='no'?e.surge:'—'),(e.surge&&e.surge!=='no'?(e.surgeMin||0):0),
+                 p.usdEfectivo[i].toFixed(2)].join(';'));
+    }
+    lin.push(['TOTAL','','',p.totalEfectivo,hm(p.totalEfectivo),'','',p.totalUsdEfectivo.toFixed(2)].join(';'));
+    lin.push('');
+    lin.push('Bruto Deel;'+p.totalUsdEfectivo.toFixed(2));
+    lin.push('Saldo USDT Binance;'+p.netoUsdtEfectivo.toFixed(2));
+    lin.push('Tasa P2P Binance venta;'+st.tasa);
+    lin.push('Neto en bolivianos;'+p.bobEfectivo.toFixed(2));
+    try{
+      var blob=new Blob(['\ufeff'+lin.join('\n')],{type:'text/csv;charset=utf-8'});
+      var a=document.createElement('a');
+      a.href=URL.createObjectURL(blob); a.download='ciclo-C'+String(c.n).padStart(2,'0')+'-'+iso(c.ini)+'.csv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }catch(e){
+      el.alerta.textContent='La descarga no está disponible en esta vista. Abre el archivo en el navegador para exportar el CSV.';
+    }
+  }
+
+  /* ---- eventos ---- */
+  ['metaMonto','metaTipo','tarifa','feeCripto','feeFijo','tasa','tarifaBronce','tarifaPlata','tarifaOro'].forEach(function(id){
+    el[id].addEventListener('input',function(){ refrescar(); });
+  });
+  el.diaRec.addEventListener('change',function(){ st.diaRec=Number(el.diaRec.value)||0; refrescar(); });
+  el.selCiclo.addEventListener('change',function(){ st.ciclo=Number(el.selCiclo.value)||0; construir(); refrescar(); });
+  el.btnPrev.addEventListener('click',function(){ if(st.ciclo>0){ st.ciclo--; construir(); refrescar(); } });
+  el.btnNext.addEventListener('click',function(){ if(st.ciclo<CICLOS.length-1){ st.ciclo++; construir(); refrescar(); } });
+  el.btnHoy.addEventListener('click',function(){
+    var i=cicloEnCurso();
+    if(i>=0){ st.ciclo=i; construir(); refrescar(); }
+    else el.alerta.textContent='La fecha de hoy queda fuera del calendario 2026 cargado.';
+  });
+  el.selMes.addEventListener('change',function(){ st.mes=Number(el.selMes.value)||0; refrescarMes(); });
+  el.btnMesPrev.addEventListener('click',function(){ if(st.mes>0){ st.mes--; refrescarMes(); } });
+  el.btnMesNext.addEventListener('click',function(){ if(st.mes<MESES_REG.length-1){ st.mes++; refrescarMes(); } });
+  document.getElementById('segMetaModo').addEventListener('click',function(ev){
+    var b=ev.target.closest('button'); if(!b) return;
+    st.metaModo=b.dataset.v; segmento('segMetaModo',st.metaModo); refrescar();
+  });
+  document.getElementById('segModo').addEventListener('click',function(ev){
+    var b=ev.target.closest('button'); if(!b) return;
+    st.modo=b.dataset.v; segmento('segModo',st.modo); refrescar();
+  });
+  el.btnLimpiar.addEventListener('click',function(){
+    st.porCiclo[String(st.ciclo)]=[];
+    construir(); refrescar();
+  });
+  el.btnCsv.addEventListener('click',csv);
+  el.btnImprimir.addEventListener('click',function(){ try{ window.print(); }catch(e){} });
+
+  document.getElementById('btnArchivo').addEventListener('click',function(){ conectarArchivo(false); });
+  document.getElementById('btnArchivoPanel').addEventListener('click',function(){ conectarArchivo(false); });
+  document.getElementById('btnArchivoNuevo').addEventListener('click',function(){ conectarArchivo(true); });
+  document.getElementById('btnDesconectar').addEventListener('click',desconectarArchivo);
+  document.getElementById('btnRespaldo').addEventListener('click',descargarRespaldo);
+
+  /* ---- arranque ---- */
+  pintarEstadoArchivo('idle');
+  cargar().then(function(habiaGuardado){
+    var enCurso=cicloEnCurso();
+    if(!habiaGuardado && enCurso>=0) st.ciclo=enCurso;
+    if(st.ciclo===undefined||st.ciclo===null) st.ciclo=16;
+    if(!st.porCiclo) st.porCiclo={};
+    for(var mi=0;mi<MESES_REG.length;mi++){ if(MESES_REG[mi].indexOf(st.ciclo)>=0){ st.mes=mi; break; } }
+    construirSelector();
+    construirSelectorMes();
+    escribirControles();
+    construirCalendario();
+    construir();
+    pintarFormulas();
+    refrescar();
+
+    // intenta reconectar el archivo recordado; si Chrome ya tiene el permiso concedido,
+    // esto sucede sin ningún picker ni clic, y su contenido reemplaza el estado cargado arriba
+    intentarReanudar().then(function(reconectado){
+      if(reconectado){ construirSelector(); construirSelectorMes(); construirCalendario(); }
+    });
+  });
+})();
+</script>
+</body>
+</html>
