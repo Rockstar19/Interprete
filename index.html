@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es-BO">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Herramientas de interpretación remota</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --tinta:#0B1B2B; --tinta-60:rgba(11,27,43,.60); --tinta-38:rgba(11,27,43,.38);
+  --papel:#E7ECEF; --tarjeta:#FFFFFF;
+  --guindo:#7A1F2B; --acero:#2F5F86; --musgo:#3E6B4E;
+  --linea:rgba(11,27,43,.14); --linea-fuerte:rgba(11,27,43,.30);
+  --texto:'Century Gothic','Montserrat','Lato',system-ui,sans-serif;
+  --display:'Montserrat','Century Gothic','Lato',sans-serif;
+  --radio:3px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--texto); color:var(--tinta); background-color:var(--papel);
+  background-image:repeating-linear-gradient(to bottom,rgba(11,27,43,.055) 0 1px,transparent 1px 29px);
+  font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+h1{font-family:var(--display);margin:0;font-weight:800;letter-spacing:-.02em;
+  font-size:clamp(28px,5vw,44px);line-height:1;text-transform:uppercase}
+h1 span{color:var(--guindo)}
+.rotulo{font-family:var(--display);font-weight:600;font-size:10px;text-transform:uppercase;
+  letter-spacing:.18em;color:var(--tinta-60)}
+
+.barra{border-bottom:1.5px solid var(--tinta);background:var(--tarjeta);
+  padding:26px clamp(16px,4vw,48px) 22px}
+.barra-int{max-width:1000px;margin:0 auto}
+
+.marco{max-width:1000px;margin:0 auto;padding:clamp(24px,4vw,44px) clamp(16px,4vw,48px) 60px}
+.intro{font-size:14px;color:var(--tinta-60);max-width:62ch;margin:0 0 28px}
+
+.tarjetas{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+a.tarjeta{
+  display:block;text-decoration:none;color:inherit;background:var(--tarjeta);
+  border:1px solid var(--linea);border-left:4px solid var(--acero);border-radius:var(--radio);
+  padding:22px 22px 24px;transition:border-color .15s ease,transform .15s ease}
+a.tarjeta:hover{border-color:var(--tinta);transform:translateY(-2px)}
+a.tarjeta.b{border-left-color:var(--musgo)}
+a.tarjeta h2{font-family:var(--display);font-weight:800;font-size:21px;margin:8px 0 8px;letter-spacing:-.01em}
+a.tarjeta p{margin:0;font-size:13px;color:var(--tinta-60);line-height:1.5}
+a.tarjeta .ir{display:inline-block;margin-top:14px;font-size:12px;font-weight:700;color:var(--guindo)}
+
+footer{max-width:1000px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;
+  font-size:11.5px;color:var(--tinta-38);line-height:1.5}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="barra">
+  <div class="barra-int">
+    <p class="rotulo" style="margin:0 0 8px">Interpretación remota · Bolivia</p>
+    <h1>Herramientas de <span>ciclo</span></h1>
+  </div>
+</header>
+
+<div class="marco">
+  <p class="intro">Dos calculadoras independientes: una para planificar la producción diaria y el cobro de cada ciclo quincenal, otra para seguir el avance hacia los niveles de tarifa. Los datos de ambas se guardan solo en tu navegador o en el archivo local que conectes.</p>
+
+  <div class="tarjetas">
+    <a class="tarjeta" href="./medidor-ciclo-interprete-web.html">
+      <span class="rotulo">Planificación y cobro</span>
+      <h2>Medidor de ciclo</h2>
+      <p>Reparte la meta del ciclo entre los 14 días, registra los minutos reales y las surge hours, y calcula la cadena completa desde lo facturado en Deel hasta los bolivianos en mano.</p>
+      <span class="ir">Abrir →</span>
+    </a>
+
+    <a class="tarjeta b" href="./calculadora-ascenso-rango.html">
+      <span class="rotulo">Progreso de nivel</span>
+      <h2>Ascenso de rango</h2>
+      <p>Calcula la ventana móvil de tres ciclos, cuánto falta para Plata, Oro o Platino, y en cuántos meses y días llegarías sosteniendo un promedio de minutos por día.</p>
+      <span class="ir">Abrir →</span>
+    </a>
+  </div>
+</div>
+
+<footer>
+  Si algún enlace da error 404, revisa que el nombre del archivo en el repositorio coincida exactamente con el del enlace, incluidas mayúsculas y guiones.
+</footer>
+
+</body>
+</html>
