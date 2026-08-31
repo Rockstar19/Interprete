@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Consola MBIC · MTAC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #10161d;
+    --panel: #1a232c;
+    --panel-2: #202b35;
+    --line: #2b3944;
+    --text: #eef2f5;
+    --muted: #90a2ae;
+    --accent: #34c3d6;
+    --accent-dim: rgba(52,195,214,0.15);
+    --verde: #4fd1a5;
+    --verde-dim: rgba(79,209,165,0.14);
+    --amarillo: #f5b942;
+    --amarillo-dim: rgba(245,185,66,0.14);
+    --rojo: #ef5c6e;
+    --rojo-dim: rgba(239,92,110,0.16);
+    --radius: 10px;
+    --font-d: 'Montserrat', sans-serif;
+    --font-b: 'Lato', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: radial-gradient(120% 140% at 50% -10%, #16202a 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: var(--font-b);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  button{font-family:inherit;}
+  ::selection{background: var(--accent-dim); color: var(--text);}
+  :focus-visible{outline: 2px solid var(--accent); outline-offset: 2px;}
+
+  .wrap{ max-width: 560px; margin: 0 auto; padding: 18px 16px 90px; }
+
+  /* ---------- status header ---------- */
+  .status{
+    background: linear-gradient(180deg, var(--panel-2), var(--panel));
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+  .status-top{ display:flex; justify-content: space-between; align-items:flex-start; gap:10px;}
+  .status-date{ font-family: var(--font-d); font-weight:700; font-size: 13px; letter-spacing:.02em; color: var(--text); text-transform: capitalize;}
+  .status-sub{ font-size: 11px; color: var(--muted); margin-top: 2px;}
+  .info-btn{
+    background: transparent; border: 1px solid var(--line); color: var(--muted);
+    width: 26px; height: 26px; border-radius: 50%; font-size: 13px; cursor:pointer; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .info-btn:hover{ color: var(--text); border-color: var(--accent);}
+  .status-metrics{ display:grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .metric{ background: rgba(0,0,0,0.18); border-radius: 8px; padding: 8px 10px; text-align:center;}
+  .metric-val{ font-family: var(--font-d); font-weight:800; font-size: 17px; font-variant-numeric: tabular-nums;}
+  .metric-label{ font-size: 9.5px; color: var(--muted); text-transform: uppercase; letter-spacing:.06em; margin-top:2px;}
+  .status-flags{ font-size: 11px; color: var(--rojo); margin-top: 9px; text-align:center; }
+
+  .banner-rojo{
+    margin-top: 10px; background: var(--rojo-dim); border: 1px solid var(--rojo);
+    color: #ffd7dc; font-size: 12.5px; padding: 9px 11px; border-radius: 8px; line-height:1.4;
+    display:none;
+  }
+
+  .info-panel{
+    display:none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line);
+    font-size: 11.5px; color: var(--muted); line-height: 1.55;
+  }
+  .info-panel table{ width:100%; border-collapse: collapse; margin-top: 6px; font-size: 11px;}
+  .info-panel td{ padding: 3px 4px; border-bottom: 1px solid var(--line); }
+  .info-panel td:first-child{ color: var(--text); }
+
+  /* ---------- tabs ---------- */
+  .tabs{
+    display:flex; background: var(--panel); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 4px; margin-bottom: 16px; gap:2px;
+  }
+  .tab{
+    flex:1; text-align:center; padding: 9px 4px; border-radius: 7px; font-size: 11.5px;
+    font-family: var(--font-d); font-weight:600; color: var(--muted); cursor:pointer;
+    letter-spacing: .01em; user-select:none; transition: background .15s, color .15s;
+  }
+  .tab.active{ background: var(--accent-dim); color: var(--accent); }
+
+  .panel{ display:none; }
+  .panel.active{ display:block; animation: fade .2s ease; }
+  @keyframes fade{ from{opacity:0; transform: translateY(3px);} to{opacity:1; transform:none;} }
+
+  .card{
+    background: var(--panel); border:1px solid var(--line); border-radius: var(--radius);
+    padding: 16px; margin-bottom: 12px;
+  }
+  .card h2{
+    font-family: var(--font-d); font-size: 13.5px; font-weight:700; margin:0 0 4px;
+    text-transform: uppercase; letter-spacing:.04em; color: var(--text);
+  }
+  .card .hint{ font-size: 12px; color: var(--muted); margin: 0 0 14px; line-height:1.5;}
+
+  /* ---------- pre-turno ---------- */
+  input[type=range]{
+    width:100%; accent-color: var(--accent); height: 24px; background: transparent;
+  }
+  .energy-readout{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom: 4px;}
+  .energy-num{ font-family: var(--font-d); font-size: 30px; font-weight:800; font-variant-numeric: tabular-nums;}
+  .energy-scale{ font-size: 11px; color: var(--muted);}
+  .reco{
+    margin-top: 12px; padding: 10px 12px; border-radius: 8px; font-size: 12.5px; line-height:1.5; display:none;
+  }
+  .reco.ok{ background: var(--verde-dim); color: var(--verde); display:block; }
+  .reco.warn{ background: var(--amarillo-dim); color: var(--amarillo); display:block; }
+
+  /* ---------- buttons ---------- */
+  .btn{
+    font-family: var(--font-d); font-weight:700; font-size: 13px; letter-spacing:.02em;
+    border-radius: 8px; padding: 12px 16px; border: none; cursor:pointer; width:100%;
+    transition: transform .08s, filter .15s;
+  }
+  .btn:active{ transform: scale(0.98); }
+  .btn-primary{ background: var(--accent); color: #06272c; }
+  .btn-primary:hover{ filter: brightness(1.08); }
+  .btn-primary:disabled{ background: var(--line); color: var(--muted); cursor:not-allowed; }
+  .btn-ghost{ background: transparent; border: 1px solid var(--line); color: var(--muted); }
+  .btn-ghost:hover{ color: var(--text); border-color: var(--accent); }
+  .btn-danger-outline{ background: transparent; border: 1px solid var(--rojo); color: var(--rojo); }
+  .btn-row{ display:flex; gap:8px; }
+
+  /* ---------- modalidad grid ---------- */
+  .mod-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px;}
+  .mod-btn{
+    text-align:left; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px 11px; cursor:pointer; color: var(--text);
+  }
+  .mod-btn.sel{ border-color: var(--accent); background: var(--accent-dim); }
+  .mod-btn .mt{ font-family: var(--font-d); font-weight:700; font-size: 12px; }
+  .mod-btn .ms{ font-size: 10.5px; color: var(--muted); margin-top:2px; line-height:1.3;}
+  .mod-btn .mf{ font-size: 10px; color: var(--accent); margin-top: 4px; font-family: var(--font-d); font-weight:700;}
+
+  /* ---------- gauge ---------- */
+  .gauge-wrap{ display:flex; justify-content:center; padding: 8px 0 4px; }
+  .gauge{ position:relative; width: 210px; height:210px; }
+  .gauge svg{ transform: rotate(-90deg); width:100%; height:100%; }
+  .gauge-track{ fill:none; stroke: var(--line); stroke-width: 10; }
+  .gauge-fill{ fill:none; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset .4s linear, stroke .4s; }
+  .gauge-center{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .gauge-time{ font-family: var(--font-d); font-size: 32px; font-weight:800; font-variant-numeric: tabular-nums; }
+  .gauge-caption{ font-size: 8.5px; color: var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-top:1px;}
+  .gauge-mce{ font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .gauge-zone{ font-family: var(--font-d); font-size: 10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; margin-top: 6px; padding: 2px 10px; border-radius: 20px;}
+  .zone-verde{ background: var(--verde-dim); color: var(--verde); }
+  .zone-amarillo{ background: var(--amarillo-dim); color: var(--amarillo); }
+  .zone-rojo{ background: var(--rojo-dim); color: var(--rojo); }
+  .zone-pausado{ background: rgba(255,255,255,0.07); color: var(--text); }
+  .zone-inactivo{ background: rgba(255,255,255,0.05); color: var(--muted); }
+  .gauge.paused .gauge-fill{ opacity: .35; }
+
+  /* ---------- MTAC selectors ---------- */
+  .strip-label{ font-family: var(--font-d); font-size: 11px; font-weight:700; color: var(--muted); text-transform:uppercase; letter-spacing:.04em; margin: 14px 0 6px;}
+  .strip-label:first-child{ margin-top:0; }
+  .strip{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .seg{
+    border-radius: 8px; padding: 9px 6px; text-align:center; cursor:pointer; border: 1px solid var(--line);
+    background: var(--panel-2);
+  }
+  .seg .sn{ font-family: var(--font-d); font-weight:700; font-size: 11.5px; }
+  .seg .sd{ font-size: 9.5px; color: var(--muted); margin-top: 2px; line-height:1.25; }
+  .seg-verde.sel{ background: var(--verde-dim); border-color: var(--verde); }
+  .seg-verde.sel .sn{ color: var(--verde); }
+  .seg-amarillo.sel{ background: var(--amarillo-dim); border-color: var(--amarillo); }
+  .seg-amarillo.sel .sn{ color: var(--amarillo); }
+  .seg-rojo.sel{ background: var(--rojo-dim); border-color: var(--rojo); }
+  .seg-rojo.sel .sn{ color: var(--rojo); }
+
+  textarea{
+    width:100%; background: var(--panel-2); border: 1px solid var(--line); color: var(--text);
+    border-radius: 8px; padding: 9px 10px; font-family: var(--font-b); font-size: 12.5px; resize: vertical;
+    min-height: 44px; margin-top: 4px;
+  }
+
+  .summary-row{ display:flex; justify-content:space-between; font-size: 12.5px; padding: 5px 0; border-bottom: 1px solid var(--line); }
+  .summary-row:last-child{ border-bottom:none; }
+  .summary-row b{ font-family: var(--font-d); }
+
+  /* ---------- decompression overlay ---------- */
+  .decomp{
+    display:none; position:fixed; inset:0; background: rgba(8,12,16,0.94); z-index: 50;
+    flex-direction:column; align-items:center; justify-content:center; padding: 24px; text-align:center;
+  }
+  .decomp.show{ display:flex; }
+  .breath-circle{
+    width: 140px; height:140px; border-radius:50%;
+    background: radial-gradient(circle, var(--accent-dim), transparent 70%);
+    border: 1.5px solid var(--accent); display:flex; align-items:center; justify-content:center;
+    animation: breathe 8s ease-in-out infinite;
+  }
+  @keyframes breathe{ 0%,100%{ transform: scale(0.82);} 50%{ transform: scale(1.05);} }
+  @media (prefers-reduced-motion: reduce){ .breath-circle{ animation:none; } }
+  .breath-word{ font-family: var(--font-d); font-weight:700; font-size: 13px; letter-spacing:.05em; text-transform:uppercase;}
+  .decomp-timer{ font-family: var(--font-d); font-size: 44px; font-weight:800; margin: 22px 0 6px; font-variant-numeric: tabular-nums;}
+  .decomp-hint{ font-size: 12.5px; color: var(--muted); max-width: 300px; line-height:1.5; margin-bottom: 22px;}
+  .decomp .btn{ max-width: 220px; }
+
+  /* ---------- historial ---------- */
+  .log-item{ border-bottom: 1px solid var(--line); padding: 10px 0; }
+  .log-item:last-child{ border-bottom:none; }
+  .log-top{ display:flex; justify-content:space-between; align-items:center; }
+  .log-mod{ font-family: var(--font-d); font-weight:700; font-size: 12.5px; }
+  .log-time{ font-size: 11px; color: var(--muted); }
+  .log-mid{ display:flex; gap:10px; margin-top: 5px; align-items:center;}
+  .dot{ width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:4px;}
+  .dot-verde{ background: var(--verde); } .dot-amarillo{ background: var(--amarillo); } .dot-rojo{ background: var(--rojo); }
+  .log-chip{ font-size: 10.5px; color: var(--muted); display:flex; align-items:center; }
+  .log-note{ font-size: 11.5px; color: var(--muted); margin-top: 5px; font-style: italic; }
+  .empty{ text-align:center; color: var(--muted); font-size: 12.5px; padding: 24px 0; }
+
+  .toast{
+    position: fixed; left:50%; bottom: 22px; transform: translateX(-50%) translateY(10px);
+    background: var(--panel-2); border: 1px solid var(--accent); color: var(--text);
+    padding: 10px 16px; border-radius: 8px; font-size: 12.5px; opacity:0; pointer-events:none;
+    transition: opacity .25s, transform .25s; z-index: 60; max-width: 90%; text-align:center;
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="status">
+    <div class="status-top">
+      <div>
+        <div class="status-date" id="statusDate">—</div>
+        <div class="status-sub">Consola de carga de interpretación</div>
+      </div>
+      <button class="info-btn" id="infoToggle" aria-label="Cómo se calcula">i</button>
+    </div>
+    <div class="status-metrics">
+      <div class="metric"><div class="metric-val" id="mBloques">0</div><div class="metric-label">Llamadas hoy</div></div>
+      <div class="metric"><div class="metric-val" id="mMinInterp">0</div><div class="metric-label">Min. interpretados</div></div>
+      <div class="metric"><div class="metric-val" id="mMce">0.0</div><div class="metric-label">MCE activo</div></div>
+      <div class="metric"><div class="metric-val" id="mRitmo">Bajo</div><div class="metric-label">Ritmo (última hora)</div></div>
+    </div>
+    <div class="status-flags" id="statusFlags" style="display:none;"></div>
+    <div class="banner-rojo" id="bannerLimite">
+      Límite operacional alcanzado hoy (2 saturaciones registradas). Considera una pausa obligatoria o cambiar a tareas administrativas antes de tomar otra llamada de alta carga.
+    </div>
+    <div class="info-panel" id="infoPanel">
+      MCE = minutos <b>activos</b> interpretando × FCC. La duración total de la llamada no es lo mismo que el tiempo activo: si hay esperas (el profesional revisando algo, tiempos muertos), usa «Pausar» para que ese tramo no cuente como carga. Los umbrales escalan según la modalidad, sobre el reloj activo — no sobre la duración total.
+      <br><br>
+      «Ritmo (última hora)» mide cuántas llamadas cerraste en los últimos 60 min: Bajo (0–2), Moderado (3–5), Alto (6+). Muchas llamadas cortas seguidas pueden desgastar por fragmentación de contexto aunque el MCE de cada una sea bajo.
+      <table>
+        <tr><td>VRI/OPI General</td><td>FCC 1.0</td><td>aviso 20' · límite 30'</td></tr>
+        <tr><td>VRI/OPI Especializado</td><td>FCC 1.4</td><td>aviso 17' · límite 25'</td></tr>
+        <tr><td>RSI Conferencia</td><td>FCC 1.7</td><td>aviso 15' · límite 22'</td></tr>
+        <tr><td>Alto contenido emocional</td><td>FCC 2.0</td><td>aviso 12' · límite 18'</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-panel="preturno">Pre-turno</div>
+    <div class="tab" data-panel="bloque">Bloque activo</div>
+    <div class="tab" data-panel="post">Post-llamada</div>
+    <div class="tab" data-panel="historial">Historial</div>
+  </div>
+
+  <!-- PRE-TURNO -->
+  <div class="panel active" id="panel-preturno">
+    <div class="card">
+      <h2>Evaluación de entrada</h2>
+      <p class="hint">Antes de tomar tu primer bloque de hoy, registra tu nivel funcional. Si tu energía o claridad está por debajo de 5/10, reduce el bloque en 25% o aumenta tus pausas.</p>
+      <div class="energy-readout">
+        <span class="energy-num" id="energyNum">7</span>
+        <span class="energy-scale">/ 10</span>
+      </div>
+      <input type="range" min="0" max="10" step="1" value="7" id="energySlider">
+      <div class="reco" id="energyReco"></div>
+      <div style="margin-top:14px;">
+        <button class="btn btn-primary" id="saveEnergy">Guardar check-in</button>
+      </div>
+      <p class="hint" id="energySaved" style="margin:10px 0 0; display:none;"></p>
+    </div>
+  </div>
+
+  <!-- BLOQUE ACTIVO -->
+  <div class="panel" id="panel-bloque">
+    <div class="card" id="modCard">
+      <h2>Modalidad de la llamada</h2>
+      <p class="hint">Selecciona el tipo de asignación antes de iniciar. Define el Factor de Carga Cognitiva (FCC).</p>
+      <div class="mod-grid" id="modGrid"></div>
+    </div>
+
+    <div class="card">
+      <div class="gauge-wrap">
+        <div class="gauge">
+          <svg viewBox="0 0 210 210">
+            <circle class="gauge-track" cx="105" cy="105" r="92"></circle>
+            <circle class="gauge-fill" id="gaugeFill" cx="105" cy="105" r="92" stroke="var(--accent)"></circle>
+          </svg>
+          <div class="gauge-center">
+            <div class="gauge-time" id="gaugeTime">00:00</div>
+            <div class="gauge-caption">tiempo activo interpretando</div>
+            <div class="gauge-mce" id="gaugeMce">MCE 0.0 · llamada 00:00</div>
+            <div class="gauge-zone zone-inactivo" id="gaugeZone">Sin iniciar</div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:6px;">
+        <button class="btn btn-primary" id="toggleTimer">Iniciar llamada</button>
+      </div>
+      <div class="btn-row" style="margin-top:8px; display:none; gap:8px;" id="activeRow">
+        <button class="btn btn-ghost" id="togglePause">Pausar (tiempo de espera)</button>
+        <button class="btn btn-danger-outline" id="cancelBlock">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POST-LLAMADA -->
+  <div class="panel" id="panel-post">
+    <div class="card" id="postSummaryCard" style="display:none;">
+      <h2>Resumen del bloque</h2>
+      <div class="summary-row"><span>Modalidad</span><b id="sMod">—</b></div>
+      <div class="summary-row"><span>Duración total de la llamada</span><b id="sDurTotal">—</b></div>
+      <div class="summary-row"><span>Tiempo activo interpretando</span><b id="sDurActivo">—</b></div>
+      <div class="summary-row"><span>MCE (carga equivalente)</span><b id="sMce">—</b></div>
+    </div>
+    <div class="card" id="postEmptyCard">
+      <p class="hint" style="margin:0;">Todavía no hay una llamada finalizada. Ve a <b>Bloque activo</b>, inicia y luego pulsa «Finalizar llamada» para descargar aquí.</p>
+    </div>
+
+    <div class="card" id="mtacCard" style="display:none;">
+      <h2>Descarga rápida (MTAC)</h2>
+      <p class="hint">Marca en segundos cómo quedaste. Esto es solo para ti — nadie más lo ve.</p>
+
+      <div class="strip-label">Tolerancia auditiva</div>
+      <div class="strip" id="stripAud">
+        <div class="seg seg-verde" data-val="verde"><div class="sn">Verde</div><div class="sd">Audición clara, cómodo</div></div>
+        <div class="seg seg-amarillo" data-val="amarillo"><div class="sn">Amarillo</div><div class="sd">Subiste volumen, oídos cargados</div></div>
+        <div class="seg seg-rojo" data-val="rojo"><div class="sn">Rojo</div><div class="sd">Duele, tensión mandíbula/oído</div></div>
+      </div>
+
+      <div class="strip-label">Tolerancia cognitiva</div>
+      <div class="strip" id="stripCog">
+        <div class="seg seg-verde" data-val="verde"><div class="sn">Verde</div><div class="sd">Decalage fluido, mente clara</div></div>
+        <div class="seg seg-amarillo" data-val="amarillo"><div class="sn">Amarillo</div><div class="sd">Forzando memoria, micro-lapsus</div></div>
+        <div class="seg seg-rojo" data-val="rojo"><div class="sn">Rojo</div><div class="sd">Mente en blanco, omisiones</div></div>
+      </div>
+
+      <div class="strip-label">Nota rápida (opcional)</div>
+      <textarea id="noteInput" placeholder="Una frase, si algo quedó pendiente en tu cabeza..."></textarea>
+
+      <div style="margin-top:14px;">
+        <button class="btn btn-ghost" id="startDecomp">Iniciar descompresión (5 min)</button>
+      </div>
+      <div style="margin-top:8px;">
+        <button class="btn btn-primary" id="saveBlock" disabled>Guardar registro</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORIAL -->
+  <div class="panel" id="panel-historial">
+    <div class="card">
+      <h2>Bloques de hoy</h2>
+      <div id="logList"><div class="empty">Aún no registraste bloques hoy.</div></div>
+    </div>
+    <div class="card">
+      <button class="btn btn-danger-outline" id="wipeToday">Borrar registros de hoy</button>
+      <button class="btn btn-danger-outline" id="wipeConfirm" style="display:none; margin-top:8px;">Confirmar borrado — no se puede deshacer</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="decomp" id="decompOverlay">
+  <div class="breath-circle"><span class="breath-word" id="breathWord">Inhala</span></div>
+  <div class="decomp-timer" id="decompTimer">05:00</div>
+  <div class="decomp-hint">Retira el auricular si puedes. Sin pantallas si es posible. Silencio absoluto por unos minutos.</div>
+  <button class="btn btn-ghost" id="closeDecomp">Terminar ahora</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const MODALIDADES = {
+    vri_general:   { label:'VRI / OPI General', sub:'Trámites, atención básica', fcc:1.0, soft:20, hard:30 },
+    vri_especial:  { label:'VRI / OPI Especializado', sub:'Médico complejo, legal/juzgados', fcc:1.4, soft:17, hard:25 },
+    rsi_conf:      { label:'RSI Conferencia', sub:'Eventos, sin compañero', fcc:1.7, soft:15, hard:22 },
+    alto_emocional:{ label:'Alto contenido emocional', sub:'Asilo, emergencias, trauma', fcc:2.0, soft:12, hard:18 },
+  };
+  const CIRC = 2 * Math.PI * 92;
+
+  const $ = (id) => document.getElementById(id);
+  const pad = (n) => String(n).padStart(2,'0');
+
+  function todayKey(){
+    const d = new Date();
+    return `registro-${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  }
+  function todayLabel(){
+    const d = new Date();
+    let s = d.toLocaleDateString('es-BO', { weekday:'long', day:'numeric', month:'long' });
+    return s;
+  }
+
+  let today = { preTurno: null, bloques: [] };
+
+  let active = null; // { modKey, startTs, elapsedSec }
+  let timerHandle = null;
+
+  let draft = null; // finished block awaiting MTAC + save
+  let mtac = { auditivo:null, cognitivo:null };
+
+  let decompHandle = null;
+
+  // ---------- storage ----------
+  async function loadToday(){
+    try{
+      const r = await window.storage.get(todayKey(), false);
+      today = r && r.value ? JSON.parse(r.value) : { preTurno:null, bloques:[] };
+    }catch(e){
+      today = { preTurno:null, bloques:[] };
+    }
+  }
+  async function saveToday(){
+    try{
+      await window.storage.set(todayKey(), JSON.stringify(today), false);
+    }catch(e){
+      showToast('No se pudo guardar. Verifica tu conexión.');
+    }
+  }
+
+  // ---------- toast ----------
+  let toastHandle = null;
+  function showToast(msg){
+    const t = $('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastHandle);
+    toastHandle = setTimeout(()=> t.classList.remove('show'), 2600);
+  }
+
+  // ---------- header / status ----------
+  function renderStatus(){
+    $('statusDate').textContent = todayLabel();
+    $('mBloques').textContent = today.bloques.length;
+
+    const minInterp = today.bloques.reduce((a,b)=> a + (b.minutosLlamada||0), 0);
+    $('mMinInterp').textContent = Math.round(minInterp);
+
+    const mceSum = today.bloques.reduce((a,b)=> a + b.mce, 0);
+    $('mMce').textContent = mceSum.toFixed(1);
+
+    const now = Date.now();
+    const lastHour = today.bloques.filter(b => (now - b.fin) <= 3600000);
+    const ritmoLabel = lastHour.length >= 6 ? 'Alto' : lastHour.length >= 3 ? 'Moderado' : 'Bajo';
+    $('mRitmo').textContent = ritmoLabel;
+    $('mRitmo').style.color = ritmoLabel==='Alto' ? 'var(--rojo)' : ritmoLabel==='Moderado' ? 'var(--amarillo)' : 'var(--text)';
+
+    const flags = today.bloques.filter(b => b.auditivo==='rojo' || b.cognitivo==='rojo').length;
+    const flagsEl = $('statusFlags');
+    if(flags > 0){
+      flagsEl.style.display = 'block';
+      flagsEl.textContent = `${flags} saturación${flags>1?'es':''} registrada${flags>1?'s':''} hoy`;
+    } else {
+      flagsEl.style.display = 'none';
+    }
+    $('bannerLimite').style.display = flags >= 2 ? 'block' : 'none';
+
+    if(ritmoLabel === 'Alto' && lastRitmo !== 'Alto'){
+      showToast('Ritmo alto: muchas llamadas cortas seguidas. El cambio de contexto constante también cansa, aunque cada MCE sea bajo.');
+    }
+    lastRitmo = ritmoLabel;
+  }
+  let lastRitmo = null;
+
+  $('infoToggle').addEventListener('click', ()=>{
+    const p = $('infoPanel');
+    p.style.display = p.style.display === 'block' ? 'none' : 'block';
+  });
+
+  // ---------- tabs ----------
+  document.querySelectorAll('.tab').forEach(tab=>{
+    tab.addEventListener('click', ()=> switchTab(tab.dataset.panel));
+  });
+  function switchTab(name){
+    document.querySelectorAll('.tab').forEach(t=> t.classList.toggle('active', t.dataset.panel===name));
+    document.querySelectorAll('.panel').forEach(p=> p.classList.toggle('active', p.id === 'panel-'+name));
+  }
+
+  // ---------- pre-turno ----------
+  const energySlider = $('energySlider');
+  const energyNum = $('energyNum');
+  function renderEnergyReco(v){
+    const reco = $('energyReco');
+    if(v < 5){
+      reco.className = 'reco warn';
+      reco.textContent = 'Nivel bajo: reduce el bloque continuo en ~25% y aumenta tus micro-pausas de descompresión hoy.';
+    } else {
+      reco.className = 'reco ok';
+      reco.textContent = 'Nivel operacional. Mantén los umbrales estándar por modalidad.';
+    }
+  }
+  energySlider.addEventListener('input', ()=>{
+    energyNum.textContent = energySlider.value;
+    renderEnergyReco(Number(energySlider.value));
+  });
+  $('saveEnergy').addEventListener('click', async ()=>{
+    const v = Number(energySlider.value);
+    today.preTurno = { energia: v, ts: Date.now() };
+    await saveToday();
+    $('energySaved').style.display = 'block';
+    $('energySaved').textContent = `Check-in guardado a las ${new Date().toLocaleTimeString('es-BO',{hour:'2-digit',minute:'2-digit'})}.`;
+    showToast('Check-in de entrada guardado');
+  });
+  function hydratePreTurno(){
+    if(today.preTurno){
+      energySlider.value = today.preTurno.energia;
+      energyNum.textContent = today.preTurno.energia;
+      renderEnergyReco(today.preTurno.energia);
+      $('energySaved').style.display = 'block';
+      $('energySaved').textContent = `Último check-in: ${new Date(today.preTurno.ts).toLocaleTimeString('es-BO',{hour:'2-digit',minute:'2-digit'})} — puedes actualizarlo.`;
+    } else {
+      renderEnergyReco(Number(energySlider.value));
+    }
+  }
+
+  // ---------- modalidad grid ----------
+  let selectedMod = 'vri_general';
+  function renderModGrid(){
+    const grid = $('modGrid');
+    grid.innerHTML = '';
+    Object.entries(MODALIDADES).forEach(([key, m])=>{
+      const div = document.createElement('div');
+      div.className = 'mod-btn' + (key===selectedMod ? ' sel' : '');
+      div.innerHTML = `<div class="mt">${m.label}</div><div class="ms">${m.sub}</div><div class="mf">FCC ${m.fcc.toFixed(1)}</div>`;
+      div.addEventListener('click', ()=>{
+        if(active) return; // no cambiar modalidad con timer corriendo
+        selectedMod = key;
+        renderModGrid();
+      });
+      grid.appendChild(div);
+    });
+  }
+
+  // ---------- gauge / timer ----------
+  function zoneFor(modKey, minutes){
+    const m = MODALIDADES[modKey];
+    if(minutes < m.soft) return 'verde';
+    if(minutes < m.hard) return 'amarillo';
+    return 'rojo';
+  }
+  function zoneColor(z){
+    return z==='verde' ? 'var(--verde)' : z==='amarillo' ? 'var(--amarillo)' : 'var(--rojo)';
+  }
+  // active model: callStart (wall clock, never pauses) + activeAccum/segStart (fatigue clock, pauses on hold)
+  function activeSecondsNow(){
+    if(!active) return 0;
+    const running = active.isPaused ? 0 : (Date.now() - active.segStart)/1000;
+    return active.activeAccum + running;
+  }
+  function totalCallSecondsNow(){
+    if(!active) return 0;
+    return (Date.now() - active.callStart)/1000;
+  }
+
+  function renderGauge(){
+    const fill = $('gaugeFill');
+    const gaugeEl = document.querySelector('.gauge');
+    if(!active){
+      gaugeEl.classList.remove('paused');
+      $('gaugeTime').textContent = '00:00';
+      $('gaugeMce').textContent = 'MCE 0.0 · llamada 00:00';
+      $('gaugeZone').textContent = 'Sin iniciar';
+      $('gaugeZone').className = 'gauge-zone zone-inactivo';
+      fill.style.stroke = 'var(--line)';
+      fill.style.strokeDasharray = CIRC;
+      fill.style.strokeDashoffset = CIRC;
+      return;
+    }
+    const activeSec = activeSecondsNow();
+    const totalSec = totalCallSecondsNow();
+    const minutes = activeSec/60;
+    const m = MODALIDADES[active.modKey];
+    const mce = minutes * m.fcc;
+    const zone = zoneFor(active.modKey, minutes);
+    const pct = Math.min(minutes / m.hard, 1);
+
+    $('gaugeTime').textContent = `${pad(Math.floor(activeSec/60))}:${pad(Math.floor(activeSec%60))}`;
+    $('gaugeMce').textContent = `MCE ${mce.toFixed(1)} · llamada ${pad(Math.floor(totalSec/60))}:${pad(Math.floor(totalSec%60))}`;
+
+    gaugeEl.classList.toggle('paused', active.isPaused);
+    if(active.isPaused){
+      $('gaugeZone').textContent = 'En espera — no cuenta como carga';
+      $('gaugeZone').className = 'gauge-zone zone-pausado';
+    } else {
+      $('gaugeZone').textContent = zone==='verde' ? 'Operacional' : zone==='amarillo' ? 'Fricción — considera cerrar' : 'Saturación — cierra ya';
+      $('gaugeZone').className = 'gauge-zone zone-' + zone;
+    }
+    fill.style.stroke = zoneColor(zone);
+    fill.style.strokeDasharray = CIRC;
+    fill.style.strokeDashoffset = CIRC * (1 - pct);
+  }
+
+  $('toggleTimer').addEventListener('click', ()=>{
+    if(!active){
+      const now = Date.now();
+      active = { modKey: selectedMod, callStart: now, activeAccum: 0, segStart: now, isPaused: false };
+      $('toggleTimer').textContent = 'Finalizar llamada';
+      $('activeRow').style.display = 'flex';
+      $('togglePause').textContent = 'Pausar (tiempo de espera)';
+      timerHandle = setInterval(renderGauge, 1000);
+      renderGauge();
+    } else {
+      finishBlock();
+    }
+  });
+  $('togglePause').addEventListener('click', ()=>{
+    if(!active) return;
+    const now = Date.now();
+    if(active.isPaused){
+      active.segStart = now;
+      active.isPaused = false;
+      $('togglePause').textContent = 'Pausar (tiempo de espera)';
+    } else {
+      active.activeAccum += (now - active.segStart)/1000;
+      active.isPaused = true;
+      $('togglePause').textContent = 'Reanudar interpretación';
+    }
+    renderGauge();
+  });
+  $('cancelBlock').addEventListener('click', ()=>{
+    clearInterval(timerHandle);
+    active = null;
+    $('toggleTimer').textContent = 'Iniciar llamada';
+    $('activeRow').style.display = 'none';
+    renderGauge();
+    showToast('Llamada descartada');
+  });
+
+  function finishBlock(){
+    clearInterval(timerHandle);
+    const activeSec = activeSecondsNow();
+    const totalSec = totalCallSecondsNow();
+    const minutosActivos = activeSec/60;
+    const minutosLlamada = totalSec/60;
+    const m = MODALIDADES[active.modKey];
+    const mce = minutosActivos * m.fcc;
+    draft = {
+      id: 'b_' + Date.now(),
+      modKey: active.modKey,
+      modLabel: m.label,
+      fcc: m.fcc,
+      minutosActivos: minutosActivos,
+      minutosLlamada: minutosLlamada,
+      mce: mce,
+      inicio: active.callStart,
+      fin: Date.now(),
+    };
+    active = null;
+    $('toggleTimer').textContent = 'Iniciar llamada';
+    $('activeRow').style.display = 'none';
+    renderGauge();
+    hydratePost();
+    switchTab('post');
+  }
+
+  // ---------- post-llamada / MTAC ----------
+  function hydratePost(){
+    if(!draft){
+      $('postSummaryCard').style.display = 'none';
+      $('mtacCard').style.display = 'none';
+      $('postEmptyCard').style.display = 'block';
+      return;
+    }
+    $('postEmptyCard').style.display = 'none';
+    $('postSummaryCard').style.display = 'block';
+    $('mtacCard').style.display = 'block';
+    $('sMod').textContent = draft.modLabel;
+    const tm = Math.floor(draft.minutosLlamada);
+    const ts = Math.round((draft.minutosLlamada - tm) * 60);
+    $('sDurTotal').textContent = `${pad(tm)}:${pad(ts)}`;
+    const am = Math.floor(draft.minutosActivos);
+    const as = Math.round((draft.minutosActivos - am) * 60);
+    $('sDurActivo').textContent = `${pad(am)}:${pad(as)}`;
+    $('sMce').textContent = draft.mce.toFixed(1);
+    mtac = { auditivo:null, cognitivo:null };
+    $('noteInput').value = '';
+    renderSegs();
+  }
+  function renderSegs(){
+    ['stripAud','stripCog'].forEach((id, idx)=>{
+      const key = idx===0 ? 'auditivo' : 'cognitivo';
+      document.querySelectorAll(`#${id} .seg`).forEach(seg=>{
+        seg.classList.toggle('sel', mtac[key] === seg.dataset.val);
+      });
+    });
+    $('saveBlock').disabled = !(mtac.auditivo && mtac.cognitivo);
+  }
+  document.querySelectorAll('#stripAud .seg').forEach(seg=>{
+    seg.addEventListener('click', ()=>{ mtac.auditivo = seg.dataset.val; renderSegs(); });
+  });
+  document.querySelectorAll('#stripCog .seg').forEach(seg=>{
+    seg.addEventListener('click', ()=>{ mtac.cognitivo = seg.dataset.val; renderSegs(); });
+  });
+
+  $('saveBlock').addEventListener('click', async ()=>{
+    if(!draft || !mtac.auditivo || !mtac.cognitivo) return;
+    const record = {
+      ...draft,
+      auditivo: mtac.auditivo,
+      cognitivo: mtac.cognitivo,
+      nota: $('noteInput').value.trim(),
+    };
+    today.bloques.push(record);
+    await saveToday();
+    renderStatus();
+    renderLog();
+    draft = null;
+    hydratePost();
+    showToast('Registro guardado');
+    switchTab('bloque');
+  });
+
+  // ---------- decompression overlay ----------
+  $('startDecomp').addEventListener('click', ()=> startDecomp(300));
+  $('closeDecomp').addEventListener('click', stopDecomp);
+  function startDecomp(seconds){
+    let remaining = seconds;
+    $('decompOverlay').classList.add('show');
+    updateDecompUI(remaining);
+    let phase = 0;
+    const words = ['Inhala','Sostén','Exhala'];
+    $('breathWord').textContent = words[0];
+    decompHandle = setInterval(()=>{
+      remaining -= 1;
+      updateDecompUI(remaining);
+      phase = Math.floor(((seconds - remaining) % 8) / 4) % words.length;
+      if(remaining % 4 === 0){
+        const i = Math.floor((seconds - remaining) / 2.7) % words.length;
+        $('breathWord').textContent = words[i];
+      }
+      if(remaining <= 0){ stopDecomp(); showToast('Descompresión completa'); }
+    }, 1000);
+  }
+  function updateDecompUI(s){
+    const m = Math.max(0, Math.floor(s/60));
+    const sec = Math.max(0, Math.floor(s%60));
+    $('decompTimer').textContent = `${pad(m)}:${pad(sec)}`;
+  }
+  function stopDecomp(){
+    clearInterval(decompHandle);
+    $('decompOverlay').classList.remove('show');
+  }
+
+  // ---------- historial ----------
+  function renderLog(){
+    const list = $('logList');
+    if(!today.bloques.length){
+      list.innerHTML = '<div class="empty">Aún no registraste bloques hoy.</div>';
+      return;
+    }
+    list.innerHTML = '';
+    [...today.bloques].reverse().forEach(b=>{
+      const time = new Date(b.fin).toLocaleTimeString('es-BO',{hour:'2-digit',minute:'2-digit'});
+      const tm = Math.floor(b.minutosLlamada); const ts = Math.round((b.minutosLlamada-tm)*60);
+      const am = Math.floor(b.minutosActivos); const as = Math.round((b.minutosActivos-am)*60);
+      const row = document.createElement('div');
+      row.className = 'log-item';
+      row.innerHTML = `
+        <div class="log-top">
+          <span class="log-mod">${b.modLabel}</span>
+          <span class="log-time">${time}</span>
+        </div>
+        <div class="log-mid">
+          <span class="log-chip"><span class="dot dot-${b.auditivo}"></span>Auditivo</span>
+          <span class="log-chip"><span class="dot dot-${b.cognitivo}"></span>Cognitivo</span>
+        </div>
+        <div class="log-mid">
+          <span class="log-chip">Llamada ${pad(tm)}:${pad(ts)}</span>
+          <span class="log-chip">Activo ${pad(am)}:${pad(as)}</span>
+          <span class="log-chip">MCE ${b.mce.toFixed(1)}</span>
+        </div>
+        ${b.nota ? `<div class="log-note">"${escapeHtml(b.nota)}"</div>` : ''}
+      `;
+      list.appendChild(row);
+    });
+  }
+  function escapeHtml(s){
+    const d = document.createElement('div'); d.textContent = s; return d.innerHTML;
+  }
+
+  let wipeArmed = false;
+  $('wipeToday').addEventListener('click', ()=>{
+    wipeArmed = true;
+    $('wipeConfirm').style.display = 'block';
+  });
+  $('wipeConfirm').addEventListener('click', async ()=>{
+    today = { preTurno:null, bloques:[] };
+    await saveToday();
+    renderStatus(); renderLog(); hydratePreTurno();
+    $('wipeConfirm').style.display = 'none';
+    showToast('Registros de hoy borrados');
+  });
+
+  // ---------- init ----------
+  async function init(){
+    renderModGrid();
+    renderGauge();
+    await loadToday();
+    renderStatus();
+    hydratePreTurno();
+    hydratePost();
+    renderLog();
+    setInterval(renderStatus, 60000);
+  }
+  init();
+})();
+</script>
+</body>
+</html>
