@@ -42,6 +42,13 @@
 
   .wrap{ max-width: 560px; margin: 0 auto; padding: 18px 16px 90px; }
 
+  .topnav{ margin-bottom: 10px; }
+  .back-link{
+    display:inline-flex; align-items:center; gap:5px; color: var(--muted); text-decoration:none;
+    font-family: var(--font-d); font-size: 12px; font-weight:600; padding: 4px 2px;
+  }
+  .back-link:hover{ color: var(--accent); }
+
   /* ---------- status header ---------- */
   .status{
     background: linear-gradient(180deg, var(--panel-2), var(--panel));
@@ -68,6 +75,11 @@
   .banner-rojo{
     margin-top: 10px; background: var(--rojo-dim); border: 1px solid var(--rojo);
     color: #ffd7dc; font-size: 12.5px; padding: 9px 11px; border-radius: 8px; line-height:1.4;
+    display:none;
+  }
+  .banner-info{
+    margin-top: 10px; background: var(--amarillo-dim); border: 1px solid var(--amarillo);
+    color: #ffe3ad; font-size: 12.5px; padding: 9px 11px; border-radius: 8px; line-height:1.45;
     display:none;
   }
 
@@ -250,6 +262,10 @@
 <body>
 <div class="wrap">
 
+  <div class="topnav">
+    <a href="index.html" class="back-link">&larr; Volver al índice</a>
+  </div>
+
   <div class="status">
     <div class="status-top">
       <div>
@@ -268,10 +284,15 @@
     <div class="banner-rojo" id="bannerLimite">
       Límite operacional alcanzado hoy (2 saturaciones registradas). Considera una pausa obligatoria o cambiar a tareas administrativas antes de tomar otra llamada de alta carga.
     </div>
+    <div class="banner-info" id="bannerStorage">
+      No se pudo guardar en este navegador. Revisa que no estés en modo incógnito/privado y que el sitio tenga permiso de almacenamiento local — algunos navegadores lo bloquean por configuración.
+    </div>
     <div class="info-panel" id="infoPanel">
       MCE = minutos <b>activos</b> interpretando × FCC. La duración total de la llamada no es lo mismo que el tiempo activo: si hay esperas (el profesional revisando algo, tiempos muertos), usa «Pausar» para que ese tramo no cuente como carga. Los umbrales escalan según la modalidad, sobre el reloj activo — no sobre la duración total.
       <br><br>
       «Ritmo (última hora)» mide cuántas llamadas cerraste en los últimos 60 min: Bajo (0–2), Moderado (3–5), Alto (6+). Muchas llamadas cortas seguidas pueden desgastar por fragmentación de contexto aunque el MCE de cada una sea bajo.
+      <br><br>
+      Los datos se guardan en el almacenamiento local de este navegador/dispositivo. Si interpretas desde el celular y la computadora, cada uno lleva su propio historial — no se sincronizan entre sí.
       <table>
         <tr><td>VRI/OPI General</td><td>FCC 1.0</td><td>aviso 20' · límite 30'</td></tr>
         <tr><td>VRI/OPI Especializado</td><td>FCC 1.4</td><td>aviso 17' · límite 25'</td></tr>
@@ -440,9 +461,12 @@
   const $ = (id) => document.getElementById(id);
   const pad = (n) => String(n).padStart(2,'0');
 
-  function todayKey(){
+  function todayDateOnly(){
     const d = new Date();
-    return `registro-${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  }
+  function todayKey(){
+    return `registro-${todayDateOnly()}`;
   }
   function todayLabel(){
     const d = new Date();
@@ -460,23 +484,64 @@
 
   let decompHandle = null;
 
-  // ---------- storage ----------
+  // ---------- storage: localStorage (respaldo inmediato) + API en Vercel (sync entre dispositivos) ----------
   function defaultToday(){
-    return { preTurno:null, bloques:[], enCurso:null, borrador:null, selectedMod:'vri_general', blockMode:'crono' };
+    return { preTurno:null, bloques:[], enCurso:null, borrador:null, selectedMod:'vri_general', blockMode:'crono', lastModified:0 };
   }
-  async function loadToday(){
+  const storageAvailable = (function(){
     try{
-      const r = await window.storage.get(todayKey(), false);
-      today = r && r.value ? Object.assign(defaultToday(), JSON.parse(r.value)) : defaultToday();
+      const t = '__mbic_probe__';
+      localStorage.setItem(t, '1');
+      localStorage.removeItem(t);
+      return true;
+    }catch(e){ return false; }
+  })();
+  async function loadToday(){
+    if(!storageAvailable){ today = defaultToday(); return; }
+    try{
+      const raw = localStorage.getItem(todayKey());
+      today = raw ? Object.assign(defaultToday(), JSON.parse(raw)) : defaultToday();
     }catch(e){
       today = defaultToday();
     }
   }
   async function saveToday(){
+    today.lastModified = Date.now();
+    if(!storageAvailable){
+      $('bannerStorage').style.display = 'block';
+    } else {
+      try{
+        localStorage.setItem(todayKey(), JSON.stringify(today));
+      }catch(e){
+        $('bannerStorage').style.display = 'block';
+        showToast('No se pudo guardar este cambio (¿almacenamiento lleno o bloqueado?).');
+      }
+    }
+    // sincronización al backend en Vercel — best-effort, nunca bloquea ni molesta si falla
+    // (sin backend configurado todavía, o sin conexión, simplemente no sincroniza; local ya quedó guardado)
+    fetch(`/api/registro?fecha=${todayDateOnly()}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(today),
+    }).catch(()=>{});
+  }
+  async function syncFromServer(){
     try{
-      await window.storage.set(todayKey(), JSON.stringify(today), false);
+      const r = await fetch(`/api/registro?fecha=${todayDateOnly()}`);
+      if(!r.ok) return;
+      const j = await r.json();
+      if(!j || !j.data) return;
+      const merged = Object.assign(defaultToday(), j.data);
+      if((merged.lastModified||0) > (today.lastModified||0)){
+        today = merged;
+        if(storageAvailable){
+          try{ localStorage.setItem(todayKey(), JSON.stringify(today)); }catch(e){}
+        }
+        hydrateFromToday(false);
+        showToast('Registro actualizado desde otro dispositivo');
+      }
     }catch(e){
-      showToast('No se pudo guardar. Verifica tu conexión.');
+      // sin backend disponible todavía o sin conexión: seguimos con lo local, sin interrumpir
     }
   }
 
@@ -954,8 +1019,7 @@
   });
 
   // ---------- init ----------
-  async function init(){
-    await loadToday();
+  function hydrateFromToday(allowTabSwitch){
     selectedMod = today.selectedMod || 'vri_general';
     blockMode = today.blockMode || 'crono';
 
@@ -965,6 +1029,7 @@
     $('manualCard').style.display = blockMode==='manual' ? 'block' : 'none';
 
     let landOn = null;
+    clearInterval(timerHandle);
 
     if(today.enCurso){
       active = { ...today.enCurso };
@@ -973,6 +1038,10 @@
       $('togglePause').textContent = active.isPaused ? 'Reanudar interpretación' : 'Pausar (tiempo de espera)';
       timerHandle = setInterval(renderGauge, 1000);
       landOn = 'bloque';
+    } else {
+      active = null;
+      $('toggleTimer').textContent = 'Iniciar llamada';
+      $('activeRow').style.display = 'none';
     }
     renderGauge();
 
@@ -981,13 +1050,28 @@
       mtac = today.borrador.mtac || { auditivo:null, cognitivo:null };
       $('noteInput').value = today.borrador.nota || '';
       landOn = landOn || 'post';
+    } else {
+      draft = null;
+      mtac = { auditivo:null, cognitivo:null };
     }
 
     renderStatus();
     hydratePreTurno();
     hydratePost();
     renderLog();
-    if(landOn) switchTab(landOn);
+    if(allowTabSwitch && landOn) switchTab(landOn);
+  }
+
+  async function init(){
+    if(!storageAvailable){
+      $('bannerStorage').style.display = 'block';
+    }
+    await loadToday();
+    hydrateFromToday(true);
+    syncFromServer();
+    document.addEventListener('visibilitychange', ()=>{
+      if(document.visibilityState === 'visible') syncFromServer();
+    });
     setInterval(renderStatus, 60000);
   }
   init();
