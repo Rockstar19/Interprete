@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patrones de Interpretación — Llamadas Complejas</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Lato:wght@400;700&display=swap');
+
+body {
+    font-family: 'Montserrat', 'Lato', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #333;
+    line-height: 1.65;
+    padding: 20px;
+}
+.container {
+    max-width: 1050px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    overflow: hidden;
+}
+header {
+    background: linear-gradient(135deg, #0b1f6a 0%, #1a3a70 100%);
+    color: #feb801;
+    padding: 40px 30px;
+    text-align: center;
+}
+header h1 { font-size: 2.3em; font-weight: 800; margin-bottom: 8px; }
+header p { font-size: 1.05em; opacity: 0.95; color: #fff; }
+
+.nav-tabs {
+    display: flex;
+    background: #f8f9fa;
+    border-bottom: 3px solid #0b1f6a;
+    flex-wrap: wrap;
+}
+.nav-tabs button {
+    flex: 1;
+    padding: 14px 10px;
+    border: none;
+    background: #f8f9fa;
+    cursor: pointer;
+    font-weight: 700;
+    font-family: 'Montserrat', sans-serif;
+    color: #333;
+    font-size: 0.85em;
+    transition: all 0.25s ease;
+    min-width: 130px;
+}
+.nav-tabs button:hover { background: #e9ecef; color: #0b1f6a; }
+.nav-tabs button.active {
+    background: #0b1f6a; color: #feb801; border-bottom: 3px solid #feb801;
+}
+
+.content { padding: 35px 30px; }
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+
+.domain-intro {
+    background: #eef1fb;
+    border-left: 4px solid #0b1f6a;
+    padding: 18px 20px;
+    margin-bottom: 28px;
+    border-radius: 4px;
+}
+.domain-intro strong { color: #0b1f6a; }
+
+.section h2 {
+    color: #0b1f6a;
+    font-size: 1.5em;
+    margin: 30px 0 16px 0;
+    border-left: 4px solid #feb801;
+    padding-left: 14px;
+    font-weight: 700;
+}
+.section h2:first-child { margin-top: 0; }
+
+.phase-block {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    border-left: 4px solid #667eea;
+}
+.phase-block .phase-title {
+    font-weight: 700;
+    color: #1a3a70;
+    font-size: 1.05em;
+    margin-bottom: 6px;
+}
+.phase-block .phase-desc {
+    font-size: 0.93em;
+    color: #555;
+    margin-bottom: 8px;
+}
+.phase-block .phase-tip {
+    background: #fff8e1;
+    border-left: 3px solid #feb801;
+    padding: 8px 12px;
+    font-size: 0.88em;
+    color: #6b5300;
+    border-radius: 3px;
+}
+.phase-block .phase-tip strong { color: #8a6d00; }
+
+.friction-box {
+    background: #fdf0ef;
+    border-left: 4px solid #c0392b;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    font-size: 0.93em;
+}
+.friction-box strong { color: #c0392b; }
+
+.technique-item {
+    background: #f0f7f0;
+    border-left: 4px solid #2e7d32;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+}
+.technique-item strong { color: #1b5e20; display:block; margin-bottom:4px; font-size: 1.02em;}
+.technique-item span { font-size: 0.92em; color: #444; }
+
+table.phrasebank { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+table.phrasebank th {
+    background: #0b1f6a; color: #feb801; padding: 10px 12px; text-align:left; font-size:0.9em;
+}
+table.phrasebank td {
+    border-bottom: 1px solid #e2e2e2; padding: 10px 12px; font-size: 0.92em; vertical-align: top;
+}
+table.phrasebank tr:hover { background: #f8f9fa; }
+table.phrasebank td.en { color: #1a3a70; font-weight: 600; }
+table.phrasebank td.es { color: #764ba2; font-weight: 600; }
+
+.subhead {
+    font-weight: 700;
+    color: #1a3a70;
+    margin: 18px 0 10px 0;
+    font-size: 1.1em;
+}
+
+.search-box { margin-bottom: 22px; }
+.search-box input {
+    width: 100%; padding: 12px 15px; font-family: 'Montserrat', sans-serif;
+    border: 2px solid #0b1f6a; border-radius: 4px; font-size: 1em;
+}
+.search-box input:focus { outline:none; box-shadow: 0 0 0 3px rgba(11,31,106,0.1); }
+
+.print-button {
+    background: #0b1f6a; color: white; border: none; padding: 10px 20px;
+    border-radius: 4px; cursor: pointer; font-weight: 600; font-family:'Montserrat',sans-serif;
+    margin-bottom: 20px; transition: all 0.2s ease;
+}
+.print-button:hover { background: #1a3a70; }
+
+.badge {
+    display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.75em;
+    font-weight: 700; margin-left: 8px; vertical-align: middle;
+}
+.badge-critical { background: #c0392b; color: white; }
+.badge-high { background: #e67e22; color: white; }
+.badge-med { background: #f1c40f; color: #333; }
+
+.subprofile-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 34px 0 18px 0;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 800;
+    font-size: 1.15em;
+    color: white;
+}
+.subprofile-header.customer { background: linear-gradient(90deg,#e67e22,#f39c12); }
+.subprofile-header.dasher { background: linear-gradient(90deg,#c0392b,#e74c3c); }
+.subprofile-header.merchant { background: linear-gradient(90deg,#2e7d32,#43a047); }
+.subprofile-header.guest { background: linear-gradient(90deg,#764ba2,#9b6fc9); }
+.subprofile-header.host { background: linear-gradient(90deg,#0b1f6a,#1a3a70); }
+.subprofile-header .icon { font-size: 1.3em; }
+
+.room-glossary-item {
+    background: #f4f0fa;
+    padding: 15px;
+    margin-bottom: 14px;
+    border-left: 3px solid #764ba2;
+    border-radius: 4px;
+}
+.room-glossary-item .english { color: #1a3a70; font-weight: 600; margin-bottom: 4px; }
+.room-glossary-item .spanish { color: #764ba2; font-weight: 600; }
+.room-glossary-item .definition { margin-top: 8px; font-size: 0.93em; color: #555; font-style: italic; }
+.room-glossary-item .context {
+    margin-top: 8px; background: white; padding: 9px 12px;
+    border-left: 2px solid #764ba2; font-size: 0.88em; color: #666;
+}
+.room-glossary-item .context strong { color: #764ba2; }
+
+footer {
+    background: #f8f9fa; padding: 20px 30px; border-top: 1px solid #ddd;
+    text-align: center; font-size: 0.85em; color: #666;
+}
+
+@media print {
+    body { background: white; padding:0; }
+    .container { box-shadow:none; }
+    .nav-tabs, .print-button, .search-box { display:none; }
+    .tab-content { display:block !important; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>📞 Patrones de Interpretación</h1>
+        <p>Manual de escenarios de alto estrés para intérpretes OPI/VRI/RSI</p>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="openTab(event,'aar')">Access-A-Ride</button>
+        <button class="tab-btn" onclick="openTab(event,'e911')">911 Emergencias</button>
+        <button class="tab-btn" onclick="openTab(event,'insurance')">Seguro de Auto</button>
+        <button class="tab-btn" onclick="openTab(event,'utility')">Servicios Públicos</button>
+        <button class="tab-btn" onclick="openTab(event,'banking')">Banca</button>
+        <button class="tab-btn" onclick="openTab(event,'doordash')">DoorDash</button>
+        <button class="tab-btn" onclick="openTab(event,'airbnb')">Airbnb</button>
+    </div>
+
+    <div class="content">
+        <button class="print-button" onclick="window.print()">🖨️ Imprimir Manual</button>
+
+        <!-- ==================== AAR ==================== -->
+        <div id="aar" class="tab-content active">
+            <div class="domain-intro">
+                <strong>Perfil de la llamada:</strong> Volumen alto, scripts rígidos del lado del dispatcher, LEP frecuentemente ya frustrado por experiencias previas con el servicio. Duración corta (3-8 min) pero con picos de tensión concentrados en confirmaciones de PCA, ventanas de tiempo y cancelaciones.
+            </div>
+
+            <div class="section">
+                <h2>Fases de la Llamada</h2>
+
+                <div class="phase-block">
+                    <div class="phase-title">1. Verificación de identidad</div>
+                    <div class="phase-desc">Dispatcher confirma nombre, número de AAR ID, y a veces dirección. Suele ser rápido y mecánico.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Mantén el ritmo del dispatcher — no agregues cortesías que no están en el original; esta fase es transaccional de ambos lados.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">2. Propósito de la llamada</div>
+                    <div class="phase-desc">Reservar, cancelar, reprogramar, o consultar estado de un viaje ya reservado.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Si el LEP da información desordenada (fecha, luego dirección, luego hora), interpreta en el orden que la dio — no reorganices, el dispatcher está capacitado para procesar así.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">3. Detalles del viaje (origen/destino/PCA)</div>
+                    <div class="phase-desc">Aquí ocurre la mayor fricción: confirmación de si viaja con PCA o invitado, y quién paga.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Esta es la fase donde el dispatcher suele sonar más cortante ("Is that a PCA or a guest?") — interpreta el tono literal sin suavizarlo ni endurecerlo.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">4. Confirmación de ventana de tiempo</div>
+                    <div class="phase-desc">Se da la ventana de 30 minutos de recogida. Frecuente punto de queja del LEP.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Si el LEP se queja de la ventana ("that's too early", "I have a doctor's appointment"), interprétalo completo — no lo resumas aunque se repita.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">5. Cierre y número de confirmación</div>
+                    <div class="phase-desc">Se otorga número de confirmación; a veces instrucciones sobre reprogramación o cancelación.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Confirma que el número se transmitió con exactitud dígito por dígito — es común que se necesite repetir.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Puntos de Fricción Típicos</h2>
+                <div class="friction-box"><strong>Sequedad del dispatcher:</strong> Turnos largos y alto volumen de llamadas generan un tono mecánico que el LEP puede percibir como grosería. No es dirigido a ti ni al LEP personalmente — es fatiga operacional.</div>
+                <div class="friction-box"><strong>Confusión PCA vs. Guest:</strong> El LEP no siempre entiende la distinción de pago; puede sonar frustrado repitiendo "but she helps me."</div>
+                <div class="friction-box"><strong>Ventanas de tiempo inflexibles:</strong> El sistema no siempre acomoda citas médicas ajustadas, lo que genera negociación tensa.</div>
+                <div class="friction-box"><strong>Historial de no-shows o quejas previas:</strong> Si el LEP ha tenido conflictos anteriores, puede llegar ya a la defensiva desde el saludo.</div>
+            </div>
+
+            <div class="section">
+                <h2>Técnicas de Manejo</h2>
+                <div class="technique-item"><strong>Espejo de registro, no de emoción</strong><span>Iguala el nivel de formalidad/informalidad de cada hablante, pero no adoptes su carga emocional — tu voz interpretada debe transmitir el contenido emocional sin que tú lo sientas como propio.</span></div>
+                <div class="technique-item"><strong>Primera persona siempre</strong><span>Aun si el dispatcher suena cortante, interpreta en primera persona ("I need your AAR ID") — no lo suavices a "él dice que necesita..."</span></div>
+                <div class="technique-item"><strong>Pausa de recuperación de 2 segundos</strong><span>Si una intervención fue especialmente tensa, permite un silencio breve natural antes de continuar — no rellenes el silencio con comentarios propios.</span></div>
+            </div>
+
+            <div class="search-box"><input type="text" id="searchAar" placeholder="Buscar frases..." onkeyup="filterPhrasebank('aar')"></div>
+            <div class="section">
+                <h2>Banco de Frases Bilingües</h2>
+                <table class="phrasebank" id="table-aar">
+                    <tr><th>English (Dispatcher/System)</th><th>Español</th></tr>
+                    <tr><td class="en">Can I have your Access-A-Ride ID number?</td><td class="es">¿Me puede dar su número de identificación de Access-A-Ride?</td></tr>
+                    <tr><td class="en">What's the date and time of the trip?</td><td class="es">¿Cuál es la fecha y hora del viaje?</td></tr>
+                    <tr><td class="en">Is this a PCA or a guest traveling with you?</td><td class="es">¿Es un asistente de cuidado personal o un invitado quien viaja con usted?</td></tr>
+                    <tr><td class="en">Your pickup window is between 9:00 and 9:30 AM.</td><td class="es">Su ventana de recogida es entre las 9:00 y las 9:30 de la mañana.</td></tr>
+                    <tr><td class="en">The driver will wait up to 5 minutes.</td><td class="es">El conductor esperará hasta 5 minutos.</td></tr>
+                    <tr><td class="en">Your confirmation number is...</td><td class="es">Su número de confirmación es...</td></tr>
+                    <tr><td class="en">You need to cancel at least one hour in advance.</td><td class="es">Debe cancelar con al menos una hora de anticipación.</td></tr>
+                    <tr><td class="en">I'm sorry, that destination is outside our service area.</td><td class="es">Lo siento, ese destino está fuera de nuestra área de servicio.</td></tr>
+                    <tr><td class="en">This will count as a no-show if you don't call to cancel.</td><td class="es">Esto contará como no presentación si no llama para cancelar.</td></tr>
+                    <tr><td class="en">My appointment is at 10, I can't be picked up that late.</td><td class="es">Mi cita es a las 10, no puedo ser recogido tan tarde.</td></tr>
+                    <tr><td class="en">She's my PCA, she helps me every day.</td><td class="es">Ella es mi asistente de cuidado personal, me ayuda todos los días.</td></tr>
+                    <tr><td class="en">I've been waiting outside for 20 minutes already.</td><td class="es">Ya llevo 20 minutos esperando afuera.</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== 911 ==================== -->
+        <div id="e911" class="tab-content">
+            <div class="domain-intro">
+                <strong>Perfil de la llamada:</strong> <span class="badge badge-critical">CRÍTICA</span> Máxima urgencia, cero margen de error, protocolo rígido del call-taker. El LEP puede estar en pánico, llorando, gritando, o con dificultad para respirar. Toda demora o imprecisión tiene consecuencias reales.
+            </div>
+
+            <div class="section">
+                <h2>Fases de la Llamada</h2>
+
+                <div class="phase-block">
+                    <div class="phase-title">1. Ubicación (primero, siempre)</div>
+                    <div class="phase-desc">El protocolo de 911 exige la dirección ANTES que cualquier otro detalle, incluso si la llamada se corta.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Si el LEP da la ubicación de forma fragmentada, interpreta cada fragmento inmediatamente — no esperes a que termine de dar toda la dirección para interpretar.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">2. Naturaleza de la emergencia</div>
+                    <div class="phase-desc">"Police, Fire, or Medical?" — clasificación inicial que determina el resto del protocolo.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Interpreta literalmente, sin inferir la categoría tú mismo aunque parezca obvia.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">3. Preguntas de triage (protocolo estructurado)</div>
+                    <div class="phase-desc">Serie de preguntas cerradas y rápidas: "Is he breathing? Is he conscious? Is there bleeding?"</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Responde con la misma brevedad del original — "Sí/No/No sé" sin elaborar de más, salvo que el LEP lo haga.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">4. Instrucciones pre-arribo</div>
+                    <div class="phase-desc">El call-taker puede dar instrucciones de RCP, primeros auxilios, o de seguridad mientras llega ayuda.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Interpreta instrucción por instrucción, en tiempo real, sin agrupar varios pasos — la vida de alguien puede depender de la secuencia exacta.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">5. Permanecer en línea / cierre</div>
+                    <div class="phase-desc">El call-taker suele pedir que no cuelguen hasta que llegue ayuda.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Mantén tu propia calma vocal como ancla — el LEP puede regular su pánico parcialmente a partir del tono estable de tu voz interpretada.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Puntos de Fricción Típicos</h2>
+                <div class="friction-box"><strong>Pánico y habla desordenada:</strong> El LEP puede saltar entre síntomas, ubicación y ruegos de ayuda sin orden.</div>
+                <div class="friction-box"><strong>Ruido de fondo / gritos:</strong> Dificulta la comprensión auditiva; puede requerir pedir repetición sin romper el protocolo de urgencia.</div>
+                <div class="friction-box"><strong>Terminología médica bajo presión:</strong> Términos como "unresponsive", "seizure", "overdose" deben salir con precisión inmediata, sin pausa para pensar la traducción.</div>
+                <div class="friction-box"><strong>El call-taker interrumpe:</strong> Es protocolo válido, no grosería — recorta al LEP para redirigir a la pregunta necesaria.</div>
+            </div>
+
+            <div class="section">
+                <h2>Técnicas de Manejo</h2>
+                <div class="technique-item"><strong>Interpretación simultánea de emergencia</strong><span>En 911 se prioriza la velocidad sobre el pulido — interpreta fragmentos cortos casi en tiempo real en vez de esperar oraciones completas.</span></div>
+                <div class="technique-item"><strong>Sin editorializar ni resumir</strong><span>Nunca sintetices ("dice que está mal") — cada detalle clínico o situacional debe pasar completo, aunque se repita.</span></div>
+                <div class="technique-item"><strong>Autorregulación post-llamada</strong><span>Las llamadas de 911 tienen carga vicaria real. Si terminas una llamada fuerte, tómate un respiro consciente de 30-60 segundos antes de la siguiente — es una práctica de higiene profesional, no debilidad.</span></div>
+                <div class="technique-item"><strong>Pide repetición con protocolo, no con disculpa</strong><span>"Can you repeat the address?" en vez de "lo siento, no entendí" — mantiene el ritmo de urgencia sin sonar que fallaste.</span></div>
+            </div>
+
+            <div class="search-box"><input type="text" id="search911" placeholder="Buscar frases..." onkeyup="filterPhrasebank('e911')"></div>
+            <div class="section">
+                <h2>Banco de Frases Bilingües</h2>
+                <table class="phrasebank" id="table-e911">
+                    <tr><th>English (Call-taker/Caller)</th><th>Español</th></tr>
+                    <tr><td class="en">What's the address of the emergency?</td><td class="es">¿Cuál es la dirección de la emergencia?</td></tr>
+                    <tr><td class="en">Police, Fire, or Medical?</td><td class="es">¿Policía, Bomberos, o Médico?</td></tr>
+                    <tr><td class="en">Is he breathing? Is he conscious?</td><td class="es">¿Está respirando? ¿Está consciente?</td></tr>
+                    <tr><td class="en">Is there any bleeding?</td><td class="es">¿Hay sangrado?</td></tr>
+                    <tr><td class="en">Stay on the line with me.</td><td class="es">Quédese en la línea conmigo.</td></tr>
+                    <tr><td class="en">Help is on the way.</td><td class="es">La ayuda va en camino.</td></tr>
+                    <tr><td class="en">Do you know CPR? I'm going to walk you through it.</td><td class="es">¿Sabe hacer RCP? Le voy a guiar paso a paso.</td></tr>
+                    <tr><td class="en">Tilt his head back and check for breathing.</td><td class="es">Incline su cabeza hacia atrás y verifique si respira.</td></tr>
+                    <tr><td class="en">Is the scene safe? Is anyone armed?</td><td class="es">¿La escena es segura? ¿Alguien está armado?</td></tr>
+                    <tr><td class="en">Please hurry, he's not moving!</td><td class="es">¡Por favor apúrense, no se está moviendo!</td></tr>
+                    <tr><td class="en">I don't know the exact address, I'm near...</td><td class="es">No sé la dirección exacta, estoy cerca de...</td></tr>
+                    <tr><td class="en">Do not hang up the phone.</td><td class="es">No cuelgue el teléfono.</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== INSURANCE ==================== -->
+        <div id="insurance" class="tab-content">
+            <div class="domain-intro">
+                <strong>Perfil de la llamada:</strong> <span class="badge badge-high">ALTA COMPLEJIDAD</span> Terminología técnico-legal densa, línea grabada, implicaciones de responsabilidad legal (liability). El LEP puede estar en shock post-accidente. Precisión absoluta requerida — cualquier declaración puede usarse para determinar culpa.
+            </div>
+
+            <div class="section">
+                <h2>Fases de la Llamada</h2>
+
+                <div class="phase-block">
+                    <div class="phase-title">1. Verificación de póliza</div>
+                    <div class="phase-desc">Número de póliza, titular, vehículo asegurado.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Confirma cada número/letra con precisión — errores aquí retrasan todo el proceso de reclamo.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">2. Aviso de reclamo (FNOL - First Notice of Loss)</div>
+                    <div class="phase-desc">El LEP narra el incidente: cuándo, dónde, cómo ocurrió.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Esta narración es evidencia. Interpreta exactamente lo dicho, sin agregar causalidad o secuencia que el LEP no expresó explícitamente ("el otro carro se pasó la luz" vs. "hubo un choque").</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">3. Determinación preliminar de responsabilidad</div>
+                    <div class="phase-desc">El agente puede preguntar directamente "who was at fault?" — pregunta delicada.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Nunca suavices ni endurezcas una admisión o negación de culpa del LEP — es textualmente relevante para el caso.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">4. Asignación de número de reclamo y ajustador</div>
+                    <div class="phase-desc">Se otorga claim number y se explica el proceso siguiente (inspección, ajustador, taller).</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Verifica que términos como "deductible" y "adjuster" queden claros — son frecuentemente mal entendidos por el LEP.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">5. Cierre y próximos pasos</div>
+                    <div class="phase-desc">Instrucciones sobre documentación, plazos, y contacto de seguimiento.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Confirma fechas y plazos con exactitud — suelen tener consecuencias contractuales.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Puntos de Fricción Típicos</h2>
+                <div class="friction-box"><strong>Shock emocional post-accidente:</strong> El LEP puede divagar, repetirse, o tener dificultad para organizar la narrativa cronológica.</div>
+                <div class="friction-box"><strong>Jerga técnica-legal:</strong> "Deductible", "liability", "subrogation", "total loss" no siempre tienen equivalente directo y requieren precisión conceptual.</div>
+                <div class="friction-box"><strong>Línea grabada:</strong> El agente puede recordar "this call is being recorded" — asegúrate de interpretar ese disclaimer sin omitirlo.</div>
+                <div class="friction-box"><strong>Presión para admitir culpa rápido:</strong> Algunos agentes formulan preguntas capciosas; interpreta literal, no interpretes intención del agente.</div>
+            </div>
+
+            <div class="section">
+                <h2>Técnicas de Manejo</h2>
+                <div class="technique-item"><strong>Precisión sobre fluidez</strong><span>En este dominio es preferible una interpretación ligeramente más lenta pero exacta, que una fluida con imprecisiones — el texto puede citarse en disputas.</span></div>
+                <div class="technique-item"><strong>Nunca interpretes conclusiones, solo hechos narrados</strong><span>Si el LEP dice "yo estaba parado" interpreta eso exactamente — no "el LEP no tuvo culpa."</span></div>
+                <div class="technique-item"><strong>Aclara términos técnicos con neutralidad</strong><span>Si el LEP no entiende "deductible", puedes señalar al agente que hay una posible brecha de comprensión, sin explicar tú mismo el concepto — eso corresponde al agente.</span></div>
+            </div>
+
+            <div class="search-box"><input type="text" id="searchInsurance" placeholder="Buscar frases..." onkeyup="filterPhrasebank('insurance')"></div>
+            <div class="section">
+                <h2>Banco de Frases Bilingües</h2>
+                <table class="phrasebank" id="table-insurance">
+                    <tr><th>English (Agent/Claimant)</th><th>Español</th></tr>
+                    <tr><td class="en">This call is being recorded for quality purposes.</td><td class="es">Esta llamada está siendo grabada con fines de calidad.</td></tr>
+                    <tr><td class="en">Can you confirm your policy number?</td><td class="es">¿Puede confirmar su número de póliza?</td></tr>
+                    <tr><td class="en">Walk me through what happened.</td><td class="es">Cuénteme paso a paso lo que pasó.</td></tr>
+                    <tr><td class="en">Was anyone injured?</td><td class="es">¿Hubo alguien lesionado?</td></tr>
+                    <tr><td class="en">Who do you believe was at fault?</td><td class="es">¿Quién cree usted que tuvo la culpa?</td></tr>
+                    <tr><td class="en">Your deductible for this policy is $500.</td><td class="es">Su deducible para esta póliza es de $500.</td></tr>
+                    <tr><td class="en">An adjuster will contact you within 48 hours.</td><td class="es">Un ajustador se pondrá en contacto con usted dentro de 48 horas.</td></tr>
+                    <tr><td class="en">Your claim number is...</td><td class="es">Su número de reclamo es...</td></tr>
+                    <tr><td class="en">The other driver ran the red light.</td><td class="es">El otro conductor se pasó la luz roja.</td></tr>
+                    <tr><td class="en">Is your vehicle drivable?</td><td class="es">¿Su vehículo está en condiciones de manejarse?</td></tr>
+                    <tr><td class="en">I need to submit photos of the damage.</td><td class="es">Necesito enviar fotos del daño.</td></tr>
+                    <tr><td class="en">The vehicle may be declared a total loss.</td><td class="es">El vehículo puede ser declarado pérdida total.</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== UTILITY ==================== -->
+        <div id="utility" class="tab-content">
+            <div class="domain-intro">
+                <strong>Perfil de la llamada:</strong> <span class="badge badge-high">ALTA CARGA EMOCIONAL</span> Estrés financiero directo, amenaza de corte de servicio (shutoff). El LEP frecuentemente suplica o negocia; el agente sigue políticas rígidas de la compañía (ej. National Grid, Con Edison). Puede involucrar programas de asistencia (HEAP).
+            </div>
+
+            <div class="section">
+                <h2>Fases de la Llamada</h2>
+
+                <div class="phase-block">
+                    <div class="phase-title">1. Verificación de cuenta</div>
+                    <div class="phase-desc">Número de cuenta, dirección de servicio, titular.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Rutinario — mantén ritmo neutral.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">2. Estado de cuenta / saldo vencido</div>
+                    <div class="phase-desc">Se informa el balance adeudado, a veces con fecha límite de corte inminente.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Interpreta las cifras y fechas con exactitud absoluta — son la base de cualquier negociación posterior.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">3. Negociación de plan de pago</div>
+                    <div class="phase-desc">El LEP puede pedir un plan de pagos; el agente ofrece opciones según política de la empresa.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Aquí sube la tensión emocional — el LEP puede suplicar o justificar su situación económica extensamente. Interpreta completo, aunque sea largo.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">4. Programas de asistencia (HEAP u otros)</div>
+                    <div class="phase-desc">El agente puede mencionar programas de ayuda para pago de servicios.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Términos como "HEAP", "reconnection fee", "arrears" requieren precisión — el LEP puede depender de esta info para decidir cómo actuar.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">5. Confirmación y cierre</div>
+                    <div class="phase-desc">Se confirma el acuerdo (fecha de pago, monto, plan) o se informa fecha de corte si no hay acuerdo.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Verifica que el LEP haya entendido consecuencias exactas si no cumple el plan.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Puntos de Fricción Típicos</h2>
+                <div class="friction-box"><strong>Súplica emocional del LEP:</strong> Narrativas sobre hijos, salud, o pérdida de empleo que buscan generar empatía en el agente.</div>
+                <div class="friction-box"><strong>Rigidez de política de la empresa:</strong> El agente puede repetir la misma negativa varias veces sin margen de flexibilidad.</div>
+                <div class="friction-box"><strong>Amenaza de corte inminente (24-48 horas):</strong> Alto nivel de ansiedad, especialmente en climas extremos.</div>
+                <div class="friction-box"><strong>Vergüenza o resistencia a admitir dificultad económica:</strong> El LEP puede minimizar su situación al inicio y luego abrirse más.</div>
+            </div>
+
+            <div class="section">
+                <h2>Técnicas de Manejo</h2>
+                <div class="technique-item"><strong>Sostén emocional sin involucrarte</strong><span>Interpreta la súplica con el mismo peso emocional del original, sin que tu propia voz se quiebre ni suene distante — es un balance de neutralidad empática.</span></div>
+                <div class="technique-item"><strong>No anticipes la negativa del agente</strong><span>Aunque sepas por experiencia que la política suele ser rígida, interpreta cada intento de negociación del LEP con la misma energía que el primero.</span></div>
+                <div class="technique-item"><strong>Prioriza cifras y fechas sobre estilo</strong><span>Si debes elegir entre fluidez y exactitud numérica bajo presión de tiempo, prioriza siempre la exactitud del monto y la fecha límite.</span></div>
+            </div>
+
+            <div class="search-box"><input type="text" id="searchUtility" placeholder="Buscar frases..." onkeyup="filterPhrasebank('utility')"></div>
+            <div class="section">
+                <h2>Banco de Frases Bilingües</h2>
+                <table class="phrasebank" id="table-utility">
+                    <tr><th>English (Agent/Customer)</th><th>Español</th></tr>
+                    <tr><td class="en">Your account balance is past due.</td><td class="es">El saldo de su cuenta está vencido.</td></tr>
+                    <tr><td class="en">Your service is scheduled for disconnection on...</td><td class="es">Su servicio está programado para ser desconectado el...</td></tr>
+                    <tr><td class="en">I can offer you a payment arrangement.</td><td class="es">Puedo ofrecerle un plan de pago.</td></tr>
+                    <tr><td class="en">You'd need to pay a deposit to set up the plan.</td><td class="es">Necesitaría pagar un depósito para establecer el plan.</td></tr>
+                    <tr><td class="en">Have you applied for HEAP assistance?</td><td class="es">¿Ha solicitado la asistencia de HEAP?</td></tr>
+                    <tr><td class="en">There is a reconnection fee of $50.</td><td class="es">Hay una tarifa de reconexión de $50.</td></tr>
+                    <tr><td class="en">Please, I have small children at home.</td><td class="es">Por favor, tengo niños pequeños en casa.</td></tr>
+                    <tr><td class="en">I lost my job last month.</td><td class="es">Perdí mi trabajo el mes pasado.</td></tr>
+                    <tr><td class="en">I understand, but I'm unable to waive this fee.</td><td class="es">Entiendo, pero no puedo eximir este cargo.</td></tr>
+                    <tr><td class="en">Can I speak to a supervisor?</td><td class="es">¿Puedo hablar con un supervisor?</td></tr>
+                    <tr><td class="en">Your arrears total $340.</td><td class="es">Su saldo atrasado total es de $340.</td></tr>
+                    <tr><td class="en">If you pay $100 today, we can hold the disconnection.</td><td class="es">Si paga $100 hoy, podemos detener la desconexión.</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== BANKING ==================== -->
+        <div id="banking" class="tab-content">
+            <div class="domain-intro">
+                <strong>Perfil de la llamada:</strong> <span class="badge badge-med">SEGURIDAD/CONFIDENCIALIDAD</span> Verificación de identidad extensa, terminología financiera, posible estrés por fraude. El LEP puede sentirse desconfiado del propio proceso de verificación, o angustiado si reporta cargos fraudulentos.
+            </div>
+
+            <div class="section">
+                <h2>Fases de la Llamada</h2>
+
+                <div class="phase-block">
+                    <div class="phase-title">1. Verificación de identidad (Security Questions)</div>
+                    <div class="phase-desc">Preguntas de seguridad: SSN parcial, fecha de nacimiento, dirección, preguntas personalizadas.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Nunca repitas en voz alta información sensible más de lo necesario para interpretar — cuida la confidencialidad incluso en el ritmo de la interpretación.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">2. Motivo de la llamada</div>
+                    <div class="phase-desc">Consulta de saldo, transferencia, disputa de cargo, reporte de fraude, apertura de cuenta.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Si es reporte de fraude, el LEP puede empezar a hablar rápido y desordenado por la angustia — igual que en 911, prioriza velocidad de transmisión.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">3. Investigación / disputa</div>
+                    <div class="phase-desc">El agente pide detalles de la transacción cuestionada: fecha, monto, comerciante.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Los montos deben ser exactos hasta el centavo — un error aquí puede invalidar la disputa.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">4. Resolución / próximos pasos</div>
+                    <div class="phase-desc">Se explica el proceso: congelamiento de cuenta, nueva tarjeta, plazo de investigación (usualmente 10 días hábiles).</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Confirma que el LEP entendió los plazos exactos — genera ansiedad no saber cuándo se resuelve.</div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-title">5. Cierre y número de caso</div>
+                    <div class="phase-desc">Se otorga número de referencia del caso o disputa.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Verifica número de referencia con el mismo cuidado que un número de cuenta.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Puntos de Fricción Típicos</h2>
+                <div class="friction-box"><strong>Fatiga o desconfianza en verificación:</strong> El LEP puede sentir que "ya dio esa información" y mostrarse impaciente con preguntas repetitivas de seguridad.</div>
+                <div class="friction-box"><strong>Pánico por fraude activo:</strong> Si hay cargos en curso, la ansiedad es alta y el habla se acelera.</div>
+                <div class="friction-box"><strong>Terminología bancaria densa:</strong> "Routing number", "hold", "chargeback", "overdraft" no siempre tienen equivalente intuitivo.</div>
+                <div class="friction-box"><strong>Transferencias entre departamentos:</strong> El LEP puede tener que repetir toda su historia a un segundo agente — frustración acumulada.</div>
+            </div>
+
+            <div class="section">
+                <h2>Técnicas de Manejo</h2>
+                <div class="technique-item"><strong>Discreción activa con datos sensibles</strong><span>Interpreta números de cuenta y SSN con precisión pero sin darles énfasis vocal innecesario — mantén un tono neutro que no llame más atención de la necesaria sobre datos confidenciales.</span></div>
+                <div class="technique-item"><strong>Exactitud numérica no negociable</strong><span>En disputas de cargo, cada dígito de fecha y monto debe transmitirse exacto — pide repetición si tienes la más mínima duda, sin pena.</span></div>
+                <div class="technique-item"><strong>Paciencia interpretativa en transferencias</strong><span>Si el LEP debe repetir su caso a otro agente, interpreta la narrativa completa de nuevo con la misma energía, sin transmitir tu propio cansancio ante la repetición.</span></div>
+            </div>
+
+            <div class="search-box"><input type="text" id="searchBanking" placeholder="Buscar frases..." onkeyup="filterPhrasebank('banking')"></div>
+            <div class="section">
+                <h2>Banco de Frases Bilingües</h2>
+                <table class="phrasebank" id="table-banking">
+                    <tr><th>English (Agent/Customer)</th><th>Español</th></tr>
+                    <tr><td class="en">Can you verify the last four digits of your SSN?</td><td class="es">¿Puede verificar los últimos cuatro dígitos de su número de seguro social?</td></tr>
+                    <tr><td class="en">I'd like to report a charge I don't recognize.</td><td class="es">Quisiera reportar un cargo que no reconozco.</td></tr>
+                    <tr><td class="en">What was the amount and date of the transaction?</td><td class="es">¿Cuál fue el monto y la fecha de la transacción?</td></tr>
+                    <tr><td class="en">We're going to place a temporary hold on your account.</td><td class="es">Vamos a poner una retención temporal en su cuenta.</td></tr>
+                    <tr><td class="en">A new card will arrive within 5-7 business days.</td><td class="es">Una nueva tarjeta llegará dentro de 5 a 7 días hábiles.</td></tr>
+                    <tr><td class="en">The investigation may take up to 10 business days.</td><td class="es">La investigación puede tardar hasta 10 días hábiles.</td></tr>
+                    <tr><td class="en">Your reference number for this case is...</td><td class="es">Su número de referencia para este caso es...</td></tr>
+                    <tr><td class="en">I already gave that information to the last agent.</td><td class="es">Ya le di esa información al agente anterior.</td></tr>
+                    <tr><td class="en">Is this an authorized transaction?</td><td class="es">¿Es esta una transacción autorizada?</td></tr>
+                    <tr><td class="en">Your account shows an overdraft of $45.</td><td class="es">Su cuenta muestra un sobregiro de $45.</td></tr>
+                    <tr><td class="en">I need to transfer you to our fraud department.</td><td class="es">Necesito transferirlo a nuestro departamento de fraude.</td></tr>
+                    <tr><td class="en">Someone is using my card right now!</td><td class="es">¡Alguien está usando mi tarjeta ahora mismo!</td></tr>
+                </table>
+            </div>
+        </div>
+        <!-- ==================== DOORDASH ==================== -->
+        <div id="doordash" class="tab-content">
+            <div class="domain-intro">
+                <strong>Perfil de la llamada:</strong> <span class="badge badge-med">MULTI-PERFIL</span> Equivalente estadounidense de PedidosYa/Rappi. A diferencia de los otros escenarios, aquí NO hay un solo tipo de llamada — hay <strong>tres perfiles de llamador distintos</strong> (Cliente, Dasher, Merchant), cada uno con su propia línea de soporte, urgencia y vocabulario. Lo primero que debes identificar en los primeros segundos es <strong>quién llama y desde qué rol</strong>, porque eso determina todo el patrón que sigue.
+            </div>
+
+            <!-- ===== SUB-PERFIL: CLIENTE ===== -->
+            <div class="subprofile-header customer"><span class="icon">🛍️</span> PERFIL 1: CLIENTE</div>
+            <div class="domain-intro" style="border-left-color:#e67e22; background:#fff6ec;">
+                Llama por problemas con su propio pedido: artículos faltantes, pedido incorrecto, entrega tardía, o solicitud de reembolso. Tensión moderada, casi nunca de vida o muerte, pero frecuentemente cargada de frustración por hambre/hora de comida perdida.
+            </div>
+
+            <div class="section">
+                <h2>Fases de la Llamada — Cliente</h2>
+                <div class="phase-block">
+                    <div class="phase-title">1. Identificación del pedido</div>
+                    <div class="phase-desc">Número de orden, nombre en la cuenta, o número de teléfono asociado.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Confirma el número de orden con exactitud — el agente lo usa para jalar todo el historial del pedido.</div>
+                </div>
+                <div class="phase-block">
+                    <div class="phase-title">2. Descripción del problema</div>
+                    <div class="phase-desc">Artículo faltante, pedido equivocado, comida fría/tardía, o el pedido nunca llegó.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> El LEP puede listar varios artículos faltantes seguidos — interpreta la lista completa, no la resumas como "faltaron varias cosas."</div>
+                </div>
+                <div class="phase-block">
+                    <div class="phase-title">3. Resolución ofrecida</div>
+                    <div class="phase-desc">Reembolso parcial/total, crédito de la tienda (DoorDash credit), o reenvío del pedido.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Distingue con precisión entre "refund" (dinero de vuelta) y "credit" (crédito solo utilizable en la app) — es una diferencia que el LEP necesita entender antes de aceptar.</div>
+                </div>
+                <div class="phase-block">
+                    <div class="phase-title">4. Cierre</div>
+                    <div class="phase-desc">Confirmación del monto y tiempo estimado de procesamiento del reembolso/crédito.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Verifica el plazo exacto (usualmente 5-10 días hábiles para reembolsos a tarjeta).</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Fricciones — Cliente</h2>
+                <div class="friction-box"><strong>Ofrecen crédito en vez de reembolso:</strong> El LEP puede insistir en dinero real, no crédito de la app; el agente suele tener política de ofrecer primero el crédito.</div>
+                <div class="friction-box"><strong>Pedido nunca llegó pero el sistema dice "delivered":</strong> Genera fricción porque el LEP debe "probar" que no llegó, contra un sistema de GPS que dice lo contrario.</div>
+                <div class="friction-box"><strong>Frustración por hambre/tiempo perdido:</strong> Tensión emocional baja-moderada pero constante, especialmente en pedidos para eventos o niños.</div>
+            </div>
+
+            <!-- ===== SUB-PERFIL: DASHER ===== -->
+            <div class="subprofile-header dasher"><span class="icon">🛵</span> PERFIL 2: DASHER (Repartidor)</div>
+            <div class="domain-intro" style="border-left-color:#c0392b; background:#fdf0ef;">
+                Llama porque necesita ayuda operativa durante una entrega activa, o por temas de pago/cuenta. Existen líneas separadas: una para entregas activas ((855) 973-1040) con tiempos de espera más cortos por estar reservada a emergencias en curso, y otra general ((855) 431-0459) para pago, cuenta, verificación de antecedentes y quejas de clientes. Este es el perfil con mayor variabilidad de urgencia — desde "no encuentro la dirección" hasta reportar un accidente o situación de seguridad.
+            </div>
+
+            <div class="section">
+                <h2>Fases de la Llamada — Dasher</h2>
+                <div class="phase-block">
+                    <div class="phase-title">1. Triage de urgencia</div>
+                    <div class="phase-desc">El agente determina rápido si es una emergencia de entrega activa o un tema administrativo.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Si el Dasher llamó a la línea de entrega activa, asume tono de mayor urgencia desde el inicio — el sistema ya filtró que es tiempo-sensible.</div>
+                </div>
+                <div class="phase-block">
+                    <div class="phase-title">2. Identificación de la orden/situación</div>
+                    <div class="phase-desc">Número de orden activa, ubicación del Dasher, naturaleza del obstáculo (tienda cerrada, cliente inalcanzable, dirección incorrecta).</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Si el Dasher está manejando mientras llama (situación común y riesgosa), su habla puede ser entrecortada — no le pidas que repita más de lo necesario.</div>
+                </div>
+                <div class="phase-block">
+                    <div class="phase-title">3. Instrucción del agente</div>
+                    <div class="phase-desc">El agente puede indicar reintentar contacto con el cliente, dejar el pedido en un lugar seguro (contactless drop-off), o cancelar la entrega sin penalización.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Verifica que quede claro si la cancelación afecta o no la tasa de finalización (completion rate) del Dasher — es un dato que le importa mucho para su cuenta.</div>
+                </div>
+                <div class="phase-block">
+                    <div class="phase-title">4. Temas de pago (si es línea general)</div>
+                    <div class="phase-desc">Discrepancias en el pago, propinas no reflejadas, o depósitos (Fast Pay) retrasados.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Cifras exactas de pago son críticas — igual que en banca, prioriza precisión numérica sobre fluidez.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Fricciones — Dasher</h2>
+                <div class="friction-box"><strong>Ansiedad por el "completion rate" / "acceptance rate":</strong> Estas métricas afectan directamente si siguen recibiendo pedidos — el Dasher puede sonar desesperado por no perder puntos aunque la situación no sea su culpa.</div>
+                <div class="friction-box"><strong>Situaciones de seguridad real:</strong> Direcciones peligrosas, clientes agresivos, o accidentes de tránsito — aquí el perfil se acerca más al de una llamada 911 en tono de urgencia.</div>
+                <div class="friction-box"><strong>Retención de pago (payment hold):</strong> Frustración alta cuando el Dasher siente que trabajó pero no le pagan a tiempo.</div>
+            </div>
+
+            <!-- ===== SUB-PERFIL: MERCHANT ===== -->
+            <div class="subprofile-header merchant"><span class="icon">🏪</span> PERFIL 3: MERCHANT (Restaurante/Tienda)</div>
+            <div class="domain-intro" style="border-left-color:#2e7d32; background:#f0f7f0;">
+                Llama por consultas relacionadas con órdenes activas: entrega, cancelaciones, reembolsos, problemas con Dashers, o con la tableta del restaurante, disponible las 24 horas por teléfono o chat. Tono generalmente más profesional/comercial que los otros dos perfiles — es un negocio hablando con su plataforma de venta, no un consumidor individual.
+            </div>
+
+            <div class="section">
+                <h2>Fases de la Llamada — Merchant</h2>
+                <div class="phase-block">
+                    <div class="phase-title">1. Identificación del negocio</div>
+                    <div class="phase-desc">Nombre de la tienda, ID de tienda, dirección — a menudo múltiples ubicaciones bajo un mismo dueño.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Si hay varias ubicaciones, confirma cuál específicamente está reportando el problema.</div>
+                </div>
+                <div class="phase-block">
+                    <div class="phase-title">2. Descripción del problema operativo</div>
+                    <div class="phase-desc">Tableta desconectada, orden que no se sincronizó, artículo marcado "no disponible" incorrectamente, o disputa de un reembolso ya otorgado a un cliente.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Vocabulario aquí es más técnico/comercial — "sync", "tablet", "menu item", "86'd" (jerga de restaurante para "agotado").</div>
+                </div>
+                <div class="phase-block">
+                    <div class="phase-title">3. Resolución</div>
+                    <div class="phase-desc">Ajuste de pago al Merchant, ticket de soporte técnico, o escalamiento a un "Merchant Experience Partner" (representante dedicado).</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Si mencionan un "MXP" o "Merchant Experience Partner," aclara que es un representante asignado, no un departamento genérico.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Fricciones — Merchant</h2>
+                <div class="friction-box"><strong>Disputa de reembolsos ya otorgados:</strong> El restaurante puede sentir que se les descontó dinero por un reembolso al cliente sin su consentimiento — tensión comercial, no emocional.</div>
+                <div class="friction-box"><strong>Problemas técnicos recurrentes con la tableta:</strong> Frustración operativa que afecta directamente sus ventas del día.</div>
+                <div class="friction-box"><strong>Percepción de que Dashers "arruinan" su reputación:</strong> El Merchant puede culpar a los Dashers por demoras que no son culpa del restaurante.</div>
+            </div>
+
+            <div class="section">
+                <h2>Técnicas de Manejo — General DoorDash</h2>
+                <div class="technique-item"><strong>Identifica el perfil en los primeros 5 segundos</strong><span>Escucha si mencionan "my order", "I'm on a delivery", o "my store" — esto te dice inmediatamente qué patrón de los tres anteriores aplicar.</span></div>
+                <div class="technique-item"><strong>Ajusta el registro según el perfil</strong><span>Cliente = tono coloquial/emocional; Dasher = tono operativo bajo presión; Merchant = tono comercial-profesional. No uses el mismo registro para los tres.</span></div>
+                <div class="technique-item"><strong>Cuidado con el spanglish de la gig economy</strong><span>Términos como "dashear", "el tip", "la app" ya están asentados en el habla cotidiana de muchos LEPs — no los "corrijas" a una traducción formal si el LEP los usa naturalmente; refleja su registro real.</span></div>
+            </div>
+
+            <div class="search-box"><input type="text" id="searchDdcustomer" placeholder="Buscar frases de Cliente..." onkeyup="filterPhrasebank('ddcustomer')"></div>
+            <div class="section">
+                <h2>Banco de Frases — Cliente</h2>
+                <table class="phrasebank" id="table-ddcustomer">
+                    <tr><th>English</th><th>Español</th></tr>
+                    <tr><td class="en">Can I get your order number?</td><td class="es">¿Me puede dar su número de orden?</td></tr>
+                    <tr><td class="en">My order is missing two items.</td><td class="es">A mi pedido le faltan dos artículos.</td></tr>
+                    <tr><td class="en">The app shows the order was delivered, but I never received it.</td><td class="es">La aplicación muestra que el pedido fue entregado, pero nunca lo recibí.</td></tr>
+                    <tr><td class="en">I can offer you DoorDash credit for the missing items.</td><td class="es">Le puedo ofrecer crédito de DoorDash por los artículos faltantes.</td></tr>
+                    <tr><td class="en">I'd rather have a refund to my card, not credit.</td><td class="es">Prefiero un reembolso a mi tarjeta, no crédito.</td></tr>
+                    <tr><td class="en">Your refund will take 5 to 10 business days.</td><td class="es">Su reembolso tardará de 5 a 10 días hábiles.</td></tr>
+                    <tr><td class="en">The food arrived cold and over an hour late.</td><td class="es">La comida llegó fría y con más de una hora de retraso.</td></tr>
+                </table>
+            </div>
+
+            <div class="search-box"><input type="text" id="searchDdasher" placeholder="Buscar frases de Dasher..." onkeyup="filterPhrasebank('ddasher')"></div>
+            <div class="section">
+                <h2>Banco de Frases — Dasher</h2>
+                <table class="phrasebank" id="table-ddasher">
+                    <tr><th>English</th><th>Español</th></tr>
+                    <tr><td class="en">I'm on an active delivery and I can't find the address.</td><td class="es">Estoy en una entrega activa y no puedo encontrar la dirección.</td></tr>
+                    <tr><td class="en">The store is closed, what should I do?</td><td class="es">La tienda está cerrada, ¿qué debo hacer?</td></tr>
+                    <tr><td class="en">The customer isn't answering their phone.</td><td class="es">El cliente no contesta su teléfono.</td></tr>
+                    <tr><td class="en">You can leave the order at the door and take a photo.</td><td class="es">Puede dejar el pedido en la puerta y tomar una foto.</td></tr>
+                    <tr><td class="en">Will this cancellation affect my completion rate?</td><td class="es">¿Esta cancelación afectará mi tasa de finalización?</td></tr>
+                    <tr><td class="en">My payment for this delivery looks wrong.</td><td class="es">Mi pago por esta entrega se ve incorrecto.</td></tr>
+                    <tr><td class="en">I was in a minor accident during the delivery.</td><td class="es">Tuve un accidente menor durante la entrega.</td></tr>
+                    <tr><td class="en">My Fast Pay deposit hasn't arrived yet.</td><td class="es">Mi depósito de Fast Pay todavía no ha llegado.</td></tr>
+                </table>
+            </div>
+
+            <div class="search-box"><input type="text" id="searchDdmerchant" placeholder="Buscar frases de Merchant..." onkeyup="filterPhrasebank('ddmerchant')"></div>
+            <div class="section">
+                <h2>Banco de Frases — Merchant</h2>
+                <table class="phrasebank" id="table-ddmerchant">
+                    <tr><th>English</th><th>Español</th></tr>
+                    <tr><td class="en">Can I get your store name and store ID?</td><td class="es">¿Me puede dar el nombre de su tienda y su ID de tienda?</td></tr>
+                    <tr><td class="en">Our tablet is disconnected and orders aren't syncing.</td><td class="es">Nuestra tableta está desconectada y las órdenes no se están sincronizando.</td></tr>
+                    <tr><td class="en">A refund was issued to a customer without our approval.</td><td class="es">Se emitió un reembolso a un cliente sin nuestra aprobación.</td></tr>
+                    <tr><td class="en">This item was marked unavailable by mistake.</td><td class="es">Este artículo fue marcado como no disponible por error.</td></tr>
+                    <tr><td class="en">I'd like to speak to our Merchant Experience Partner.</td><td class="es">Quisiera hablar con nuestro Socio de Experiencia del Comerciante.</td></tr>
+                    <tr><td class="en">The Dasher waited too long and the food got cold.</td><td class="es">El repartidor esperó demasiado y la comida se enfrió.</td></tr>
+                    <tr><td class="en">We need this resolved before our next payout cycle.</td><td class="es">Necesitamos que esto se resuelva antes de nuestro próximo ciclo de pago.</td></tr>
+                </table>
+            </div>
+        </div>
+        <!-- ==================== AIRBNB ==================== -->
+        <div id="airbnb" class="tab-content">
+            <div class="domain-intro">
+                <strong>Perfil de la llamada:</strong> <span class="badge badge-med">MULTI-PERFIL</span> Como DoorDash, Airbnb tiene dos lados con intereses distintos — <strong>Huésped (Guest)</strong> y <strong>Anfitrión (Host)</strong> — que llaman a la misma plataforma pero con objetivos casi opuestos (uno busca reembolso/solución, el otro busca protección de su propiedad e ingresos). Además, Airbnb tiene un componente que los otros escenarios no tienen: <strong>terminología de configuración de espacio físico</strong> (tipo de alojamiento, camas, habitaciones), que es donde te pediste que hiciera énfasis.
+            </div>
+
+            <!-- ===== SUB-PERFIL: HUÉSPED ===== -->
+            <div class="subprofile-header guest"><span class="icon">🧳</span> PERFIL 1: HUÉSPED (Guest)</div>
+            <div class="domain-intro" style="border-left-color:#764ba2; background:#f4f0fa;">
+                Llama por problemas con la propiedad reservada: no coincide con la descripción, problemas de limpieza/seguridad, cancelación de último momento por el anfitrión, o solicitud de reembolso vía el Resolution Center.
+            </div>
+
+            <div class="section">
+                <h2>Fases de la Llamada — Huésped</h2>
+                <div class="phase-block">
+                    <div class="phase-title">1. Identificación de la reserva</div>
+                    <div class="phase-desc">Número de confirmación de reserva, fechas del check-in/check-out, nombre del listing.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Ten a la mano el número de confirmación de reserva — el agente lo pedirá casi siempre primero, igual que en AAR con el ID.</div>
+                </div>
+                <div class="phase-block">
+                    <div class="phase-title">2. Descripción del problema</div>
+                    <div class="phase-desc">La propiedad no coincide con las fotos, falta un amenity prometido, hay un problema de seguridad/limpieza, o el anfitrión canceló inesperadamente.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Si el LEP describe la configuración física del lugar (camas, habitaciones) para justificar su queja, aquí es donde la precisión terminológica de la sección de glosario se vuelve crítica.</div>
+                </div>
+                <div class="phase-block">
+                    <div class="phase-title">3. Resolución / Resolution Center</div>
+                    <div class="phase-desc">Reembolso parcial/total, recolocación (rebooking) en otra propiedad, o mediación entre huésped y anfitrión.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Distingue "refund" de "rebooking assistance" — son soluciones distintas que el LEP debe entender antes de aceptar una.</div>
+                </div>
+                <div class="phase-block">
+                    <div class="phase-title">4. AirCover (si aplica)</div>
+                    <div class="phase-desc">Programa de protección de Airbnb para huéspedes cuando la propiedad no cumple lo prometido (Booking Protection Guarantee).</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Si mencionan "AirCover", aclara que es el programa de garantía de la plataforma, no un seguro que el huésped compró aparte.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Fricciones — Huésped</h2>
+                <div class="friction-box"><strong>Discrepancia entre fotos y realidad:</strong> El LEP puede describir con frustración la diferencia entre lo anunciado y lo que encontró — aquí es clave la precisión en términos de habitaciones y camas.</div>
+                <div class="friction-box"><strong>Cancelación de último momento por el anfitrión:</strong> Alta ansiedad si ocurre el mismo día del check-in, especialmente en viajes con niños o eventos.</div>
+                <div class="friction-box"><strong>Negociación de reembolso vs. crédito de viaje (travel credit):</strong> Similar a DoorDash — el agente puede ofrecer crédito primero en vez de reembolso a tarjeta.</div>
+            </div>
+
+            <!-- ===== SUB-PERFIL: ANFITRIÓN ===== -->
+            <div class="subprofile-header host"><span class="icon">🏠</span> PERFIL 2: ANFITRIÓN (Host)</div>
+            <div class="domain-intro" style="border-left-color:#0b1f6a; background:#eef1fb;">
+                Llama por temas de gestión de su propiedad: daños causados por huéspedes, disputas de reembolso, retrasos de pago (payout), problemas técnicos del listing, o situaciones de seguridad activa (huésped que no se quiere ir, fiesta no autorizada). Los anfitriones con estatus Superhost suelen tener línea dedicada con menor tiempo de espera.
+            </div>
+
+            <div class="section">
+                <h2>Fases de la Llamada — Anfitrión</h2>
+                <div class="phase-block">
+                    <div class="phase-title">1. Identificación del listing y reserva</div>
+                    <div class="phase-desc">ID del listing, número de reserva específica, nombre del huésped involucrado.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Si el anfitrión maneja múltiples propiedades, confirma cuál listing específico está reportando.</div>
+                </div>
+                <div class="phase-block">
+                    <div class="phase-title">2. Naturaleza del problema</div>
+                    <div class="phase-desc">Daño a la propiedad (damage claim bajo AirCover), huésped que rompió reglas de la casa, disputa de una reseña, o retraso de payout.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> En reclamos de daño, la precisión narrativa importa tanto como en un reclamo de seguro de auto — el anfitrión debe describir el daño con exactitud, sin que tú agregues intensidad emocional que no dijo.</div>
+                </div>
+                <div class="phase-block">
+                    <div class="phase-title">3. Documentación requerida</div>
+                    <div class="phase-desc">El agente pedirá fotos, mensajes dentro de la plataforma, o recibos — la comunicación fuera de Airbnb no cuenta como evidencia válida.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Es útil que el anfitrión entienda que solo cuenta la evidencia dentro de la plataforma — aclara esto si el LEP menciona haber hablado "por WhatsApp" con el huésped.</div>
+                </div>
+                <div class="phase-block">
+                    <div class="phase-title">4. Escalamiento (si aplica)</div>
+                    <div class="phase-desc">Situaciones activas de seguridad (fiesta, huésped agresivo) se escalan a Trust & Safety con mayor urgencia.</div>
+                    <div class="phase-tip"><strong>Tip:</strong> Si el anfitrión llama en medio de una situación activa (p. ej. huésped no se va), trata el tono con la misma urgencia que una llamada de entrega activa de DoorDash.</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Fricciones — Anfitrión</h2>
+                <div class="friction-box"><strong>Dificultad para probar quién causó el daño:</strong> Especialmente frustrante en reservas con múltiples huéspedes o turnos de limpieza entre reservas.</div>
+                <div class="friction-box"><strong>Payout retrasado:</strong> Ansiedad financiera similar a la de un Dasher esperando su pago — el anfitrión depende de esos ingresos.</div>
+                <div class="friction-box"><strong>Sensación de que la plataforma favorece al huésped:</strong> Percepción común entre anfitriones de que las políticas de reembolso son más flexibles para huéspedes que para ellos.</div>
+            </div>
+
+            <div class="section">
+                <h2>Técnicas de Manejo — General Airbnb</h2>
+                <div class="technique-item"><strong>Distingue reembolso, crédito y recolocación</strong><span>Son tres resultados distintos con distintas implicaciones financieras para el LEP — nunca los uses como sinónimos al interpretar.</span></div>
+                <div class="technique-item"><strong>Precisión en evidencia y plazos</strong><span>AirCover exige presentar reclamos de daño dentro de 14 días tras el checkout y antes de que ingrese el siguiente huésped — cualquier fecha mencionada debe ser exacta, igual que en seguros de auto.</span></div>
+                <div class="technique-item"><strong>Vocabulario de configuración = precisión de descripción</strong><span>Cuando la queja del huésped o la defensa del anfitrión depende de cómo está configurado el espacio (cuántas camas, qué tipo de habitación), tu precisión terminológica en esa sección es tan importante como un número de cuenta bancaria.</span></div>
+            </div>
+
+            <!-- ===== GLOSARIO: CONFIGURACIÓN DE HABITACIONES ===== -->
+            <div class="section">
+                <h2>📐 Glosario: Configuración de Habitaciones y Alojamiento</h2>
+                <div class="domain-intro" style="border-left-color:#e67e22; background:#fff6ec;">
+                Esta sección es el énfasis solicitado: vocabulario específico sobre cómo está estructurado y configurado el espacio físico — crítico quando la queja o disputa depende de si "lo que se anunció" coincide con "lo que se entregó."
+                </div>
+
+                <div class="room-glossary-item">
+                    <div class="english">Entire Home/Apartment (Entire Place)</div>
+                    <div class="spanish">Casa/Apartamento Completo</div>
+                    <div class="definition">Tipo de listing donde el huésped tiene acceso exclusivo a toda la propiedad, sin compartir espacios con el anfitrión u otros huéspedes.</div>
+                    <div class="context"><strong>Contexto:</strong> "The listing said entire apartment, but there was another guest using the kitchen." / "El anuncio decía apartamento completo, pero había otro huésped usando la cocina."</div>
+                </div>
+
+                <div class="room-glossary-item">
+                    <div class="english">Private Room</div>
+                    <div class="spanish">Habitación Privada</div>
+                    <div class="definition">El huésped tiene su propia habitación privada, pero comparte espacios comunes (cocina, sala, a veces baño) con el anfitrión u otros huéspedes.</div>
+                    <div class="context"><strong>Contexto:</strong> "This is a private room listing, so you'll share the bathroom with the host." / "Este es un anuncio de habitación privada, así que compartirá el baño con el anfitrión."</div>
+                </div>
+
+                <div class="room-glossary-item">
+                    <div class="english">Shared Room</div>
+                    <div class="spanish">Habitación Compartida</div>
+                    <div class="definition">El huésped comparte la habitación misma (no solo espacios comunes) con otras personas ajenas a su grupo de viaje.</div>
+                    <div class="context"><strong>Contexto:</strong> "I didn't realize it was a shared room with strangers." / "No me di cuenta de que era una habitación compartida con extraños."</div>
+                </div>
+
+                <div class="room-glossary-item">
+                    <div class="english">Studio</div>
+                    <div class="spanish">Estudio / Monoambiente</div>
+                    <div class="definition">Espacio de un solo ambiente que combina dormitorio, sala y a veces cocina en un mismo cuarto, sin divisiones.</div>
+                    <div class="context"><strong>Contexto:</strong> "It's listed as a studio, so the bed is in the same room as the kitchen." / "Está listado como estudio, así que la cama está en el mismo cuarto que la cocina."</div>
+                </div>
+
+                <div class="room-glossary-item">
+                    <div class="english">En-suite Bathroom</div>
+                    <div class="spanish">Baño Privado / Baño en Suite</div>
+                    <div class="definition">Baño conectado directamente a una habitación específica, de uso exclusivo del ocupante de esa habitación.</div>
+                    <div class="context"><strong>Contexto:</strong> "The listing promised an en-suite bathroom, but I had to walk down the hall." / "El anuncio prometía un baño privado, pero tuve que caminar por el pasillo."</div>
+                </div>
+
+                <div class="room-glossary-item">
+                    <div class="english">King Bed / Queen Bed</div>
+                    <div class="spanish">Cama King / Cama Queen (Matrimonial Grande)</div>
+                    <div class="definition">Tamaños estándar de cama: King es la más grande (aprox. 193x203 cm), Queen es intermedia (aprox. 152x203 cm).</div>
+                    <div class="context"><strong>Contexto:</strong> "The listing said king bed, but it was actually a queen." / "El anuncio decía cama king, pero en realidad era una cama queen."</div>
+                </div>
+
+                <div class="room-glossary-item">
+                    <div class="english">Twin Bed / Single Bed</div>
+                    <div class="spanish">Cama Individual / Cama de una Plaza</div>
+                    <div class="definition">Cama pequeña para una sola persona (aprox. 99x190 cm).</div>
+                    <div class="context"><strong>Contexto:</strong> "There are two twin beds in the second bedroom." / "Hay dos camas individuales en la segunda habitación."</div>
+                </div>
+
+                <div class="room-glossary-item">
+                    <div class="english">Bunk Bed</div>
+                    <div class="spanish">Litera / Cama Camarote</div>
+                    <div class="definition">Dos camas apiladas verticalmente, una encima de la otra.</div>
+                    <div class="context"><strong>Contexto:</strong> "My kids are afraid of the top bunk bed." / "Mis hijos le tienen miedo a la litera de arriba."</div>
+                </div>
+
+                <div class="room-glossary-item">
+                    <div class="english">Sofa Bed / Pull-out Couch</div>
+                    <div class="spanish">Sofá Cama / Sillón Cama</div>
+                    <div class="definition">Sofá que se convierte en cama, generalmente ubicado en la sala.</div>
+                    <div class="context"><strong>Contexto:</strong> "The listing counted the sofa bed as a bedroom." / "El anuncio contó el sofá cama como una habitación."</div>
+                </div>
+
+                <div class="room-glossary-item">
+                    <div class="english">Air Mattress / Inflatable Mattress</div>
+                    <div class="spanish">Colchón Inflable / Colchón de Aire</div>
+                    <div class="definition">Colchón temporal e inflable, generalmente usado para huéspedes adicionales no incluidos en la configuración base.</div>
+                    <div class="context"><strong>Contexto:</strong> "They gave us an air mattress instead of an actual bed." / "Nos dieron un colchón inflable en vez de una cama real."</div>
+                </div>
+
+                <div class="room-glossary-item">
+                    <div class="english">Sleeps X / Max Occupancy</div>
+                    <div class="spanish">Capacidad para X Personas / Ocupación Máxima</div>
+                    <div class="definition">Número máximo de huéspedes que el listing permite alojar, según su configuración de camas.</div>
+                    <div class="context"><strong>Contexto:</strong> "The listing says it sleeps 6, but there were only 2 real beds." / "El anuncio dice que tiene capacidad para 6, pero solo había 2 camas reales."</div>
+                </div>
+
+                <div class="room-glossary-item">
+                    <div class="english">Bedroom Count / Bathroom Count</div>
+                    <div class="spanish">Número de Habitaciones / Número de Baños</div>
+                    <div class="definition">Cantidad de dormitorios y baños incluidos en la propiedad, tal como aparece en el listing.</div>
+                    <div class="context"><strong>Contexto:</strong> "It's listed as 3 bedrooms, 2 bathrooms." / "Está anunciado como 3 habitaciones, 2 baños."</div>
+                </div>
+
+                <div class="room-glossary-item">
+                    <div class="english">Loft</div>
+                    <div class="spanish">Altillo / Buhardilla</div>
+                    <div class="definition">Espacio elevado dentro de la propiedad, a veces usado como área de dormir adicional con techo bajo.</div>
+                    <div class="context"><strong>Contexto:</strong> "The extra beds are in a loft above the living room." / "Las camas adicionales están en un altillo arriba de la sala."</div>
+                </div>
+
+                <div class="room-glossary-item">
+                    <div class="english">Amenities</div>
+                    <div class="spanish">Comodidades / Amenidades</div>
+                    <div class="definition">Servicios y características incluidas en la propiedad (WiFi, aire acondicionado, lavadora, estacionamiento, piscina).</div>
+                    <div class="context"><strong>Contexto:</strong> "The listing said it had air conditioning as an amenity, but it wasn't working." / "El anuncio decía que tenía aire acondicionado como amenidad, pero no funcionaba."</div>
+                </div>
+
+                <div class="room-glossary-item">
+                    <div class="english">Self Check-in</div>
+                    <div class="spanish">Registro Automático / Auto Check-in</div>
+                    <div class="definition">Sistema que permite al huésped entrar a la propiedad sin interacción directa con el anfitrión, usualmente con caja de seguridad para llaves o cerradura digital.</div>
+                    <div class="context"><strong>Contexto:</strong> "Self check-in is available with a lockbox code." / "El registro automático está disponible con un código de caja de seguridad."</div>
+                </div>
+
+                <div class="room-glossary-item">
+                    <div class="english">House Rules</div>
+                    <div class="spanish">Reglas de la Casa</div>
+                    <div class="definition">Normas específicas establecidas por el anfitrión para el uso de la propiedad (no fumar, no fiestas, horario de silencio).</div>
+                    <div class="context"><strong>Contexto:</strong> "The guest violated the house rules by hosting a party." / "El huésped violó las reglas de la casa al organizar una fiesta."</div>
+                </div>
+            </div>
+
+            <div class="search-box"><input type="text" id="searchAirbnbguest" placeholder="Buscar frases de Huésped..." onkeyup="filterPhrasebank('airbnbguest')"></div>
+            <div class="section">
+                <h2>Banco de Frases — Huésped</h2>
+                <table class="phrasebank" id="table-airbnbguest">
+                    <tr><th>English</th><th>Español</th></tr>
+                    <tr><td class="en">Can I get your reservation confirmation code?</td><td class="es">¿Me puede dar su código de confirmación de reserva?</td></tr>
+                    <tr><td class="en">The property doesn't match the listing photos.</td><td class="es">La propiedad no coincide con las fotos del anuncio.</td></tr>
+                    <tr><td class="en">The host cancelled on me the day of check-in.</td><td class="es">El anfitrión me canceló el mismo día del check-in.</td></tr>
+                    <tr><td class="en">I'd like to file a claim under AirCover.</td><td class="es">Quisiera presentar un reclamo bajo AirCover.</td></tr>
+                    <tr><td class="en">I can offer you a full refund or help rebooking.</td><td class="es">Le puedo ofrecer un reembolso completo o ayuda para reservar otro lugar.</td></tr>
+                    <tr><td class="en">There were only 2 beds for 4 guests as promised.</td><td class="es">Solo había 2 camas para 4 huéspedes como se prometió.</td></tr>
+                    <tr><td class="en">I'd prefer a refund to my card, not travel credit.</td><td class="es">Prefiero un reembolso a mi tarjeta, no crédito de viaje.</td></tr>
+                </table>
+            </div>
+
+            <div class="search-box"><input type="text" id="searchAirbnbhost" placeholder="Buscar frases de Anfitrión..." onkeyup="filterPhrasebank('airbnbhost')"></div>
+            <div class="section">
+                <h2>Banco de Frases — Anfitrión</h2>
+                <table class="phrasebank" id="table-airbnbhost">
+                    <tr><th>English</th><th>Español</th></tr>
+                    <tr><td class="en">Can I get your listing ID and the reservation in question?</td><td class="es">¿Me puede dar el ID de su anuncio y la reserva en cuestión?</td></tr>
+                    <tr><td class="en">The guest caused significant damage to the property.</td><td class="es">El huésped causó daños significativos a la propiedad.</td></tr>
+                    <tr><td class="en">I need to file this claim within 14 days of checkout.</td><td class="es">Necesito presentar este reclamo dentro de los 14 días posteriores al checkout.</td></tr>
+                    <tr><td class="en">Please upload photos and any messages from the platform.</td><td class="es">Por favor suba fotos y cualquier mensaje de la plataforma.</td></tr>
+                    <tr><td class="en">Messages outside the Airbnb platform can't be used as evidence.</td><td class="es">Los mensajes fuera de la plataforma de Airbnb no se pueden usar como evidencia.</td></tr>
+                    <tr><td class="en">My payout is three days late.</td><td class="es">Mi pago tiene tres días de retraso.</td></tr>
+                    <tr><td class="en">The guest is refusing to leave after checkout time.</td><td class="es">El huésped se niega a irse después de la hora de checkout.</td></tr>
+                    <tr><td class="en">I'd like to escalate this to Trust and Safety.</td><td class="es">Quisiera escalar esto a Confianza y Seguridad.</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>🎧 Manual de patrones de interpretación para escenarios de alto estrés | Referencia profesional 2026</p>
+        <p>Uso personal — se recomienda revisión periódica y expansión según experiencia propia</p>
+    </footer>
+</div>
+
+<script>
+function openTab(evt, tabName) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+    evt.currentTarget.classList.add('active');
+}
+
+function filterPhrasebank(domain) {
+    let inputId;
+    if (domain === 'e911') {
+        inputId = 'search911';
+    } else if (domain === 'ddcustomer') {
+        inputId = 'searchDdcustomer';
+    } else if (domain === 'ddasher') {
+        inputId = 'searchDdasher';
+    } else if (domain === 'ddmerchant') {
+        inputId = 'searchDdmerchant';
+    } else if (domain === 'airbnbguest') {
+        inputId = 'searchAirbnbguest';
+    } else if (domain === 'airbnbhost') {
+        inputId = 'searchAirbnbhost';
+    } else {
+        inputId = 'search' + domain.charAt(0).toUpperCase() + domain.slice(1);
+    }
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const filter = input.value.toUpperCase();
+    const table = document.getElementById('table-' + domain);
+    const rows = table.querySelectorAll('tr');
+    rows.forEach((row, idx) => {
+        if (idx === 0) return; // header
+        const text = row.textContent.toUpperCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
+    });
+}
+</script>
+</body>
+</html>
