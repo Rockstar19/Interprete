@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deletreo fonético — ES / EN</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Lato:wght@400;700&display=swap');
+
+  :root{
+    --ink: #1c2b2e;
+    --paper: #f7f4ec;
+    --line: #d8d2c2;
+    --es-accent: #c1442d;
+    --es-accent-soft: #f1ded7;
+    --en-accent: #2f5d62;
+    --en-accent-soft: #dbe6e4;
+    --muted: #6b6759;
+    --card: #ffffff;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin:0; padding:0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Lato', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body{
+    padding: 40px 20px 80px;
+  }
+
+  .wrap{
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  /* ---------- Back button ---------- */
+  .back-row{
+    margin-bottom: 18px;
+  }
+
+  .back-btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 13.5px;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 7px 4px;
+    border-bottom: 1.5px solid transparent;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .back-btn:hover{
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+  .back-btn svg{ width: 15px; height: 15px; }
+
+  /* ---------- Header ---------- */
+  header{
+    margin-bottom: 34px;
+    padding-bottom: 24px;
+    border-bottom: 2px solid var(--ink);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  h1{
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: clamp(28px, 4vw, 40px);
+    letter-spacing: -0.01em;
+    margin: 0 0 6px 0;
+    line-height: 1.05;
+  }
+
+  header p{
+    margin: 0;
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 46ch;
+  }
+
+  .toggle-group{
+    display: flex;
+    gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px;
+  }
+
+  .toggle-btn{
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 13.5px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    padding: 9px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+  }
+
+  .toggle-btn.active[data-lang="es"]{ background: var(--es-accent); color: #fff; }
+  .toggle-btn.active[data-lang="en"]{ background: var(--en-accent); color: #fff; }
+
+  /* ---------- Action row (randomize) ---------- */
+  .action-row{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+
+  .action-row .hint{
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .randomize-btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    border: none;
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform .1s ease, filter .15s ease;
+  }
+  .randomize-btn:hover{ filter: brightness(1.08); }
+  .randomize-btn:active{ transform: scale(0.97); }
+  .randomize-btn svg{
+    width: 16px; height: 16px;
+    transition: transform .4s cubic-bezier(.2,.8,.2,1);
+  }
+  .randomize-btn.spinning svg{ transform: rotate(360deg); }
+
+  .lang-block[data-lang="es"] .randomize-btn{ background: var(--es-accent); }
+  .lang-block[data-lang="en"] .randomize-btn{ background: var(--en-accent); }
+
+  /* ---------- Section title ---------- */
+  .section-title{
+    display:flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 30px 0 14px;
+  }
+  .section-title h2{
+    font-family: 'Montserrat', sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    margin: 0;
+  }
+  .section-title span{
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .lang-block[data-lang="es"] .section-title h2::before{ content:"🇪🇸 "; }
+  .lang-block[data-lang="en"] .section-title h2::before{ content:"🇺🇸 "; }
+
+  /* ---------- Table ---------- */
+  table{
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  thead th{
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-align: left;
+    padding: 12px 14px;
+    color: #fff;
+  }
+
+  .lang-block[data-lang="es"] thead th{ background: var(--es-accent); }
+  .lang-block[data-lang="en"] thead th{ background: var(--en-accent); }
+
+  thead th:first-child{ width: 64px; text-align: center; }
+  thead th:last-child{ width: 90px; text-align: center; }
+
+  tbody tr{
+    border-top: 1px solid var(--line);
+  }
+  tbody tr:hover{ background: #faf8f2; }
+
+  td{
+    padding: 13px 14px;
+    font-size: 14.5px;
+    vertical-align: middle;
+  }
+
+  td.letter-cell{
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 17px;
+    width: 64px;
+  }
+  .lang-block[data-lang="es"] td.letter-cell{ color: var(--es-accent); }
+  .lang-block[data-lang="en"] td.letter-cell{ color: var(--en-accent); }
+
+  td.main-word{
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .word-text{
+    display: inline-block;
+    transition: opacity .12s ease;
+  }
+  .word-text.fading{ opacity: 0; }
+
+  td.variant-index{
+    text-align: center;
+    width: 90px;
+  }
+
+  .variant-dots{
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .variant-dot{
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--line);
+    transition: background .2s ease, transform .2s ease;
+  }
+  .variant-dot.on{ transform: scale(1.3); }
+  .lang-block[data-lang="es"] .variant-dot.on{ background: var(--es-accent); }
+  .lang-block[data-lang="en"] .variant-dot.on{ background: var(--en-accent); }
+
+  /* ---------- Layout of both blocks ---------- */
+  .lang-block{ display: none; }
+  .lang-block.visible{ display: block; }
+
+  @media (max-width: 720px){
+    td.main-word{ font-size: 14.5px; }
+    .action-row{ justify-content: center; }
+    .action-row .hint{ display: none; }
+  }
+
+  footer{
+    margin-top: 40px;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="back-row">
+    <a class="back-btn" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Volver al inicio
+    </a>
+  </div>
+
+  <header>
+    <div>
+      <h1>Deletreo fonético</h1>
+      <p>Palabras cotidianas para deletrear letra por letra, sin alfabeto OTAN. Cuatro alternativas por letra en cada idioma.</p>
+    </div>
+    <div class="toggle-group">
+      <button class="toggle-btn active" data-lang="es" onclick="showLang('es')">Español</button>
+      <button class="toggle-btn" data-lang="en" onclick="showLang('en')">English</button>
+    </div>
+  </header>
+
+  <!-- ================= ESPAÑOL ================= -->
+  <div class="lang-block visible" data-lang="es">
+    <div class="action-row">
+      <span class="hint">Cambia todas las palabras a otra variante</span>
+      <button class="randomize-btn" id="randBtn-es" onclick="randomizeLang('es')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Aleatorio
+      </button>
+    </div>
+    <div class="section-title">
+      <h2>Alfabeto en español</h2>
+      <span>27 letras</span>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Letra</th><th>Palabra</th><th>Variante</th></tr>
+      </thead>
+      <tbody id="tbody-es"></tbody>
+    </table>
+  </div>
+
+  <!-- ================= ENGLISH ================= -->
+  <div class="lang-block" data-lang="en">
+    <div class="action-row">
+      <span class="hint">Shuffle all words to a different variant</span>
+      <button class="randomize-btn" id="randBtn-en" onclick="randomizeLang('en')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Shuffle
+      </button>
+    </div>
+    <div class="section-title">
+      <h2>English alphabet</h2>
+      <span>26 letters</span>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Letter</th><th>Word</th><th>Variant</th></tr>
+      </thead>
+      <tbody id="tbody-en"></tbody>
+    </table>
+  </div>
+
+  <footer>Toca "Español" o "English" para cambiar de tabla · Usa "Aleatorio" para variar el vocabulario</footer>
+
+</div>
+
+<script>
+// Cada letra tiene 4 opciones (palabra base + 3 variantes = 4 en total)
+const dataES = [
+  ["A",["Árbol","Ana","Avión","Amigo"]],
+  ["B",["Barco","Burro","Bandera","Beso"]],
+  ["C",["Casa","Coco","Cielo","Copa"]],
+  ["D",["Dado","Dedo","Delfín","Domingo"]],
+  ["E",["Elefante","Estrella","Espejo","Enero"]],
+  ["F",["Foco","Flor","Familia","Feliz"]],
+  ["G",["Gato","Globo","Guitarra","Ganso"]],
+  ["H",["Helado","Hueso","Hormiga","Huevo"]],
+  ["I",["Iglú","Isla","Imán","Iguana"]],
+  ["J",["Jarra","Jirafa","Jardín","Juego"]],
+  ["K",["Kilo","Koala","Kiwi","Karateca"]],
+  ["L",["Luna","León","Libro","Lápiz"]],
+  ["M",["Mesa","Mano","Montaña","Mariposa"]],
+  ["N",["Nube","Nariz","Noche","Nido"]],
+  ["Ñ",["Ñandú","Ñoño","Niño con eñe","Muñeca"]],
+  ["O",["Oso","Ojo","Ola","Oveja"]],
+  ["P",["Pato","Perro","Pelota","Puerta"]],
+  ["Q",["Queso","Química","Quince","Quijote"]],
+  ["R",["Ratón","Radio","Río","Rueda"]],
+  ["S",["Sol","Silla","Serpiente","Sombrero"]],
+  ["T",["Taza","Tigre","Tren","Tomate"]],
+  ["U",["Uva","Uña","Universo","Uniforme"]],
+  ["V",["Vaca","Ventana","Violín","Vela"]],
+  ["W",["Wafle","Walkie","Wifi","Whisky"]],
+  ["X",["Xilófono","Taxi","Éxito","Boxeo"]],
+  ["Y",["Yate","Yo-yo","Yema","Yeso"]],
+  ["Z",["Zapato","Zorro","Zebra","Zumo"]]
+];
+
+const dataEN = [
+  ["A",["Apple","Airplane","Ant","Adam"]],
+  ["B",["Banana","Ball","Bread","Blue"]],
+  ["C",["Cat","Coffee","Candy","Car"]],
+  ["D",["Dog","Door","Duck","David"]],
+  ["E",["Egg","Elephant","Eagle","Edward"]],
+  ["F",["Fish","Flower","Frank","Fork"]],
+  ["G",["Green","Garden","George","Grape"]],
+  ["H",["House","Horse","Henry","Hat"]],
+  ["I",["Ice","Island","Igloo","Ivan"]],
+  ["J",["Juice","John","Jacket","Jelly"]],
+  ["K",["Kite","King","Kevin","Kitchen"]],
+  ["L",["Lemon","Lion","Lucy","Ladder"]],
+  ["M",["Mango","Moon","Mary","Mountain"]],
+  ["N",["Nurse","Nancy","Night","Nest"]],
+  ["O",["Orange","Ocean","Oliver","Owl"]],
+  ["P",["Peter","Pizza","Paper","Purple"]],
+  ["Q",["Queen","Question","Quiet","Quick"]],
+  ["R",["Robert","Rain","Rabbit","River"]],
+  ["S",["Sugar","Sun","Sarah","Snake"]],
+  ["T",["Tiger","Tomato","Thomas","Table"]],
+  ["U",["Umbrella","Uncle","Unicorn","Union"]],
+  ["V",["Victor","Van","Violet","Village"]],
+  ["W",["William","Water","Window","Wolf"]],
+  ["X",["X-ray","Xylophone","Extra","Box"]],
+  ["Y",["Yellow","Yankee","Young","Yogurt"]],
+  ["Z",["Zebra","Zoo","Zack","Zero"]]
+];
+
+// Estado actual de variante seleccionada por cada letra e idioma
+const currentIndex = { es: {}, en: {} };
+
+function renderTable(data, lang){
+  const tbody = document.getElementById('tbody-' + lang);
+  tbody.innerHTML = data.map(([letter, words]) => {
+    currentIndex[lang][letter] = 0;
+    const dots = words.map((_, i) =>
+      `<span class="variant-dot ${i === 0 ? 'on' : ''}" data-idx="${i}"></span>`
+    ).join('');
+    return `
+      <tr data-letter="${letter}">
+        <td class="letter-cell">${letter}</td>
+        <td class="main-word"><span class="word-text">${words[0]}</span></td>
+        <td class="variant-index"><span class="variant-dots">${dots}</span></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+renderTable(dataES, 'es');
+renderTable(dataEN, 'en');
+
+function showLang(lang){
+  document.querySelectorAll('.lang-block').forEach(el => {
+    el.classList.toggle('visible', el.dataset.lang === lang);
+  });
+  document.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+}
+
+function randomizeLang(lang){
+  const data = lang === 'es' ? dataES : dataEN;
+  const btn = document.getElementById('randBtn-' + lang);
+  btn.classList.add('spinning');
+  setTimeout(() => btn.classList.remove('spinning'), 400);
+
+  const tbody = document.getElementById('tbody-' + lang);
+
+  data.forEach(([letter, words]) => {
+    const prevIdx = currentIndex[lang][letter];
+    // elegir un índice distinto al actual para que siempre se note el cambio
+    let newIdx = prevIdx;
+    if(words.length > 1){
+      while(newIdx === prevIdx){
+        newIdx = Math.floor(Math.random() * words.length);
+      }
+    }
+    currentIndex[lang][letter] = newIdx;
+
+    const row = tbody.querySelector(`tr[data-letter="${letter}"]`);
+    if(!row) return;
+
+    const wordSpan = row.querySelector('.word-text');
+    wordSpan.classList.add('fading');
+    setTimeout(() => {
+      wordSpan.textContent = words[newIdx];
+      wordSpan.classList.remove('fading');
+    }, 120);
+
+    row.querySelectorAll('.variant-dot').forEach((dot, i) => {
+      dot.classList.toggle('on', i === newIdx);
+    });
+  });
+}
+</script>
+</body>
+</html>
