@@ -1,0 +1,105 @@
+{
+  "COMPL": {
+    "etiqueta": "Completada",
+    "nota": "Llamada normal, sin incidentes",
+    "variantes": [
+      "Call completed. Audio was clear on both ends and no interpretation issues came up.",
+      "Session ended normally. No terminology or connection concerns during the call.",
+      "Interpretation completed without incident. Both parties confirmed understanding before disconnecting.",
+      "Call handled to completion. No clarifications were required and no technical problems occurred.",
+      "Assignment finished normally. Communication flowed without interruptions on either side.",
+      "Call concluded as expected. Nothing to flag regarding audio, terminology or conduct."
+    ]
+  },
+  "AUDIO": {
+    "etiqueta": "Audio deficiente",
+    "nota": "Se escucha mal, ruido, eco, volumen bajo",
+    "variantes": [
+      "Audio quality was poor on the LEP side. Repetition was requested several times to confirm information.",
+      "Persistent background noise made portions of the call hard to hear. Interpreter asked for clarification when needed.",
+      "Volume on the requester's line was very low. Interpreter asked the party to repeat on multiple occasions.",
+      "Intermittent echo throughout the call affected comprehension. All content was ultimately conveyed.",
+      "Audio broke up at several points. Interpreter notified both parties and requested repetition.",
+      "Speaker was difficult to hear due to distance from the microphone. Interpreter requested repetition to ensure accuracy."
+    ]
+  },
+  "RED": {
+    "etiqueta": "Falla de red",
+    "nota": "Se cortó la conexión, no fue decisión de nadie",
+    "variantes": [
+      "Connection dropped mid-session. The call did not reconnect on the interpreter's line.",
+      "Line disconnected unexpectedly while the call was in progress. Interpreter remained available for reconnection.",
+      "Unstable connection caused repeated cut-outs until the call was lost.",
+      "Session ended abruptly due to a connection failure, not by either party.",
+      "The platform disconnected the call before the conversation was completed.",
+      "Call was lost during the exchange. Interpreter stayed on the line briefly in case of reconnection."
+    ]
+  },
+  "NADIE": {
+    "etiqueta": "Nadie se conectó",
+    "nota": "Línea vacía, sin respuesta",
+    "variantes": [
+      "Interpreter connected and announced, but no other party joined the line.",
+      "Call connected with silence on both ends. No response after repeated announcements.",
+      "Interpreter waited on the line; neither the requester nor the LEP was present.",
+      "Connected to an empty line. Interpreter announced in both languages and received no reply.",
+      "No participants on the call after connection. Interpreter disconnected per protocol.",
+      "Line was open but unattended. Interpreter announced twice before ending the session."
+    ]
+  },
+  "COLGO": {
+    "etiqueta": "Colgaron",
+    "nota": "Una de las partes cortó antes de terminar",
+    "variantes": [
+      "The LEP disconnected before the conversation was completed.",
+      "Requester ended the call while the exchange was still in progress.",
+      "One of the parties hung up mid-session without closing the conversation.",
+      "Call was terminated by the caller before the interpretation could be finished.",
+      "The party disconnected immediately after the interpreter announced. No content was exchanged.",
+      "Session ended by the requester once the information had been relayed, before formal closing."
+    ]
+  },
+  "IDIOMA": {
+    "etiqueta": "Idioma incorrecto",
+    "nota": "La parte no habla el idioma solicitado",
+    "variantes": [
+      "The party spoke a language other than the one requested. Interpreter advised the requester and the call was ended.",
+      "Language mismatch on the call: the LEP did not speak Spanish. Requester was informed.",
+      "Interpreter was connected for Spanish, but the speaker required a different language. Requester was notified.",
+      "The LEP did not respond to Spanish. Interpreter advised the requester to request the correct language line.",
+      "Requested language did not match the speaker's language. Call was released so the correct interpreter could be assigned."
+    ]
+  },
+  "TRANSF": {
+    "etiqueta": "Transferencia",
+    "nota": "Pasaron la llamada a otra área",
+    "variantes": [
+      "Call was transferred to another department mid-session. Interpreter continued through the handoff.",
+      "Requester placed the call on hold and transferred it. Interpretation resumed with the receiving agent.",
+      "Session included a transfer to a specialized unit. No issues during the handoff.",
+      "Call moved to a second representative. Interpreter remained on the line throughout.",
+      "The requester escalated the call to a supervisor. Interpretation continued without interruption."
+    ]
+  },
+  "TERM": {
+    "etiqueta": "Terminología",
+    "nota": "Vocabulario especializado, se pidió aclaración",
+    "variantes": [
+      "Specialized terminology required clarification. Interpreter requested an explanation and conveyed it accurately.",
+      "Technical vocabulary came up during the call. Interpreter asked the speaker to clarify before rendering.",
+      "Interpreter requested clarification on an acronym used by the requester to ensure accurate rendition.",
+      "Call included medical terminology unfamiliar in context. Interpreter confirmed meaning before continuing.",
+      "A regional expression required confirmation. Interpreter checked with the speaker and rendered accordingly."
+    ]
+  },
+  "ESPERA": {
+    "etiqueta": "Espera prolongada",
+    "nota": "Mucho tiempo en hold",
+    "variantes": [
+      "Extended hold time during the session. Interpreter remained on the line until the party returned.",
+      "Requester placed the call on hold for a prolonged period before resuming the conversation.",
+      "Most of the session was spent on hold. Actual interpretation time was brief.",
+      "Interpreter waited on hold while the requester retrieved information. Call resumed normally afterward."
+    ]
+  }
+}

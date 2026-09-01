@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cierre de llamada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:        #101A18;
+    --panel:      #17241F;
+    --panel-alt:  #1E2E28;
+    --line:       #2B3E37;
+    --text:       #E4EDE7;
+    --muted:      #8CA79C;
+    --signal:     #E9A73C;
+    --alert:      #D2624A;
+    --ok:         #6FBF8E;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--ink);
+    color: var(--text);
+    font-family: "Lato", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    min-height: 100vh;
+    padding: 20px 16px 40px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* ---------- Reloj de wrap-up: el elemento principal ---------- */
+
+  .reloj {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    border-bottom: 2px solid var(--line);
+    padding-bottom: 14px;
+  }
+
+  .reloj-cifra {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700;
+    font-size: clamp(3.4rem, 16vw, 5.2rem);
+    line-height: 0.85;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    color: var(--ok);
+    transition: color 0.4s ease;
+  }
+
+  .reloj-cifra[data-nivel="medio"] { color: var(--signal); }
+  .reloj-cifra[data-nivel="alto"]  { color: var(--alert); }
+
+  .reloj-texto {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 0.82rem;
+    color: var(--muted);
+    text-align: right;
+    max-width: 15ch;
+    line-height: 1.4;
+  }
+
+  /* ---------- Botones de situación ---------- */
+
+  .rejilla {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+    margin-top: 22px;
+  }
+
+  .situacion {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    color: var(--text);
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-align: left;
+    padding: 14px 14px 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .situacion:hover { background: var(--panel-alt); border-color: var(--muted); }
+  .situacion:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+  .situacion[data-activa="si"] { border-color: var(--signal); background: var(--panel-alt); }
+
+  .situacion span {
+    font-family: "Lato", sans-serif;
+    font-weight: 400;
+    font-size: 0.76rem;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+
+  /* ---------- Reporte ---------- */
+
+  .reporte {
+    margin-top: 22px;
+    border-left: 3px solid var(--signal);
+    background: var(--panel);
+    padding: 18px 18px 16px;
+    min-height: 120px;
+  }
+
+  .reporte p {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.55;
+    max-width: 62ch;
+  }
+
+  .reporte[data-estado="vacio"] p { color: var(--muted); }
+
+  .aviso {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 0.78rem;
+    color: var(--ok);
+    margin-bottom: 10px;
+    min-height: 1.1em;
+  }
+
+  .acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .accion {
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    color: var(--text);
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+    padding: 9px 14px;
+    cursor: pointer;
+  }
+
+  .accion:hover { border-color: var(--muted); }
+  .accion:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+  .accion:disabled { opacity: 0.35; cursor: default; }
+
+  .accion-principal {
+    border-color: var(--signal);
+    color: var(--signal);
+  }
+
+  .pie {
+    margin-top: 28px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="reloj">
+    <div class="reloj-cifra" id="cifra" data-nivel="bajo">0:00</div>
+    <div class="reloj-texto" id="textoReloj">Tiempo desde que terminó la llamada</div>
+  </div>
+
+  <div class="rejilla" id="rejilla"></div>
+
+  <div class="reporte" id="reporte" data-estado="vacio">
+    <div class="aviso" id="aviso"></div>
+    <p id="textoReporte">Elegí qué pasó en la llamada. El reporte se copia solo.</p>
+  </div>
+
+  <div class="acciones">
+    <button class="accion accion-principal" id="btnNueva">Nueva llamada</button>
+    <button class="accion" id="btnOtra" disabled>Otra redacción</button>
+    <button class="accion" id="btnCopiar" disabled>Copiar de nuevo</button>
+  </div>
+
+  <div class="pie" id="pie"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var DB = {};
+  var codigos = [];
+  var CLAVE_HIST = "cierre.historial";
+  var CLAVE_USO  = "cierre.uso";
+  var SIN_REPETIR = 3;
+
+  var estado = { codigo: null, texto: "", inicio: Date.now() };
+
+  var $cifra   = document.getElementById("cifra");
+  var $texto   = document.getElementById("textoReloj");
+  var $rejilla = document.getElementById("rejilla");
+  var $reporte = document.getElementById("reporte");
+  var $aviso   = document.getElementById("aviso");
+  var $salida  = document.getElementById("textoReporte");
+  var $otra    = document.getElementById("btnOtra");
+  var $copiar  = document.getElementById("btnCopiar");
+  var $nueva   = document.getElementById("btnNueva");
+  var $pie     = document.getElementById("pie");
+
+  /* ---------- Almacenamiento local, tolerante a fallos ---------- */
+
+  function leer(clave) {
+    try { return JSON.parse(localStorage.getItem(clave)) || {}; }
+    catch (e) { return {}; }
+  }
+
+  function guardar(clave, valor) {
+    try { localStorage.setItem(clave, JSON.stringify(valor)); }
+    catch (e) { /* modo privado: seguimos sin persistencia */ }
+  }
+
+  /* ---------- Temporizador ---------- */
+
+  function pintarReloj() {
+    var seg = Math.floor((Date.now() - estado.inicio) / 1000);
+    var m = Math.floor(seg / 60);
+    var s = seg % 60;
+    $cifra.textContent = m + ":" + (s < 10 ? "0" : "") + s;
+    $cifra.dataset.nivel = seg >= 90 ? "alto" : seg >= 45 ? "medio" : "bajo";
+    if (seg >= 90) { $texto.textContent = "Cerrá el comentario y volvé a Available"; }
+  }
+
+  setInterval(pintarReloj, 1000);
+  pintarReloj();
+
+  /* ---------- Elección de variante sin repetir ---------- */
+
+  function elegirVariante(codigo) {
+    var lista = DB[codigo].variantes;
+    if (lista.length === 1) { return lista[0]; }
+
+    var historial = leer(CLAVE_HIST);
+    var recientes = historial[codigo] || [];
+    var libres = lista.filter(function (t) { return recientes.indexOf(t) === -1; });
+    if (!libres.length) { libres = lista.filter(function (t) { return t !== recientes[0]; }); }
+
+    var elegida = libres[Math.floor(Math.random() * libres.length)];
+    historial[codigo] = [elegida].concat(recientes).slice(0, SIN_REPETIR);
+    guardar(CLAVE_HIST, historial);
+    return elegida;
+  }
+
+  /* ---------- Portapapeles ---------- */
+
+  function copiar(texto) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(texto);
+    }
+    return new Promise(function (resolve, reject) {
+      var caja = document.createElement("textarea");
+      caja.value = texto;
+      caja.setAttribute("readonly", "");
+      caja.style.position = "fixed";
+      caja.style.opacity = "0";
+      document.body.appendChild(caja);
+      caja.select();
+      var ok = document.execCommand("copy");
+      document.body.removeChild(caja);
+      ok ? resolve() : reject(new Error("sin acceso al portapapeles"));
+    });
+  }
+
+  function mostrar(texto, copiado) {
+    estado.texto = texto;
+    $salida.textContent = texto;
+    $reporte.dataset.estado = "lleno";
+    $otra.disabled = false;
+    $copiar.disabled = false;
+    $aviso.textContent = copiado
+      ? "Copiado — pegalo y volvé a Available"
+      : "Seleccionalo y copialo a mano";
+  }
+
+  /* ---------- Uso de cada situación ---------- */
+
+  function usar(codigo) {
+    estado.codigo = codigo;
+
+    Array.prototype.forEach.call($rejilla.children, function (b) {
+      b.dataset.activa = b.dataset.codigo === codigo ? "si" : "no";
+    });
+
+    var uso = leer(CLAVE_USO);
+    uso[codigo] = (uso[codigo] || 0) + 1;
+    guardar(CLAVE_USO, uso);
+    pintarPie();
+
+    var texto = elegirVariante(codigo);
+    copiar(texto)
+      .then(function () { mostrar(texto, true); })
+      .catch(function () { mostrar(texto, false); });
+  }
+
+  /* ---------- Construcción de la rejilla ---------- */
+
+  function iniciar(datos) {
+    DB = datos;
+    codigos = Object.keys(DB);
+    codigos.forEach(function (codigo, i) {
+    var boton = document.createElement("button");
+    boton.className = "situacion";
+    boton.dataset.codigo = codigo;
+    boton.dataset.activa = "no";
+    boton.innerHTML = DB[codigo].etiqueta + "<span>" + (DB[codigo].nota || "") + "</span>";
+    boton.addEventListener("click", function () { usar(codigo); });
+      $rejilla.appendChild(boton);
+    });
+    pintarPie();
+  }
+
+  function fallo() {
+    $salida.textContent = "No se pudo leer reportes.json. Abrí la carpeta con un servidor local "
+      + "(en PowerShell: npx serve) o subí los dos archivos a Vercel.";
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (e.target.tagName === "BUTTON" && e.key === "Enter") { return; }
+    var n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 9 && codigos[n - 1]) { usar(codigos[n - 1]); }
+  });
+
+  $otra.addEventListener("click", function () {
+    if (estado.codigo) { usar(estado.codigo); }
+  });
+
+  $copiar.addEventListener("click", function () {
+    if (!estado.texto) { return; }
+    copiar(estado.texto)
+      .then(function () { $aviso.textContent = "Copiado otra vez"; })
+      .catch(function () { $aviso.textContent = "Seleccionalo y copialo a mano"; });
+  });
+
+  $nueva.addEventListener("click", function () {
+    estado = { codigo: null, texto: "", inicio: Date.now() };
+    $reporte.dataset.estado = "vacio";
+    $salida.textContent = "Elegí qué pasó en la llamada. El reporte se copia solo.";
+    $aviso.textContent = "";
+    $otra.disabled = true;
+    $copiar.disabled = true;
+    $texto.textContent = "Tiempo desde que terminó la llamada";
+    Array.prototype.forEach.call($rejilla.children, function (b) { b.dataset.activa = "no"; });
+    pintarReloj();
+  });
+
+  /* ---------- Conteo de uso ---------- */
+
+  function pintarPie() {
+    var uso = leer(CLAVE_USO);
+    var pares = Object.keys(uso).sort(function (a, b) { return uso[b] - uso[a]; });
+    if (!pares.length) {
+      $pie.textContent = "Teclas 1 a 9 para elegir sin usar el ratón.";
+      return;
+    }
+    var resumen = pares.slice(0, 5).map(function (c) {
+      return (DB[c] ? DB[c].etiqueta : c) + " " + uso[c];
+    }).join("  ·  ");
+    $pie.textContent = "Teclas 1 a 9 para elegir sin usar el ratón.  Uso acumulado: " + resumen;
+  }
+
+  fetch("reportes.json")
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+    .then(iniciar)
+    .catch(fallo);
+})();
+</script>
+</body>
+</html>
