@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Siglas federales de EE. UU. — consulta para intérprete</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Lato:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12161c;
+  --ink-2:#1b212a;
+  --ink-3:#252d38;
+  --line-dark:#333d4a;
+  --on-ink:#d5dae1;
+  --on-ink-dim:#8b95a3;
+
+  --paper:#dcded6;
+  --paper-2:#cdd0c6;
+  --line-paper:#b6bab0;
+  --on-paper:#171a15;
+  --on-paper-dim:#565b51;
+
+  --brass:#b9873f;
+  --brass-lit:#d7a253;
+
+  --display:'Montserrat','Century Gothic',sans-serif;
+  --body:'Lato','Century Gothic',sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--body);
+  background:var(--paper);
+  color:var(--on-paper);
+  font-size:17px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto}
+
+/* ---------- la costura: encabezado partido ---------- */
+header{
+  background:var(--ink);
+  position:relative;
+}
+@media(min-width:860px){
+  header{background:linear-gradient(90deg,var(--ink) 0 46%,var(--paper) 46% 100%)}
+}
+.head-inner{
+  max-width:1080px;margin:0 auto;
+  padding:44px 22px 30px;
+}
+.kicker{
+  font-family:var(--body);
+  font-size:.82rem;
+  letter-spacing:.02em;
+  color:var(--on-ink-dim);
+  margin:0 0 18px;
+}
+@media(min-width:860px){.kicker{color:var(--on-ink-dim)}}
+h1{
+  font-family:var(--display);
+  font-weight:700;
+  font-size:clamp(1.7rem,4.6vw,2.7rem);
+  line-height:1.12;
+  margin:0 0 6px;
+  letter-spacing:-.015em;
+  color:var(--on-ink);
+}
+h1 .es{color:var(--on-ink)}
+@media(min-width:860px){
+  h1{display:grid;grid-template-columns:46% 54%;align-items:baseline;gap:0}
+  h1 .en{color:var(--on-ink);padding-right:26px}
+  h1 .es{color:var(--on-paper);padding-left:26px}
+}
+.sub{
+  font-size:.95rem;color:var(--on-ink-dim);margin:10px 0 0;max-width:52ch;
+}
+@media(min-width:860px){
+  .sub{max-width:44ch}
+}
+
+/* buscador sobre la costura */
+.search-zone{
+  max-width:1080px;margin:0 auto;padding:0 22px;
+  position:relative;top:26px;
+}
+.search-shell{
+  display:flex;align-items:stretch;
+  border:2px solid var(--brass);
+  background:#fff;
+  box-shadow:0 10px 30px rgba(10,14,20,.28);
+}
+.search-shell:focus-within{border-color:var(--brass-lit);box-shadow:0 10px 30px rgba(10,14,20,.36)}
+#q{
+  flex:1;border:0;outline:0;background:transparent;
+  font-family:var(--display);font-weight:600;font-size:1.15rem;
+  padding:17px 18px;color:#101410;letter-spacing:.01em;
+}
+#q::placeholder{font-weight:500;color:#8a8f86;letter-spacing:0}
+.slash{
+  display:none;align-self:center;margin-right:14px;
+  font-family:var(--body);font-size:.78rem;color:#8a8f86;
+  border:1px solid #cfd2c9;padding:2px 7px;
+}
+@media(min-width:700px){.slash{display:block}}
+#clear{
+  border:0;background:transparent;cursor:pointer;
+  font-family:var(--body);font-size:.9rem;color:#6a6f66;
+  padding:0 16px;display:none;
+}
+#clear:hover{color:#101410}
+
+/* ---------- controles ---------- */
+.controls{
+  padding:52px 22px 0;max-width:1080px;margin:0 auto;
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+}
+.chip{
+  font-family:var(--body);font-size:.86rem;
+  border:1px solid var(--line-paper);background:transparent;
+  color:var(--on-paper-dim);padding:6px 13px;cursor:pointer;
+}
+.chip:hover{border-color:var(--on-paper);color:var(--on-paper)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.chip:focus-visible,#q:focus-visible,a:focus-visible,button:focus-visible{
+  outline:2px solid var(--brass);outline-offset:2px;
+}
+.count{
+  font-size:.86rem;color:var(--on-paper-dim);margin-left:auto;font-variant-numeric:tabular-nums;
+}
+
+/* ---------- filas partidas ---------- */
+main{padding:26px 22px 0;max-width:1080px;margin:0 auto}
+.group-head{
+  font-family:var(--display);font-weight:600;font-size:.9rem;
+  color:var(--on-paper-dim);
+  border-bottom:1px solid var(--line-paper);
+  padding:26px 0 7px;margin:0 0 2px;
+}
+.row{
+  display:grid;grid-template-columns:1fr;
+  border-bottom:1px solid var(--line-paper);
+}
+@media(min-width:860px){
+  .row{grid-template-columns:46% 54%}
+}
+.side-en{
+  background:var(--ink);color:var(--on-ink);
+  padding:14px 26px 15px 20px;
+}
+.side-es{
+  background:var(--paper);
+  padding:14px 20px 15px 26px;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.sig{
+  font-family:var(--display);font-weight:700;font-size:1.22rem;
+  letter-spacing:.02em;color:#fff;margin:0;
+  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+}
+.say{
+  font-family:var(--body);font-weight:400;font-size:.7rem;
+  color:var(--brass-lit);border:1px solid var(--line-dark);
+  padding:1px 7px;letter-spacing:.01em;white-space:nowrap;
+}
+.en-name{
+  margin:3px 0 0;font-size:.9rem;color:var(--on-ink-dim);line-height:1.4;
+}
+.es-name{
+  font-family:var(--display);font-weight:500;font-size:1.05rem;
+  line-height:1.35;margin:0;color:var(--on-paper);
+}
+.nota{
+  margin:9px 0 0;padding-left:12px;border-left:3px solid var(--brass);
+  font-size:.87rem;line-height:1.45;color:var(--on-paper-dim);
+}
+mark{background:var(--brass);color:#12161c;padding:0 1px}
+.side-en mark{background:var(--brass-lit);color:#12161c}
+
+.empty{
+  padding:60px 4px;color:var(--on-paper-dim);border-bottom:1px solid var(--line-paper);
+}
+.empty b{font-family:var(--display);font-weight:600;color:var(--on-paper);display:block;margin-bottom:6px}
+
+/* ---------- falsos amigos ---------- */
+.traps{background:var(--ink);color:var(--on-ink);margin-top:64px;padding:54px 0 60px}
+.traps .wrap{padding:0 22px}
+.traps h2{
+  font-family:var(--display);font-weight:700;font-size:1.5rem;margin:0 0 6px;color:#fff;
+}
+.traps p.lead{color:var(--on-ink-dim);margin:0 0 28px;max-width:56ch;font-size:.95rem}
+.trap{
+  display:grid;grid-template-columns:1fr;gap:2px 26px;
+  border-top:1px solid var(--line-dark);padding:15px 0;
+}
+@media(min-width:700px){.trap{grid-template-columns:1fr 1fr}}
+.bad{color:#a2707a;font-size:.95rem}
+.bad s{text-decoration-color:#6d4a51}
+.good{font-family:var(--display);font-weight:600;color:var(--brass-lit);font-size:.98rem}
+
+footer{
+  background:var(--ink-2);color:var(--on-ink-dim);
+  padding:26px 22px 34px;font-size:.83rem;line-height:1.6;
+}
+footer .wrap{padding:0}
+footer b{color:var(--on-ink);font-weight:400}
+
+@media(prefers-reduced-motion:no-preference){
+  .row{transition:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-inner">
+    <p class="kicker">Referencia de cabina · OPI · VRI · RSI</p>
+    <h1><span class="en">Escucha la sigla.</span><span class="es">Lee el nombre en español.</span></h1>
+    <p class="sub">Índice de agencias federales de Estados Unidos con la traducción que publica el propio Gobierno en su portal en español.</p>
+  </div>
+</header>
+
+<div class="search-zone">
+  <div class="search-shell">
+    <input id="q" type="search" autocomplete="off" spellcheck="false"
+           placeholder="Escriba una sigla, un nombre en inglés o en español…"
+           aria-label="Buscar agencia por sigla o nombre">
+    <button id="clear" type="button">Borrar</button>
+    <span class="slash">/</span>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="chip" id="f-todo" aria-pressed="true">Todas</button>
+  <button class="chip" id="f-oficial" aria-pressed="false">Solo traducción oficial</button>
+  <button class="chip" id="f-nota" aria-pressed="false">Con advertencia</button>
+  <span class="count" id="count"></span>
+</div>
+
+<main id="results" aria-live="polite"></main>
+
+<section class="traps">
+  <div class="wrap">
+    <h2>Los calcos que más caen en revisión</h2>
+    <p class="lead">Estos ocho no son cuestión de estilo: cambian el sentido o mandan al usuario a buscar una institución que no existe.</p>
+    <div id="traps"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <b>Fuente.</b> Índice A-Z de agencias federales de USAGov en Español, recorrido letra por letra el 19 de agosto de 2026. El portal solo publica 16 letras: A, B, C, D, E, F, G, I, J, L, M, O, P, S, U y V.<br>
+    Las entradas marcadas <b>«uso profesional»</b> no aparecen en ese índice; su traducción es de uso consolidado en el oficio, no oficial del portal.
+  </div>
+</footer>
+
+<script>
+// [sigla, inglés, español, origen(o=oficial USAGov / p=uso profesional), pronunciación(''|'palabra'|'deletreada'), nota]
+const D = [
+["FDA","Food and Drug Administration","Administración de Alimentos y Medicamentos","o","deletreada",""],
+["FNS / FNA","Food and Nutrition Service","Administración de Alimentos y Nutrición","o","deletreada","USAGov la lista como «FNA», pero la agencia real es Food and Nutrition Service y en papelería aparece como FNS. Si el cliente dice FNS, es la misma."],
+["ACF","Administration for Children and Families","Administración de Asuntos de Niños y Familias","o","deletreada",""],
+["DEA","Drug Enforcement Administration","Administración de Control de Drogas","o","deletreada",""],
+["ETA","Employment and Training Administration","Administración de Empleo y Capacitación","o","deletreada",""],
+["USFA","U.S. Fire Administration","Administración de Incendios de Estados Unidos","o","deletreada",""],
+["HRSA","Health Resources and Services Administration","Administración de Recursos y Servicios de Salud","o","deletreada",""],
+["SAMHSA","Substance Abuse and Mental Health Services Administration","Administración de Salud Mental y Abuso de Sustancias","o","palabra",""],
+["EBSA","Employee Benefits Security Administration","Administración de Seguridad de Beneficios de los Empleados","o","deletreada",""],
+["TSA","Transportation Security Administration","Administración de Seguridad en el Transporte","o","deletreada",""],
+["OSHA","Occupational Safety and Health Administration","Administración de Seguridad y Salud Ocupacional","o","palabra","OSHA fiscaliza; NIOSH investiga y recomienda. Confundirlas cambia el peso legal en una llamada de compensación laboral."],
+["SSA","Social Security Administration","Administración del Seguro Social","o","deletreada","«Seguro Social», no «Seguridad Social». La segunda es uso europeo y confunde al usuario."],
+["FAA","Federal Aviation Administration","Administración Federal de Aviación","o","deletreada",""],
+["FMCSA","Federal Motor Carrier Safety Administration","Administración Federal de Seguridad de Autotransportes","o","deletreada",""],
+["FHA","Federal Housing Administration","Administración Federal de Vivienda","o","deletreada",""],
+["GSA","General Services Administration","Administración General de Servicios","o","deletreada",""],
+["NASA","National Aeronautics and Space Administration","Administración Nacional de Aeronáutica y el Espacio","o","palabra",""],
+["NARA","National Archives and Records Administration","Administración Nacional de Archivos y Registros","o","deletreada",""],
+["NCUA","National Credit Union Administration","Administración Nacional de Cooperativas de Crédito","o","deletreada",""],
+["NHTSA","National Highway Traffic Safety Administration","Administración Nacional de Seguridad del Tráfico en las Carreteras","o","deletreada",""],
+["ACL","Administration for Community Living","Administración para la Vida Comunitaria","o","deletreada",""],
+["CIA","Central Intelligence Agency","Agencia Central de Inteligencia","o","deletreada",""],
+["ATF","Bureau of Alcohol, Tobacco, Firearms and Explosives","Agencia de Alcohol, Tabaco, Armas de Fuego y Explosivos","o","deletreada","USAGov dice «Agencia», pero el nombre real es Bureau (Oficina). Use la forma del portal y no corrija al cliente."],
+["USAGM","U.S. Agency for Global Media","Agencia de Estados Unidos para los Medios Globales","o","deletreada",""],
+["EPA","Environmental Protection Agency","Agencia de Protección Ambiental de Estados Unidos","o","deletreada",""],
+["SBA","Small Business Administration","Agencia Federal de Pequeños Negocios de Estados Unidos","o","deletreada",""],
+["FEMA","Federal Emergency Management Agency","Agencia Federal para el Manejo de Emergencias","o","palabra",""],
+["AHRQ","Agency for Healthcare Research and Quality","Agencia para la Investigación y la Calidad del Cuidado de la Salud","o","deletreada",""],
+["ATSDR","Agency for Toxic Substances and Disease Registry","Agencia para Sustancias Tóxicas y el Registro de Enfermedades","o","deletreada",""],
+["USAID","U.S. Agency for International Development","Agencia de EE. UU. para el Desarrollo Internacional","o","",""],
+
+["LOC","Library of Congress, Hispanic Division","Biblioteca del Congreso, División Hispánica","o","",""],
+["NAL","National Agricultural Library","Biblioteca Nacional de Agricultura","o","deletreada",""],
+["NLM","National Library of Medicine","Biblioteca Nacional de Medicina","o","deletreada",""],
+["FBI","Federal Bureau of Investigation","Buró Federal de Investigaciones","o","deletreada","El portal usa «Buró». También circula «Oficina Federal de Investigaciones»; la oficial es la primera."],
+
+["—","U.S. House of Representatives","Cámara de Representantes de Estados Unidos","o","",""],
+["NPIC","National Pesticide Information Center","Centro de Información Nacional sobre Pesticidas","o","deletreada",""],
+["CPIR","Center for Parent Information and Resources","Centro de Información y Recursos para Padres","o","deletreada",""],
+["CNPP","Center for Nutrition Policy and Promotion","Centro de Políticas y Promoción de la Nutrición","o","deletreada",""],
+["CVC","U.S. Capitol Visitor Center","Centro de Visitantes del Capitolio de EE. UU.","o","",""],
+["NHIC","National Health Information Center","Centro Nacional de Información de Salud","o","deletreada",""],
+["NCCIH","National Center for Complementary and Integrative Health","Centro Nacional de Salud Complementaria e Integral","o","deletreada",""],
+["CMS","Centers for Medicare & Medicaid Services","Centros de Servicios de Medicare y Medicaid","o","deletreada","No lo reduzca a «Medicare». Son cosas distintas y el usuario tiene la diferencia en su papelería."],
+["CDC","Centers for Disease Control and Prevention","Centros para el Control y la Prevención de Enfermedades","o","deletreada",""],
+["EAC","U.S. Election Assistance Commission","Comisión de Asistencia Electoral de EE. UU.","o","deletreada",""],
+["SEC","Securities and Exchange Commission","Comisión de Bolsa y Valores","o","deletreada",""],
+["USCCR","U.S. Commission on Civil Rights","Comisión de Derechos Civiles de Estados Unidos","o","deletreada",""],
+["FEC","Federal Election Commission","Comisión de Elecciones Federales","o","deletreada",""],
+["CFTC","Commodity Futures Trading Commission","Comisión de Negociación de Futuros de Productos Básicos de Estados Unidos","o","deletreada",""],
+["CPSC","Consumer Product Safety Commission","Comisión de Seguridad de Productos del Consumidor de Estados Unidos","o","deletreada",""],
+["FTC","Federal Trade Commission","Comisión Federal de Comercio","o","deletreada",""],
+["FCC","Federal Communications Commission","Comisión Federal de Comunicaciones","o","deletreada",""],
+["EEOC","Equal Employment Opportunity Commission","Comisión para la Igualdad de Oportunidades en el Empleo","o","deletreada",""],
+["—","U.S. Senate Special Committee on Aging","Comité Especial del Senado de EE. UU. para la Vejez","o","",""],
+["—","U.S. Access Board","Consejo de Accesibilidad de Servicios Públicos de Estados Unidos","o","",""],
+["CEA","Council of Economic Advisers","Consejo de Asesores Económicos","o","deletreada",""],
+["CEQ","Council on Environmental Quality","Consejo de Calidad Ambiental","o","deletreada",""],
+["NCD","National Council on Disability","Consejo Nacional para la Discapacidad","o","deletreada",""],
+["PCSFN","President's Council on Sports, Fitness & Nutrition","Consejo Presidencial sobre Aptitud Física, Deportes y Nutrición","o","",""],
+["LSC","Legal Services Corporation","Corporación de Servicios Legales","o","deletreada",""],
+["FDIC","Federal Deposit Insurance Corporation","Corporación Federal de Seguro de Depósitos","o","deletreada",""],
+["CNCS","Corporation for National and Community Service","Corporación para el Servicio Nacional y Comunitario","o","","Hoy opera como AmeriCorps, que no se traduce."],
+["PBGC","Pension Benefit Guaranty Corporation","Corporación para Garantizar los Beneficios de las Pensiones","o","deletreada",""],
+["SCOTUS","Supreme Court of the United States","Corte Suprema de Estados Unidos","o","","«SCOTUS» no se dice en español. Diga «la Corte Suprema»."],
+["USMC","U.S. Marine Corps","Cuerpo de Infantería de Marina de Estados Unidos","o","deletreada",""],
+["—","Peace Corps","Cuerpo de Paz","o","",""],
+
+["USDA","Department of Agriculture","Departamento de Agricultura","o","deletreada",""],
+["VA","Department of Veterans Affairs","Departamento de Asuntos de los Veteranos","o","deletreada","No diga «Administración de Veteranos»: ese nombre se retiró en 1989."],
+["DOC","Department of Commerce","Departamento de Comercio","o","deletreada",""],
+["DOD","Department of Defense","Departamento de Defensa","o","deletreada",""],
+["ED","Department of Education","Departamento de Educación","o","deletreada",""],
+["DOE","Department of Energy","Departamento de Energía","o","deletreada",""],
+["DOS","Department of State","Departamento de Estado","o","deletreada",""],
+["DOJ","Department of Justice","Departamento de Justicia","o","deletreada",""],
+["HHS","Department of Health and Human Services","Departamento de Salud y Servicios Humanos","o","deletreada",""],
+["DHS","Department of Homeland Security","Departamento de Seguridad Nacional","o","deletreada","Nunca «Seguridad Interna». Es el calco que más aparece en revisiones de calidad."],
+["DOT","Department of Transportation","Departamento de Transporte","o","deletreada",""],
+["HUD","Department of Housing and Urban Development","Departamento de Vivienda y Desarrollo Urbano de EE. UU.","o","",""],
+["DOI","Department of the Interior","Departamento del Interior","o","deletreada",""],
+["Treasury","Department of the Treasury","Departamento del Tesoro","o","",""],
+["DOL","Department of Labor","Departamento del Trabajo","o","deletreada",""],
+["ATR","Antitrust Division (DOJ)","División Antimonopolios","o","",""],
+["IAQ","Indoor Air Quality Division (EPA)","División de Calidad del Aire Interior","o","deletreada",""],
+["CRT","Civil Rights Division (DOJ)","División de Derechos Civiles del Departamento de Justicia","o","deletreada",""],
+["WHD","Wage and Hour Division","División de Horas y Salarios","o","deletreada","El portal también la nombra «Sección de Horas y Sueldos» bajo la letra S. Es la misma oficina."],
+
+["Army","U.S. Army","Ejército de Estados Unidos","o","",""],
+["—","U.S. Embassies and Consulates Abroad","Embajadas y consulados de EE. UU. en el extranjero","o","",""],
+
+["USAF","U.S. Air Force","Fuerza Aérea de EE. UU.","o","deletreada",""],
+["IAF","Inter-American Foundation","Fundación Interamericana","o","deletreada",""],
+["NSF","National Science Foundation","Fundación Nacional de Ciencias","o","deletreada",""],
+
+["Ginnie Mae","Government National Mortgage Association","Ginnie Mae — Asociación Nacional Gubernamental Hipotecaria","o","palabra","En llamada hipotecaria no se traduce: se dice «Ginnie Mae»."],
+["USCG","U.S. Coast Guard","Guardacostas de EE. UU.","o","deletreada",""],
+["NG","National Guard","Guardia Nacional","o","",""],
+
+["—","AIDSinfo / HIVinfo","infoSIDA","o","",""],
+["NIFL","National Institute for Literacy","Instituto Nacional de Alfabetización","o","deletreada",""],
+["NIFA","National Institute of Food and Agriculture","Instituto Nacional de Alimentos y Agricultura","o","deletreada",""],
+["NIAMS","National Institute of Arthritis and Musculoskeletal and Skin Diseases","Instituto Nacional de Artritis y Enfermedades Musculoesqueléticas y de la Piel","o","deletreada",""],
+["NIGMS","National Institute of General Medical Sciences","Instituto Nacional de Ciencias Médicas Generales","o","deletreada",""],
+["NIDCR","National Institute of Dental and Craniofacial Research","Instituto Nacional de Investigación Dental y Craneofacial","o","deletreada",""],
+["NIDDK","National Institute of Diabetes and Digestive and Kidney Diseases","Instituto Nacional de la Diabetes y las Enfermedades Digestivas y Renales","o","deletreada",""],
+["NIMH","National Institute of Mental Health","Instituto Nacional de la Salud Mental","o","deletreada",""],
+["NIDCD","National Institute on Deafness and Other Communication Disorders","Instituto Nacional de la Sordera y Otros Trastornos de la Comunicación","o","deletreada",""],
+["NINDS","National Institute of Neurological Disorders and Stroke","Instituto Nacional de Trastornos Neurológicos y Accidentes Cerebrovasculares","o","deletreada","El portal traduce «stroke» como accidente cerebrovascular. En sala oirá «derrame» o «ACV»; para el nombre de la institución use la forma oficial."],
+["NCI","National Cancer Institute","Instituto Nacional del Cáncer","o","deletreada",""],
+["NHLBI","National Heart, Lung, and Blood Institute","Instituto Nacional del Corazón, los Pulmones y la Sangre","o","deletreada",""],
+["NEI","National Eye Institute","Instituto Nacional del Ojo","o","deletreada",""],
+["NIOSH","National Institute for Occupational Safety and Health","Instituto Nacional para la Seguridad y Salud Ocupacional","o","palabra","NIOSH investiga y recomienda; OSHA fiscaliza. No las intercambie."],
+["NIH","National Institutes of Health","Institutos Nacionales de la Salud","o","deletreada",""],
+
+["USBG","U.S. Botanic Garden","Jardín Botánico de los Estados Unidos","o","deletreada",""],
+["RRB","Railroad Retirement Board","Junta de Jubilación de Empleados Ferroviarios","o","deletreada",""],
+["FRB","Federal Reserve Board","Junta de la Reserva Federal","o","","También «the Fed». En español: «la Reserva Federal»."],
+["CSB","U.S. Chemical Safety Board","Junta de Seguridad Química de EE. UU.","o","deletreada",""],
+["NLRB","National Labor Relations Board","Junta Nacional de Relaciones del Trabajo","o","deletreada",""],
+["NTSB","National Transportation Safety Board","Junta Nacional de Seguridad en el Transporte","o","deletreada",""],
+
+["WH","The White House","La Casa Blanca","o","",""],
+["NRS","National Runaway Safeline","Línea Nacional de Niños Fugitivos","o","deletreada",""],
+
+["USN","U.S. Navy","Marina de Guerra de Estados Unidos","o","deletreada",""],
+["SI","Smithsonian Museums and Galleries","Museos y Galerías Smithsonian","o","",""],
+
+["BOEM","Bureau of Ocean Energy Management","Oficina de Administración de Energía Oceánica","o","",""],
+["OPM","Office of Personnel Management","Oficina de Administración de Personal","o","deletreada",""],
+["BLM","Bureau of Land Management","Oficina de Administración de Tierras","o","deletreada",""],
+["CBP","U.S. Customs and Border Protection","Oficina de Aduanas y Protección Fronteriza de Estados Unidos","o","deletreada",""],
+["BIA / ANA","Bureau of Indian Affairs / Administration for Native Americans","Oficina de Asuntos Indígenas","o","deletreada","Cuidado: en contexto migratorio, BIA es la Junta de Apelaciones de Inmigración. Confirme el contexto antes de expandirla."],
+["FSA","Federal Student Aid","Oficina de Ayuda Federal para Estudiantes","o","deletreada",""],
+["BSEE","Bureau of Safety and Environmental Enforcement","Oficina de Control de las Normas de Seguridad y Medio Ambiente","o","deletreada",""],
+["OLHCHH","Office of Lead Hazard Control and Healthy Homes","Oficina de Control de Riesgos de Plomo y Hogares Saludables","o","",""],
+["OCR","HHS Office for Civil Rights","Oficina de Derechos Civiles de HHS","o","deletreada","Sigla ambigua: existe la de HHS (salud) y la del Departamento de Educación. Confirme el contexto."],
+["IER","Immigrant and Employee Rights Section","Oficina de Derechos de Inmigrantes y Empleados","o","deletreada",""],
+["OIEA","Office of Investor Education and Advocacy","Oficina de Educación y Asistencia a los Inversionistas","o","deletreada",""],
+["FHEO","Office of Fair Housing and Equal Opportunity","Oficina de Equidad de Vivienda e Igualdad de Oportunidades","o","deletreada",""],
+["BEP","Bureau of Engraving and Printing","Oficina de Grabado e Impresión","o","deletreada",""],
+["TTB","Alcohol and Tobacco Tax and Trade Bureau","Oficina de Impuestos y Comercio de las Bebidas Alcohólicas y del Tabaco","o","deletreada",""],
+["OJJDP","Office of Juvenile Justice and Delinquency Prevention","Oficina de Justicia Juvenil y Prevención de la Delincuencia","o","deletreada",""],
+["CMEI","Office of Critical Minerals and Energy Innovation","Oficina de Minerales Críticos e Innovación Energética","o","deletreada",""],
+["OSMRE","Office of Surface Mining Reclamation and Enforcement","Oficina de Minería de Superficie","o","deletreada",""],
+["USPTO","U.S. Patent and Trademark Office","Oficina de Patentes y Marcas Registradas","o","deletreada",""],
+["OWM","Office of Weights and Measures","Oficina de Pesos y Medidas","o","deletreada",""],
+["CPD","Office of Community Planning and Development","Oficina de Planificación y Desarrollo Comunitario","o","deletreada",""],
+["MFH","Office of Multifamily Housing Programs","Oficina de Programas de Vivienda Multifamiliar","o","deletreada",""],
+["OMHP","Office of Manufactured Housing Programs","Oficina de Programas de Viviendas Prefabricadas","o","deletreada",""],
+["GPO","U.S. Government Publishing Office","Oficina de Publicaciones del Gobierno de Estados Unidos","o","deletreada",""],
+["USBR","Bureau of Reclamation","Oficina de Recuperación","o","deletreada",""],
+["OMH","Office of Minority Health","Oficina de Salud de las Minorías","o","deletreada",""],
+["OCSS","Office of Child Support Services","Oficina de Servicios de Manutención de los Hijos","o","deletreada","Antes OCSE. Según el estado, el usuario dirá «manutención infantil» o «child support»."],
+["BFS","Bureau of the Fiscal Service","Oficina de Servicios Fiscales","o","deletreada",""],
+["OCS","Office of Overseas Citizens Services","Oficina de Servicios para Ciudadanos en el Exterior","o","deletreada",""],
+["OCB","Office of Cuba Broadcasting","Oficina de Transmisiones de Noticias de Cuba — Radio y TV Martí","o","",""],
+["—","Office of Housing (HUD)","Oficina de Vivienda","o","",""],
+["OSC","U.S. Office of Special Counsel","Oficina del Asesor Legal Especial de EE. UU.","o","deletreada",""],
+["—","U.S. Census Bureau","Oficina del Censo","o","",""],
+["OCC","Office of the Comptroller of the Currency","Oficina del Contralor de la Moneda","o","deletreada",""],
+["USCO","U.S. Copyright Office","Oficina del Derecho de Autor","o","",""],
+["USTR","Office of the U.S. Trade Representative","Oficina del Representante Comercial de EE. UU.","o","deletreada",""],
+["NOAA","National Oceanic and Atmospheric Administration","Oficina Nacional de Administración Oceánica y Atmosférica","o","palabra",""],
+["CFPB","Consumer Financial Protection Bureau","Oficina para la Protección Financiera del Consumidor","o","deletreada",""],
+
+["HFP","Human Foods Program (FDA)","Programa de Alimentos para Consumo Humano","o","deletreada",""],
+["SNAP","Supplemental Nutrition Assistance Program","Programa de Cupones para Alimentos","o","palabra","Muchos usuarios lo conocen como «estampillas de comida». En llamada funciona mejor: «SNAP, el programa de cupones o estampillas para alimentos»."],
+["NFIP","National Flood Insurance Program","Programa del Seguro Nacional de Inundación","o","deletreada",""],
+
+["—","U.S. Senate","Senado de Estados Unidos","o","",""],
+["USCIS","U.S. Citizenship and Immigration Services","Servicio de Ciudadanía e Inmigración de Estados Unidos","o","deletreada",""],
+["ICE","U.S. Immigration and Customs Enforcement","Servicio de Control de Inmigración y Aduanas","o","palabra","No se traduce la sigla. Ojo: «ICE detainer» es orden de detención de ICE, no «detención de hielo»."],
+["VETS","Veterans' Employment and Training Service","Servicio de Empleo y Capacitación para Veteranos","o","",""],
+["IRS","Internal Revenue Service","Servicio de Impuestos Internos","o","deletreada","Nunca «Servicio de Rentas Internas». Es calco y el usuario no lo encontrará en su papelería."],
+["FSIS","Food Safety and Inspection Service","Servicio de Inocuidad e Inspección de los Alimentos","o","deletreada",""],
+["APHIS","Animal and Plant Health Inspection Service","Servicio de Inspección Sanitaria de Animales y Plantas","o","palabra",""],
+["NPS","National Park Service","Servicio de Parques Nacionales","o","deletreada",""],
+["FWS","U.S. Fish and Wildlife Service","Servicio Federal de Pesca y Vida Silvestre","o","deletreada",""],
+["USFS","U.S. Forest Service","Servicio Forestal de Estados Unidos","o","deletreada",""],
+["USGS","U.S. Geological Survey","Servicio Geológico de Estados Unidos","o","deletreada",""],
+["USPS","U.S. Postal Service","Servicio Postal de EE. UU.","o","deletreada",""],
+["SSS","Selective Service System","Sistema de Servicio Selectivo","o","deletreada",""],
+
+["USAGov","USAGov, antes Federal Citizen Information Center (FCIC)","USAGov, antes FCIC","o","",""],
+["VOA","Voice of America","Voz de América","o","deletreada",""],
+
+["USSS","U.S. Secret Service","Servicio Secreto de Estados Unidos","p","deletreada",""],
+["USMS","U.S. Marshals Service","Servicio de Alguaciles de Estados Unidos","p","deletreada",""],
+["BOP","Federal Bureau of Prisons","Oficina Federal de Prisiones","p","deletreada",""],
+["EOIR","Executive Office for Immigration Review","Oficina Ejecutiva de Revisión de Casos de Inmigración","p","deletreada","Es el tribunal de inmigración. No lo confunda con USCIS ni con ICE: son tres entidades separadas."],
+["BIA","Board of Immigration Appeals","Junta de Apelaciones de Inmigración","p","deletreada",""],
+["CRCL","Office for Civil Rights and Civil Liberties (DHS)","Oficina de Derechos Civiles y Libertades Civiles","p","deletreada",""],
+["ORR","Office of Refugee Resettlement","Oficina de Reasentamiento de Refugiados","p","deletreada",""],
+["WIC","Special Supplemental Nutrition Program for Women, Infants, and Children","Programa Especial de Nutrición Suplementaria para Mujeres, Bebés y Niños","p","palabra",""],
+["TANF","Temporary Assistance for Needy Families","Asistencia Temporal para Familias Necesitadas","p","palabra",""],
+["SSI","Supplemental Security Income","Seguridad de Ingreso Suplementario","p","deletreada","No lo mezcle con SSDI. SSI se basa en necesidad económica; SSDI, en historial de trabajo."],
+["SSDI","Social Security Disability Insurance","Seguro por Incapacidad del Seguro Social","p","deletreada",""],
+["LIHEAP","Low Income Home Energy Assistance Program","Programa de Asistencia de Energía para Hogares de Bajos Ingresos","p","palabra",""],
+["CHIP","Children's Health Insurance Program","Programa de Seguro Médico para Niños","p","palabra",""],
+["ACA","Affordable Care Act","Ley del Cuidado de Salud a Bajo Precio","p","deletreada","También «Obamacare» en boca del usuario."],
+["CPS","Child Protective Services","Servicios de Protección Infantil","p","deletreada","Agencia estatal, no federal. El nombre cambia según el estado."],
+["APS","Adult Protective Services","Servicios de Protección al Adulto","p","deletreada",""],
+["DMV","Department of Motor Vehicles","Departamento de Vehículos Motorizados","p","deletreada","Estatal. En algunos estados es RMV, BMV o MVD."],
+["PSAP","Public Safety Answering Point","Centro de Atención de Llamadas de Emergencia (911)","p","",""],
+["NWS","National Weather Service","Servicio Meteorológico Nacional","p","deletreada",""],
+["GAO","Government Accountability Office","Oficina de Rendición de Cuentas del Gobierno","p","deletreada",""],
+["CBO","Congressional Budget Office","Oficina de Presupuesto del Congreso","p","deletreada",""],
+["OMB","Office of Management and Budget","Oficina de Administración y Presupuesto","p","deletreada",""],
+["NSA","National Security Agency","Agencia de Seguridad Nacional","p","deletreada",""],
+["DNI","Director of National Intelligence","Director de Inteligencia Nacional","p","deletreada",""],
+["FHFA","Federal Housing Finance Agency","Agencia Federal de Financiamiento de Vivienda","p","deletreada",""],
+["FinCEN","Financial Crimes Enforcement Network","Red de Control de Delitos Financieros","p","palabra",""],
+["MSHA","Mine Safety and Health Administration","Administración de Seguridad y Salud Minera","p","deletreada",""],
+["PHMSA","Pipeline and Hazardous Materials Safety Administration","Administración de Seguridad de Oleoductos y Materiales Peligrosos","p","deletreada",""],
+["FRA","Federal Railroad Administration","Administración Federal de Ferrocarriles","p","deletreada",""],
+["FTA","Federal Transit Administration","Administración Federal de Tránsito","p","deletreada",""],
+["FHWA","Federal Highway Administration","Administración Federal de Carreteras","p","deletreada",""],
+["NRC","Nuclear Regulatory Commission","Comisión Reguladora Nuclear","p","deletreada",""],
+["FERC","Federal Energy Regulatory Commission","Comisión Federal Reguladora de Energía","p","palabra",""],
+["EIA","Energy Information Administration","Administración de Información Energética","p","deletreada",""],
+["BLS","Bureau of Labor Statistics","Oficina de Estadísticas Laborales","p","deletreada",""],
+["OFCCP","Office of Federal Contract Compliance Programs","Oficina de Programas de Cumplimiento de Contratos Federales","p","deletreada",""],
+["OWCP","Office of Workers' Compensation Programs","Oficina de Programas de Compensación al Trabajador","p","deletreada",""],
+["MSPB","Merit Systems Protection Board","Junta de Protección de Sistemas de Mérito","p","deletreada",""],
+["TVA","Tennessee Valley Authority","Autoridad del Valle de Tennessee","p","deletreada",""],
+["AmeriCorps","AmeriCorps","AmeriCorps","p","palabra","No se traduce."],
+["NEA","National Endowment for the Arts","Fondo Nacional para las Artes","p","deletreada",""],
+["NEH","National Endowment for the Humanities","Fondo Nacional para las Humanidades","p","deletreada",""],
+["IMLS","Institute of Museum and Library Services","Instituto de Servicios de Museos y Bibliotecas","p","deletreada",""],
+["IHS","Indian Health Service","Servicio de Salud Indígena","p","deletreada",""],
+["DLA","Defense Logistics Agency","Agencia de Logística de Defensa","p","deletreada",""],
+["DIA","Defense Intelligence Agency","Agencia de Inteligencia de Defensa","p","deletreada",""],
+["DFAS","Defense Finance and Accounting Service","Servicio de Finanzas y Contabilidad de Defensa","p","",""],
+["VBA","Veterans Benefits Administration","Administración de Beneficios para Veteranos","p","deletreada",""],
+["VHA","Veterans Health Administration","Administración de Salud para Veteranos","p","deletreada",""],
+["NCA","National Cemetery Administration","Administración Nacional de Cementerios","p","deletreada",""]
+];
+
+const TRAPS = [
+  ["Homeland Security → «Seguridad Interna»","Departamento de Seguridad Nacional"],
+  ["Internal Revenue Service → «Rentas Internas»","Servicio de Impuestos Internos"],
+  ["Social Security → «Seguridad Social»","Seguro Social"],
+  ["Attorney General → «Abogado General»","Fiscal General"],
+  ["District Attorney → «Abogado de Distrito»","Fiscal de Distrito"],
+  ["Deposition → «Deposición»","Declaración jurada o testimonio"],
+  ["Veterans Affairs → «Administración de Veteranos»","Departamento de Asuntos de los Veteranos"],
+  ["ICE detainer → «detención de hielo»","Orden de detención de ICE"]
+];
+
+const norm = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+
+function mark(text, q){
+  if(!q) return esc(text);
+  const nt = norm(text), nq = norm(q);
+  const i = nt.indexOf(nq);
+  if(i < 0) return esc(text);
+  return esc(text.slice(0,i)) + "<mark>" + esc(text.slice(i, i+q.length)) + "</mark>" + esc(text.slice(i+q.length));
+}
+function esc(s){return s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+let filtro = "todo";
+const results = document.getElementById("results");
+const countEl = document.getElementById("count");
+const q = document.getElementById("q");
+const clearBtn = document.getElementById("clear");
+
+function render(){
+  const term = q.value.trim();
+  const n = norm(term);
+  let list = D.filter(r => {
+    if(filtro === "oficial" && r[3] !== "o") return false;
+    if(filtro === "nota" && !r[5]) return false;
+    if(!n) return true;
+    return norm(r[0]).includes(n) || norm(r[1]).includes(n) || norm(r[2]).includes(n);
+  });
+
+  clearBtn.style.display = term ? "block" : "none";
+  countEl.textContent = list.length === 1 ? "1 entrada" : list.length + " entradas";
+
+  if(!list.length){
+    results.innerHTML = '<div class="empty"><b>Sin coincidencias para «'+esc(term)+'»</b>'+
+      'Pruebe con la sigla sola, con una palabra del nombre en inglés, o quite el filtro activo. '+
+      'Si la agencia no está aquí, diga la sigla en inglés y añada una glosa breve en lugar de improvisar una traducción.</div>';
+    return;
+  }
+
+  let html = "", grupoActual = null;
+  for(const r of list){
+    const g = r[3];
+    if(g !== grupoActual){
+      grupoActual = g;
+      html += '<p class="group-head">' + (g === "o"
+        ? "Traducción oficial del portal en español"
+        : "Uso profesional — no figura en el índice en español") + "</p>";
+    }
+    const say = r[4] === "palabra" ? "se dice como palabra"
+              : r[4] === "deletreada" ? "se deletrea en inglés" : "";
+    html += '<article class="row">'+
+      '<div class="side-en">'+
+        '<p class="sig">'+ mark(r[0], term) + (say ? '<span class="say">'+say+'</span>' : '') +'</p>'+
+        '<p class="en-name">'+ mark(r[1], term) +'</p>'+
+      '</div>'+
+      '<div class="side-es">'+
+        '<p class="es-name">'+ mark(r[2], term) +'</p>'+
+        (r[5] ? '<p class="nota">'+ esc(r[5]) +'</p>' : '')+
+      '</div>'+
+    '</article>';
+  }
+  results.innerHTML = html;
+}
+
+q.addEventListener("input", render);
+clearBtn.addEventListener("click", () => { q.value=""; render(); q.focus(); });
+
+const chips = {todo:"f-todo", oficial:"f-oficial", nota:"f-nota"};
+for(const [key,id] of Object.entries(chips)){
+  document.getElementById(id).addEventListener("click", () => {
+    filtro = key;
+    for(const [k,i] of Object.entries(chips))
+      document.getElementById(i).setAttribute("aria-pressed", String(k===key));
+    render();
+  });
+}
+
+document.addEventListener("keydown", e => {
+  if(e.key === "/" && document.activeElement !== q){ e.preventDefault(); q.focus(); q.select(); }
+  if(e.key === "Escape" && document.activeElement === q){ q.value=""; render(); }
+});
+
+document.getElementById("traps").innerHTML = TRAPS.map(t =>
+  '<div class="trap"><div class="bad"><s>'+esc(t[0])+'</s></div><div class="good">'+esc(t[1])+'</div></div>'
+).join("");
+
+render();
+</script>
+</body>
+</html>
