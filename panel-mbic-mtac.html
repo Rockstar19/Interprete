@@ -134,6 +134,21 @@
   .btn-row{ display:flex; gap:8px; }
 
   /* ---------- modalidad grid ---------- */
+  .mode-toggle{
+    display:flex; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 3px; gap: 2px;
+  }
+  .mode-btn{
+    flex:1; text-align:center; padding: 8px 4px; border-radius: 6px; font-family: var(--font-d);
+    font-weight:700; font-size: 12px; color: var(--muted); cursor:pointer; user-select:none;
+  }
+  .mode-btn.sel{ background: var(--accent-dim); color: var(--accent); }
+  .manual-row{ margin-bottom: 14px; }
+  .manual-row label{ display:block; font-size: 11.5px; color: var(--muted); margin-bottom: 5px; }
+  .manual-row input{
+    width:100%; background: var(--panel-2); border: 1px solid var(--line); color: var(--text);
+    border-radius: 8px; padding: 10px 11px; font-family: var(--font-d); font-size: 16px; font-weight:700;
+  }
+  .manual-row input:focus{ border-color: var(--accent); }
   .mod-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px;}
   .mod-btn{
     text-align:left; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px;
@@ -293,13 +308,20 @@
 
   <!-- BLOQUE ACTIVO -->
   <div class="panel" id="panel-bloque">
+    <div class="card" style="padding-bottom:12px;">
+      <div class="mode-toggle" id="modeToggle">
+        <div class="mode-btn sel" data-mode="crono">Cronometrado</div>
+        <div class="mode-btn" data-mode="manual">Manual</div>
+      </div>
+    </div>
+
     <div class="card" id="modCard">
       <h2>Modalidad de la llamada</h2>
-      <p class="hint">Selecciona el tipo de asignación antes de iniciar. Define el Factor de Carga Cognitiva (FCC).</p>
+      <p class="hint">Selecciona el tipo de asignación. Define el Factor de Carga Cognitiva (FCC).</p>
       <div class="mod-grid" id="modGrid"></div>
     </div>
 
-    <div class="card">
+    <div class="card" id="cronoCard">
       <div class="gauge-wrap">
         <div class="gauge">
           <svg viewBox="0 0 210 210">
@@ -321,6 +343,21 @@
         <button class="btn btn-ghost" id="togglePause">Pausar (tiempo de espera)</button>
         <button class="btn btn-danger-outline" id="cancelBlock">Cancelar</button>
       </div>
+    </div>
+
+    <div class="card" id="manualCard" style="display:none;">
+      <h2>Registro manual</h2>
+      <p class="hint">Para una llamada que ya terminó o que olvidaste cronometrar. Ingresa los minutos y pasas directo a la descarga MTAC.</p>
+      <div class="manual-row">
+        <label for="manualTotal">Duración total de la llamada (min)</label>
+        <input type="number" inputmode="decimal" id="manualTotal" min="0" step="0.5" placeholder="Ej. 42">
+      </div>
+      <div class="manual-row">
+        <label for="manualActivo">Tiempo activo interpretando (min)</label>
+        <input type="number" inputmode="decimal" id="manualActivo" min="0" step="0.5" placeholder="Vacío = igual a la duración total">
+      </div>
+      <p class="hint" id="manualError" style="display:none; color:var(--rojo); margin:0 0 10px;"></p>
+      <button class="btn btn-primary" id="manualSubmit">Registrar y continuar a MTAC</button>
     </div>
   </div>
 
@@ -424,12 +461,15 @@
   let decompHandle = null;
 
   // ---------- storage ----------
+  function defaultToday(){
+    return { preTurno:null, bloques:[], enCurso:null, borrador:null, selectedMod:'vri_general', blockMode:'crono' };
+  }
   async function loadToday(){
     try{
       const r = await window.storage.get(todayKey(), false);
-      today = r && r.value ? JSON.parse(r.value) : { preTurno:null, bloques:[] };
+      today = r && r.value ? Object.assign(defaultToday(), JSON.parse(r.value)) : defaultToday();
     }catch(e){
-      today = { preTurno:null, bloques:[] };
+      today = defaultToday();
     }
   }
   async function saveToday(){
@@ -547,11 +587,74 @@
       div.addEventListener('click', ()=>{
         if(active) return; // no cambiar modalidad con timer corriendo
         selectedMod = key;
+        today.selectedMod = key;
+        saveToday();
         renderModGrid();
       });
       grid.appendChild(div);
     });
   }
+
+  // ---------- modo: cronometrado vs manual ----------
+  let blockMode = 'crono';
+  document.querySelectorAll('#modeToggle .mode-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(active) { showToast('Termina o cancela la llamada en curso antes de cambiar de modo'); return; }
+      blockMode = btn.dataset.mode;
+      today.blockMode = blockMode;
+      saveToday();
+      document.querySelectorAll('#modeToggle .mode-btn').forEach(b=> b.classList.toggle('sel', b===btn));
+      $('cronoCard').style.display = blockMode==='crono' ? 'block' : 'none';
+      $('manualCard').style.display = blockMode==='manual' ? 'block' : 'none';
+      $('manualError').style.display = 'none';
+    });
+  });
+
+  $('manualSubmit').addEventListener('click', ()=>{
+    const totalRaw = $('manualTotal').value;
+    const activoRaw = $('manualActivo').value;
+    const total = parseFloat(totalRaw);
+    const err = $('manualError');
+    if(!(total > 0)){
+      err.textContent = 'Ingresa la duración total de la llamada (en minutos).';
+      err.style.display = 'block';
+      return;
+    }
+    const act = activoRaw.trim() === '' ? total : parseFloat(activoRaw);
+    if(isNaN(act) || act < 0){
+      err.textContent = 'El tiempo activo debe ser un número válido.';
+      err.style.display = 'block';
+      return;
+    }
+    if(act > total){
+      err.textContent = 'El tiempo activo no puede ser mayor que la duración total.';
+      err.style.display = 'block';
+      return;
+    }
+    err.style.display = 'none';
+    const m = MODALIDADES[selectedMod];
+    const now = Date.now();
+    draft = {
+      id: 'b_' + now,
+      modKey: selectedMod,
+      modLabel: m.label,
+      fcc: m.fcc,
+      minutosActivos: act,
+      minutosLlamada: total,
+      mce: act * m.fcc,
+      inicio: now - total * 60000,
+      fin: now,
+      manual: true,
+    };
+    mtac = { auditivo:null, cognitivo:null };
+    $('noteInput').value = '';
+    today.borrador = { draft, mtac, nota: '' };
+    saveToday();
+    $('manualTotal').value = '';
+    $('manualActivo').value = '';
+    hydratePost();
+    switchTab('post');
+  });
 
   // ---------- gauge / timer ----------
   function zoneFor(modKey, minutes){
@@ -616,6 +719,8 @@
     if(!active){
       const now = Date.now();
       active = { modKey: selectedMod, callStart: now, activeAccum: 0, segStart: now, isPaused: false };
+      today.enCurso = { ...active };
+      saveToday();
       $('toggleTimer').textContent = 'Finalizar llamada';
       $('activeRow').style.display = 'flex';
       $('togglePause').textContent = 'Pausar (tiempo de espera)';
@@ -637,11 +742,15 @@
       active.isPaused = true;
       $('togglePause').textContent = 'Reanudar interpretación';
     }
+    today.enCurso = { ...active };
+    saveToday();
     renderGauge();
   });
   $('cancelBlock').addEventListener('click', ()=>{
     clearInterval(timerHandle);
     active = null;
+    today.enCurso = null;
+    saveToday();
     $('toggleTimer').textContent = 'Iniciar llamada';
     $('activeRow').style.display = 'none';
     renderGauge();
@@ -668,6 +777,11 @@
       fin: Date.now(),
     };
     active = null;
+    today.enCurso = null;
+    mtac = { auditivo:null, cognitivo:null };
+    $('noteInput').value = '';
+    today.borrador = { draft, mtac, nota: '' };
+    saveToday();
     $('toggleTimer').textContent = 'Iniciar llamada';
     $('activeRow').style.display = 'none';
     renderGauge();
@@ -694,9 +808,11 @@
     const as = Math.round((draft.minutosActivos - am) * 60);
     $('sDurActivo').textContent = `${pad(am)}:${pad(as)}`;
     $('sMce').textContent = draft.mce.toFixed(1);
-    mtac = { auditivo:null, cognitivo:null };
-    $('noteInput').value = '';
     renderSegs();
+  }
+  function persistBorrador(){
+    today.borrador = draft ? { draft, mtac, nota: $('noteInput').value } : null;
+    saveToday();
   }
   function renderSegs(){
     ['stripAud','stripCog'].forEach((id, idx)=>{
@@ -708,10 +824,15 @@
     $('saveBlock').disabled = !(mtac.auditivo && mtac.cognitivo);
   }
   document.querySelectorAll('#stripAud .seg').forEach(seg=>{
-    seg.addEventListener('click', ()=>{ mtac.auditivo = seg.dataset.val; renderSegs(); });
+    seg.addEventListener('click', ()=>{ mtac.auditivo = seg.dataset.val; renderSegs(); persistBorrador(); });
   });
   document.querySelectorAll('#stripCog .seg').forEach(seg=>{
-    seg.addEventListener('click', ()=>{ mtac.cognitivo = seg.dataset.val; renderSegs(); });
+    seg.addEventListener('click', ()=>{ mtac.cognitivo = seg.dataset.val; renderSegs(); persistBorrador(); });
+  });
+  let noteDebounce = null;
+  $('noteInput').addEventListener('input', ()=>{
+    clearTimeout(noteDebounce);
+    noteDebounce = setTimeout(persistBorrador, 700);
   });
 
   $('saveBlock').addEventListener('click', async ()=>{
@@ -723,6 +844,7 @@
       nota: $('noteInput').value.trim(),
     };
     today.bloques.push(record);
+    today.borrador = null;
     await saveToday();
     renderStatus();
     renderLog();
@@ -779,7 +901,7 @@
       row.className = 'log-item';
       row.innerHTML = `
         <div class="log-top">
-          <span class="log-mod">${b.modLabel}</span>
+          <span class="log-mod">${b.modLabel}${b.manual ? ' <span style="color:var(--muted); font-weight:400; font-size:10px;">· manual</span>' : ''}</span>
           <span class="log-time">${time}</span>
         </div>
         <div class="log-mid">
@@ -806,33 +928,70 @@
     $('wipeConfirm').style.display = 'block';
   });
   $('wipeConfirm').addEventListener('click', async ()=>{
-    today = { preTurno:null, bloques:[] };
+    clearInterval(timerHandle);
+    clearInterval(decompHandle);
+    active = null;
+    draft = null;
+    mtac = { auditivo:null, cognitivo:null };
+    selectedMod = 'vri_general';
+    blockMode = 'crono';
+    today = defaultToday();
     await saveToday();
-    renderStatus(); renderLog(); hydratePreTurno();
+    $('toggleTimer').textContent = 'Iniciar llamada';
+    $('activeRow').style.display = 'none';
+    $('noteInput').value = '';
+    $('manualTotal').value = '';
+    $('manualActivo').value = '';
+    document.querySelectorAll('#modeToggle .mode-btn').forEach(b=> b.classList.toggle('sel', b.dataset.mode==='crono'));
+    $('cronoCard').style.display = 'block';
+    $('manualCard').style.display = 'none';
+    $('decompOverlay').classList.remove('show');
+    renderModGrid();
+    renderGauge();
+    renderStatus(); renderLog(); hydratePreTurno(); hydratePost();
     $('wipeConfirm').style.display = 'none';
     showToast('Registros de hoy borrados');
   });
 
   // ---------- init ----------
   async function init(){
-    renderModGrid();
-    renderGauge();
     await loadToday();
+    selectedMod = today.selectedMod || 'vri_general';
+    blockMode = today.blockMode || 'crono';
+
+    renderModGrid();
+    document.querySelectorAll('#modeToggle .mode-btn').forEach(b=> b.classList.toggle('sel', b.dataset.mode===blockMode));
+    $('cronoCard').style.display = blockMode==='crono' ? 'block' : 'none';
+    $('manualCard').style.display = blockMode==='manual' ? 'block' : 'none';
+
+    let landOn = null;
+
+    if(today.enCurso){
+      active = { ...today.enCurso };
+      $('toggleTimer').textContent = 'Finalizar llamada';
+      $('activeRow').style.display = 'flex';
+      $('togglePause').textContent = active.isPaused ? 'Reanudar interpretación' : 'Pausar (tiempo de espera)';
+      timerHandle = setInterval(renderGauge, 1000);
+      landOn = 'bloque';
+    }
+    renderGauge();
+
+    if(today.borrador && today.borrador.draft){
+      draft = today.borrador.draft;
+      mtac = today.borrador.mtac || { auditivo:null, cognitivo:null };
+      $('noteInput').value = today.borrador.nota || '';
+      landOn = landOn || 'post';
+    }
+
     renderStatus();
     hydratePreTurno();
     hydratePost();
     renderLog();
+    if(landOn) switchTab(landOn);
     setInterval(renderStatus, 60000);
   }
   init();
 })();
 </script>
-<a class="volver-al-indice" href="index.html" aria-label="Volver al centro de interpretación">← Inicio</a>
-<style>
-  .volver-al-indice{position:fixed;left:18px;bottom:18px;z-index:2147483647;display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 17px;color:#f7f4ec!important;background:#07111f!important;border:1px solid rgba(217,171,95,.7)!important;border-radius:999px!important;box-shadow:0 8px 24px rgba(0,0,0,.28)!important;font:600 14px/1 system-ui,sans-serif!important;letter-spacing:.01em!important;text-decoration:none!important;opacity:.92;transition:transform .18s ease,opacity .18s ease!important}
-  .volver-al-indice:hover,.volver-al-indice:focus-visible{color:#07111f!important;background:#d9ab5f!important;outline:2px solid #f7f4ec!important;outline-offset:2px!important;opacity:1;transform:translateY(-2px)}
-  @media(max-width:520px){.volver-al-indice{left:12px;bottom:12px;min-height:40px;padding:0 14px;font-size:13px!important}}
-  @media(prefers-reduced-motion:reduce){.volver-al-indice{transition:none!important}}
-</style>
 </body>
 </html>
