@@ -207,11 +207,11 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
     <div class="sellos">
       <div class="sello">Ciclo activo<strong id="selloCiclo">—</strong></div>
       <div class="sello pago">Fecha de pago<strong id="selloPago">—</strong></div>
-      <div class="archivo" id="archivoEstado">
+      <div class="archivo" id="nubeEstado">
         <span class="punto"></span>
-        <span class="txt" id="archivoTexto"><b>Sin archivo conectado</b>Los cambios solo viven en esta pestaña</span>
+        <span class="txt" id="nubeTexto"><b>Sin sincronizar</b>Cargando…</span>
       </div>
-      <button type="button" class="btn-archivo" id="btnArchivo">Abrir archivo local</button>
+      <button type="button" class="btn-archivo" id="btnNubeSyncCab">Sincronizar ahora</button>
     </div>
   </div>
 </header>
@@ -220,22 +220,19 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
 
   <aside class="panel">
     <div class="bloque">
-      <span class="rotulo">Almacenamiento</span>
+      <span class="rotulo">Sincronización en la nube</span>
       <p class="nota" style="margin:0 0 12px">
-        Chrome puede guardar tu progreso en un archivo <code>.json</code> de tu disco. La primera vez, elige dónde
-        crearlo o ábrelo si ya existe. Desde ahí, la página <strong>recuerda ese archivo</strong> — al volver a
-        abrir esta pestaña no tendrás que buscarlo de nuevo: bastará un clic en "Reanudar acceso" para confirmar
-        el permiso, que es lo mínimo que Chrome exige por seguridad. El recuerdo depende de que este mismo archivo
-        HTML se abra siempre desde la misma ubicación en el disco.
+        El progreso ya no depende de un archivo local: se lee y se guarda directamente en
+        <code>progreso-ciclos.json</code>, dentro de este mismo repositorio de GitHub, a través de un backend en
+        Vercel. Cualquier dispositivo que abra esta página parte del mismo estado. Mientras trabajas, cada cambio
+        se guarda primero en una copia instantánea de este navegador y, unos segundos después, se sube a GitHub.
       </p>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button type="button" class="btn-archivo" id="btnArchivoPanel" style="flex:1">Abrir mi archivo…</button>
-        <button type="button" class="btn-archivo chico" id="btnArchivoNuevo">Crear nuevo</button>
-        <button type="button" class="btn-archivo chico" id="btnDesconectar" hidden>Desconectar</button>
+        <button type="button" class="btn-archivo" id="btnNubeSyncPanel" style="flex:1">Sincronizar ahora</button>
       </div>
-      <p class="nota" id="notaArchivo" style="margin-top:10px"></p>
+      <p class="nota" id="notaNube" style="margin-top:10px"></p>
       <button type="button" class="btn-archivo" id="btnRespaldo" style="width:100%;margin-top:10px">Descargar copia de respaldo</button>
-      <p class="nota" style="margin-top:6px">Guarda un segundo archivo con la fecha y hora de hoy, aparte del que se actualiza solo — útil antes de un cambio grande.</p>
+      <p class="nota" style="margin-top:6px">Guarda un archivo .json aparte con la fecha y hora de hoy, útil antes de un cambio grande o como copia fuera de línea.</p>
     </div>
 
     <div class="bloque">
@@ -949,264 +946,127 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
     });
   }
 
-  /* ---- persistencia: archivo local (File System Access API) con respaldo en window.storage ---- */
-  var fsHandle=null;      // FileSystemFileHandle del archivo conectado
-  var fsSoportado = (typeof window.showSaveFilePicker==='function' && typeof window.indexedDB!=='undefined');
-  var guardando=false, pendiente=false;
-  var handleRecordado=null; // handle recuperado de IndexedDB, aún sin permiso confirmado en esta sesión
+  /* ---- persistencia: sincronización con GitHub a través de un backend en Vercel ---- */
+  /* El JSON de progreso ya no se carga desde un archivo local: vive en el repositorio de
+     GitHub (progreso-ciclos.json) y esta página lo lee y lo escribe llamando a /api/ciclos,
+     una función serverless de Vercel que guarda el token de GitHub del lado del servidor. */
+  var ENDPOINT_NUBE='/api/ciclos';
+  var SECRETO_NUBE='';           // opcional: si configuras MEDIDOR_SECRETO en Vercel, copia aquí el mismo valor
+  var CLAVE_CACHE='medidor-ciclo-2026-v2-cache'; // copia instantánea en este navegador; no es la fuente de verdad
+  var nubeGuardando=false, nubePendiente=false, nubeTimer=null;
 
-  /* --- mini almacén en IndexedDB solo para guardar el handle del archivo (no el contenido) --- */
-  var DB_NOMBRE='medidor-ciclo-fs', DB_TIENDA='handles', DB_LLAVE='archivoPrincipal';
-  function abrirDB(){
-    return new Promise(function(res,rej){
-      if(!window.indexedDB){ rej(new Error('sin indexedDB')); return; }
-      var req=indexedDB.open(DB_NOMBRE,1);
-      req.onupgradeneeded=function(){ req.result.createObjectStore(DB_TIENDA); };
-      req.onsuccess=function(){ res(req.result); };
-      req.onerror=function(){ rej(req.error); };
-    });
-  }
-  function guardarHandleEnDB(handle){
-    return abrirDB().then(function(db){
-      return new Promise(function(res,rej){
-        var tx=db.transaction(DB_TIENDA,'readwrite');
-        tx.objectStore(DB_TIENDA).put(handle,DB_LLAVE);
-        tx.oncomplete=function(){ res(true); };
-        tx.onerror=function(){ rej(tx.error); };
-      });
-    }).catch(function(){ return false; });
-  }
-  function leerHandleDeDB(){
-    return abrirDB().then(function(db){
-      return new Promise(function(res){
-        var tx=db.transaction(DB_TIENDA,'readonly');
-        var req=tx.objectStore(DB_TIENDA).get(DB_LLAVE);
-        req.onsuccess=function(){ res(req.result||null); };
-        req.onerror=function(){ res(null); };
-      });
-    }).catch(function(){ return null; });
-  }
-  function borrarHandleDeDB(){
-    return abrirDB().then(function(db){
-      return new Promise(function(res){
-        var tx=db.transaction(DB_TIENDA,'readwrite');
-        tx.objectStore(DB_TIENDA).delete(DB_LLAVE);
-        tx.oncomplete=function(){ res(true); };
-        tx.onerror=function(){ res(false); };
-      });
-    }).catch(function(){ return false; });
+  function cabecerasNube(extra){
+    var h=extra||{};
+    if(SECRETO_NUBE) h['X-Medidor-Secreto']=SECRETO_NUBE;
+    return h;
   }
 
-  function elArchivo(){
-    var pt=document.getElementById('archivoTexto'), est=document.getElementById('archivoEstado'),
-        nota=document.getElementById('notaArchivo'), btnDesc=document.getElementById('btnDesconectar'),
-        btnPanel=document.getElementById('btnArchivoPanel'), btnCab=document.getElementById('btnArchivo');
-    return {pt:pt,est:est,nota:nota,btnDesc:btnDesc,btnPanel:btnPanel,btnCab:btnCab};
+  function elNube(){
+    return {
+      est:document.getElementById('nubeEstado'),
+      txt:document.getElementById('nubeTexto'),
+      nota:document.getElementById('notaNube')
+    };
   }
 
-  function pintarEstadoArchivo(estado,detalle){
-    var r=elArchivo();
+  function pintarEstadoNube(estado,detalle){
+    var r=elNube();
     r.est.className='archivo'+(estado==='ok'?' ok':estado==='error'?' error':'');
     if(estado==='ok'){
-      r.pt.innerHTML='<b>'+ (fsHandle?fsHandle.name:'progreso-ciclos.json') +'</b>Guardando cambios automáticamente';
+      r.txt.innerHTML='<b>Sincronizado con GitHub</b>'+(detalle||('Última actualización: '+new Date().toLocaleTimeString('es-BO')));
     } else if(estado==='error'){
-      r.pt.innerHTML='<b>No se pudo guardar</b>'+(detalle||'Revisa el permiso del archivo');
-    } else if(estado==='recordado'){
-      r.pt.innerHTML='<b>'+(handleRecordado?handleRecordado.name:'archivo recordado')+'</b>Pulsa para reanudar el acceso';
+      r.txt.innerHTML='<b>No se pudo sincronizar</b>'+(detalle||'Revisa la conexión o el backend en Vercel.');
+    } else if(estado==='cargando'){
+      r.txt.innerHTML='<b>Sincronizando…</b>'+(detalle||'Leyendo el estado desde GitHub');
     } else {
-      r.pt.innerHTML='<b>Sin archivo conectado</b>Los cambios solo viven en esta pestaña';
+      r.txt.innerHTML='<b>Sin sincronizar</b>'+(detalle||'Trabajando con la copia local de este navegador');
     }
-    r.btnDesc.hidden=!fsHandle;
-
-    if(estado==='recordado'){
-      r.btnPanel.textContent='Reanudar acceso'; r.btnCab.textContent='Reanudar acceso';
-    } else if(fsHandle){
-      r.btnPanel.textContent='Cambiar archivo…'; r.btnCab.textContent='Cambiar archivo';
-    } else {
-      r.btnPanel.textContent='Abrir mi archivo…'; r.btnCab.textContent='Abrir archivo local';
-    }
-
-    if(r.nota){
-      r.nota.textContent = !fsSoportado
-        ? 'Este navegador no admite guardar en un archivo local (funciona en Chrome o Edge de escritorio). Se está usando el respaldo interno.'
-        : estado==='recordado'
-          ? 'Este archivo ya estaba conectado en una sesión anterior. Un solo clic en "Reanudar acceso" confirma el permiso — no hace falta volver a buscarlo.'
-        : (fsHandle ? 'Conectado a "'+fsHandle.name+'". Cada cambio se escribe ahí solo, y se recordará la próxima vez que abras esta página.'
-                    : 'Usa "Abrir mi archivo…" si ya tienes uno guardado de una sesión anterior, o "Crear nuevo" la primera vez.');
-    }
+    if(r.nota) r.nota.textContent = (estado==='error' && detalle) ? detalle : '';
   }
 
-  function reconstruirTrasCarga(){
-    if(!st.porCiclo) st.porCiclo={};
-    if(st.ciclo===undefined||st.ciclo===null) st.ciclo=16;
-    for(var mi=0;mi<MESES_REG.length;mi++){ if(MESES_REG[mi].indexOf(st.ciclo)>=0){ st.mes=mi; break; } }
-    escribirControles();
-    construir();
-    refrescar();
+  function aplicarEstado(g){
+    Object.keys(g).forEach(function(k){ st[k]=g[k]; });
   }
 
-  function adoptarHandle(handle){
-    fsHandle=handle;
-    return fsHandle.getFile().then(function(file){
-      return file.text();
-    }).then(function(texto){
-      if(texto && texto.trim()){
-        try{
-          var g=JSON.parse(texto);
-          Object.keys(g).forEach(function(k){ st[k]=g[k]; });
-          reconstruirTrasCarga();
-        }catch(e){ /* archivo vacío o corrupto: seguimos con el estado actual */ }
-      }
-      pintarEstadoArchivo('ok');
-      return guardarHandleEnDB(fsHandle).then(function(){ return escribirArchivo(); }).then(function(){ return true; });
-    }).catch(function(err){
-      fsHandle=null;
-      var noEncontrado = err && (err.name==='NotFoundError' || err.name==='NotAllowedError');
-      if(noEncontrado){
-        return borrarHandleDeDB().then(function(){ throw {codigo:'archivo_ausente',original:err}; });
-      }
-      throw err;
-    });
-  }
-
-  /* intenta recuperar el permiso de un handle guardado, sin abrir ningún selector */
-  function intentarReanudar(){
-    if(!fsSoportado) return Promise.resolve(false);
-    return leerHandleDeDB().then(function(handle){
-      if(!handle) return false;
-      return handle.queryPermission({mode:'readwrite'}).then(function(perm){
-        if(perm==='granted'){
-          return adoptarHandle(handle).catch(function(err){
-            // el archivo respondía en permisos pero ya no existe en disco: no podemos abrir
-            // el selector solos (requiere un clic humano), así que dejamos el aviso listo
-            if(err && err.codigo==='archivo_ausente'){
-              pintarEstadoArchivo('error','El archivo recordado ya no está en su ubicación. Pulsa el botón para elegirlo de nuevo.');
-              return false;
-            }
-            return false;
-          });
-        }
-        // el permiso ya no está concedido: lo dejamos "recordado" para pedir un solo clic
-        handleRecordado=handle;
-        pintarEstadoArchivo('recordado');
-        return false;
-      });
-    }).catch(function(){ return false; });
-  }
-
-  /* pide permiso sobre el handle recordado con un solo clic, sin picker.
-     Si el archivo ya no existe en su ubicación original, cae automáticamente al selector manual. */
-  function reanudarConClic(){
-    if(!handleRecordado) return Promise.resolve(false);
-    return handleRecordado.requestPermission({mode:'readwrite'}).then(function(perm){
-      if(perm!=='granted'){ pintarEstadoArchivo('error','Permiso denegado. Puedes abrir el archivo de nuevo manualmente.'); return false; }
-      var h=handleRecordado; handleRecordado=null;
-      return adoptarHandle(h);
-    }).catch(function(err){
-      handleRecordado=null;
-      if(err && err.codigo==='archivo_ausente'){
-        pintarEstadoArchivo('error','No se encontró el archivo en su ubicación anterior. Elígelo o créalo de nuevo.');
-        return abrirSelectorManual(false);
-      }
-      pintarEstadoArchivo('error','No se pudo reanudar el acceso. Ábrelo manualmente.');
-      return false;
-    });
-  }
-
-  /* abre el picker manual de Chrome — único punto del código donde aparece esa ventana */
-  function abrirSelectorManual(crearNuevo){
-    var pedirHandle = crearNuevo
-      ? window.showSaveFilePicker({
-          suggestedName:'progreso-ciclos.json',
-          types:[{description:'Progreso del medidor (JSON)',accept:{'application/json':['.json']}}]
-        })
-      : window.showOpenFilePicker({
-          types:[{description:'Progreso del medidor (JSON)',accept:{'application/json':['.json']}}],
-          multiple:false
-        }).then(function(handles){ return handles[0]; });
-
-    return pedirHandle.then(function(handle){
-      return handle.queryPermission({mode:'readwrite'}).then(function(perm){
-        if(perm!=='granted') return handle.requestPermission({mode:'readwrite'});
-        return perm;
-      }).then(function(perm){
-        if(perm!=='granted'){ pintarEstadoArchivo('error','Permiso de escritura denegado.'); return false; }
-        return adoptarHandle(handle);
-      });
-    }).catch(function(err){
-      if(err && err.name==='AbortError'){ return false; } // el usuario canceló el diálogo
-      fsHandle=null;
-      pintarEstadoArchivo('error','No se pudo abrir el selector de archivos.');
-      return false;
-    });
-  }
-
-  function conectarArchivo(crearNuevo){
-    if(!fsSoportado){
-      pintarEstadoArchivo('error','Usa Chrome o Edge en computadora para esta función.');
-      return Promise.resolve(false);
-    }
-    // si hay un handle recordado esperando confirmación, este clic lo confirma directamente sin picker
-    if(handleRecordado && !crearNuevo){
-      return reanudarConClic();
-    }
-    return abrirSelectorManual(crearNuevo);
-  }
-
-  function desconectarArchivo(){
-    fsHandle=null;
-    handleRecordado=null;
-    borrarHandleDeDB();
-    pintarEstadoArchivo('idle');
-  }
-
-  function escribirArchivo(){
-    if(!fsHandle) return Promise.resolve(false);
-    if(guardando){ pendiente=true; return Promise.resolve(false); }
-    guardando=true;
-    return fsHandle.createWritable().then(function(w){
-      return w.write(JSON.stringify(st,null,2)).then(function(){ return w.close(); });
-    }).then(function(){
-      guardando=false;
-      pintarEstadoArchivo('ok');
-      if(pendiente){ pendiente=false; return escribirArchivo(); }
-      return true;
-    }).catch(function(err){
-      guardando=false;
-      pintarEstadoArchivo('error', err && err.name==='NotAllowedError' ? 'El permiso del archivo expiró; reconéctalo.' : 'Error al escribir el archivo.');
-      if(err && err.name==='NotAllowedError') fsHandle=null;
-      return false;
-    });
-  }
-
-  function guardar(){
-    if(fsHandle){ escribirArchivo(); return; }
-    var datos=JSON.stringify(st);
+  /* --- copia instantánea local: evita que un cambio se pierda si falla la red antes de subirse --- */
+  function guardarLocalCache(datosTexto){
     try{
       if(window.storage&&typeof window.storage.set==='function'){
-        window.storage.set(CLAVE,datos).catch(function(){});
+        window.storage.set(CLAVE_CACHE,datosTexto).catch(function(){});
         return;
       }
     }catch(e){}
-    /* fuera del entorno de artefactos (p. ej. publicado en la web) se usa localStorage */
-    try{ if(window.localStorage) window.localStorage.setItem(CLAVE,datos); }catch(e){}
+    try{ if(window.localStorage) window.localStorage.setItem(CLAVE_CACHE,datosTexto); }catch(e){}
   }
-  function cargar(){
+  function cargarLocalCache(){
     return new Promise(function(res){
       try{
         if(window.storage&&typeof window.storage.get==='function'){
-          window.storage.get(CLAVE).then(function(r){
-            if(r&&r.value){ var g=JSON.parse(r.value); Object.keys(g).forEach(function(k){ st[k]=g[k]; }); res(true); }
-            else res(false);
-          }).catch(function(){res(false);});
+          window.storage.get(CLAVE_CACHE).then(function(r){ res(r&&r.value?r.value:null); }).catch(function(){res(null);});
           return;
         }
       }catch(e){}
-      try{
-        var crudo=window.localStorage?window.localStorage.getItem(CLAVE):null;
-        if(crudo){ var g2=JSON.parse(crudo); Object.keys(g2).forEach(function(k){ st[k]=g2[k]; }); res(true); return; }
-      }catch(e){}
-      res(false);
+      try{ res(window.localStorage?window.localStorage.getItem(CLAVE_CACHE):null); }catch(e){ res(null); }
+    });
+  }
+
+  /* --- lectura desde GitHub (vía el backend) --- */
+  function cargarDesdeNube(){
+    pintarEstadoNube('cargando');
+    return fetch(ENDPOINT_NUBE,{headers:cabecerasNube()})
+      .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+      .then(function(r){
+        if(r&&r.existe&&r.datos){
+          aplicarEstado(r.datos);
+          pintarEstadoNube('ok','Estado cargado desde GitHub.');
+          return true;
+        }
+        pintarEstadoNube('idle','GitHub aún no tiene un progreso guardado; se creará con el primer guardado.');
+        return false;
+      })
+      .catch(function(){
+        pintarEstadoNube('error','No se pudo leer desde GitHub. Se usa la copia local mientras tanto.');
+        return false;
+      });
+  }
+
+  /* --- escritura en GitHub (vía el backend); hace un commit real al archivo del repo --- */
+  function guardarEnNube(){
+    if(nubeGuardando){ nubePendiente=true; return Promise.resolve(false); }
+    nubeGuardando=true;
+    var copia=JSON.parse(JSON.stringify(st));
+    return fetch(ENDPOINT_NUBE,{
+      method:'POST',
+      headers:cabecerasNube({'Content-Type':'application/json'}),
+      body:JSON.stringify(copia)
+    }).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+      .then(function(){
+        nubeGuardando=false;
+        pintarEstadoNube('ok');
+        if(nubePendiente){ nubePendiente=false; return guardarEnNube(); }
+        return true;
+      }).catch(function(){
+        nubeGuardando=false;
+        pintarEstadoNube('error','Error al guardar en GitHub. Tus cambios quedaron en la copia local de este navegador.');
+        return false;
+      });
+  }
+
+  /* agrupa varios cambios seguidos (cada tecleo) en un solo commit, unos segundos después del último */
+  function programarGuardadoNube(){
+    if(nubeTimer) clearTimeout(nubeTimer);
+    nubeTimer=setTimeout(function(){ guardarEnNube(); },2500);
+  }
+
+  function guardar(){
+    guardarLocalCache(JSON.stringify(st));
+    programarGuardadoNube();
+  }
+
+  function cargar(){
+    return cargarLocalCache().then(function(crudo){
+      if(crudo){ try{ aplicarEstado(JSON.parse(crudo)); }catch(e){} }
+      return !!crudo;
     });
   }
 
@@ -1217,7 +1077,7 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
       var sello=ahora.getFullYear()+String(ahora.getMonth()+1).padStart(2,'0')+String(ahora.getDate()).padStart(2,'0')+
         '-'+String(ahora.getHours()).padStart(2,'0')+String(ahora.getMinutes()).padStart(2,'0');
       var copia = JSON.parse(JSON.stringify(st));
-      copia._respaldoDe = fsHandle ? fsHandle.name : 'sin archivo conectado';
+      copia._respaldoDe = 'sincronización en la nube (GitHub)';
       copia._fechaRespaldo = ahora.toISOString();
       var blob=new Blob([JSON.stringify(copia,null,2)],{type:'application/json'});
       var a=document.createElement('a');
@@ -1286,18 +1146,14 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
   el.btnCsv.addEventListener('click',csv);
   el.btnImprimir.addEventListener('click',function(){ try{ window.print(); }catch(e){} });
 
-  document.getElementById('btnArchivo').addEventListener('click',function(){ conectarArchivo(false); });
-  document.getElementById('btnArchivoPanel').addEventListener('click',function(){ conectarArchivo(false); });
-  document.getElementById('btnArchivoNuevo').addEventListener('click',function(){ conectarArchivo(true); });
-  document.getElementById('btnDesconectar').addEventListener('click',desconectarArchivo);
+  document.getElementById('btnNubeSyncCab').addEventListener('click',function(){ if(nubeTimer) clearTimeout(nubeTimer); guardarEnNube(); });
+  document.getElementById('btnNubeSyncPanel').addEventListener('click',function(){ if(nubeTimer) clearTimeout(nubeTimer); guardarEnNube(); });
   document.getElementById('btnRespaldo').addEventListener('click',descargarRespaldo);
 
   /* ---- arranque ---- */
-  pintarEstadoArchivo('idle');
-  cargar().then(function(habiaGuardado){
+  function reconstruirUI(){
     var enCurso=cicloEnCurso();
-    if(!habiaGuardado && enCurso>=0) st.ciclo=enCurso;
-    if(st.ciclo===undefined||st.ciclo===null) st.ciclo=16;
+    if(st.ciclo===undefined||st.ciclo===null) st.ciclo = enCurso>=0 ? enCurso : 16;
     if(!st.porCiclo) st.porCiclo={};
     for(var mi=0;mi<MESES_REG.length;mi++){ if(MESES_REG[mi].indexOf(st.ciclo)>=0){ st.mes=mi; break; } }
     construirSelector();
@@ -1307,11 +1163,15 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
     construir();
     pintarFormulas();
     refrescar();
+  }
 
-    // intenta reconectar el archivo recordado; si Chrome ya tiene el permiso concedido,
-    // esto sucede sin ningún picker ni clic, y su contenido reemplaza el estado cargado arriba
-    intentarReanudar().then(function(reconectado){
-      if(reconectado){ construirSelector(); construirSelectorMes(); construirCalendario(); }
+  pintarEstadoNube('idle','Cargando…');
+  cargar().then(function(){
+    // primer pintado, con la copia local si existía, para que la página no se vea vacía
+    reconstruirUI();
+    // luego se sobrescribe con lo que haya en GitHub, que es la fuente de verdad entre dispositivos
+    cargarDesdeNube().then(function(actualizadoDesdeNube){
+      if(actualizadoDesdeNube) reconstruirUI();
     });
   });
 })();
