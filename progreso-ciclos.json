@@ -1,0 +1,218 @@
+{
+  "ciclo": 16,
+  "mes": 8,
+  "metaModo": "semestre",
+  "metaMonto": 6000,
+  "metaTipo": "bruto",
+  "tarifa": 0.12,
+  "modo": "equitativo",
+  "diaRec": 0,
+  "feeCripto": 2,
+  "feeFijo": 1,
+  "tasa": 11.75,
+  "tarifaBronce": 0.13,
+  "tarifaPlata": 0.14,
+  "tarifaOro": 0.15,
+  "porCiclo": {
+    "16": [
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      }
+    ],
+    "17": [
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      }
+    ]
+  }
+}
