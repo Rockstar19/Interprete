@@ -6,7 +6,7 @@
   "metaTipo": "bruto",
   "tarifa": 0.12,
   "modo": "equitativo",
-  "diaRec": 0,
+  "diaRec": 1,
   "feeCripto": 2,
   "feeFijo": 1,
   "tasa": 11.75,
@@ -316,7 +316,7 @@
     ],
     "19": [
       {
-        "tipo": "auto",
+        "tipo": "libre",
         "min": 0,
         "real": 0,
         "surge": "no",
