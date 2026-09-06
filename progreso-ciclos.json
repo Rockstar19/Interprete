@@ -8,7 +8,7 @@
   "modo": "equitativo",
   "diaRec": 1,
   "feeCripto": 2,
-  "feeFijo": 1,
+  "feeFijo": 0,
   "tasa": 11.75,
   "tarifaBronce": 0.13,
   "tarifaPlata": 0.14,
