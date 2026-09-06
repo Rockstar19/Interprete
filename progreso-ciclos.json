@@ -1,6 +1,6 @@
 {
-  "ciclo": 16,
-  "mes": 8,
+  "ciclo": 19,
+  "mes": 9,
   "metaModo": "semestre",
   "metaMonto": 6000,
   "metaTipo": "bruto",
@@ -115,6 +115,206 @@
       }
     ],
     "17": [
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      }
+    ],
+    "18": [
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      },
+      {
+        "tipo": "auto",
+        "min": 0,
+        "real": 0,
+        "surge": "no",
+        "surgeMin": 0
+      }
+    ],
+    "19": [
       {
         "tipo": "auto",
         "min": 0,
