@@ -3,6 +3,10 @@ name: Actualizar tasa desde Google Sheet
 on:
   workflow_dispatch:
 
+  schedule:
+    - cron: "20 8 * * *"
+      timezone: "America/La_Paz"
+
 permissions:
   contents: write
 
