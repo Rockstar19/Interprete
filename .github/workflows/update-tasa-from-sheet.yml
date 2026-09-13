@@ -1,103 +1,42 @@
-name: Actualizar tasa desde Google Sheet
+- name: Leer tasa validada desde Google Sheet
+  env:
+    SHEET_RATE_URL: ${{ secrets.SHEET_RATE_URL }}
 
-on:
-  workflow_dispatch:
+  run: |
+    python3 <<'PY'
+    import json
+    import os
+    import urllib.request
 
-  schedule:
-    - cron: "20 12 * * *"
+    url = os.environ["SHEET_RATE_URL"]
 
-permissions:
-  contents: write
+    req = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": "GitHub-Actions-Sheet-Reader"
+        }
+    )
 
-jobs:
-  update-rate:
-    runs-on: ubuntu-latest
+    with urllib.request.urlopen(req, timeout=30) as response:
+        raw = response.read().decode("utf-8", errors="replace")
 
-    steps:
-      - name: Descargar repositorio
-        uses: actions/checkout@v4
+        print("HTTP:", response.status)
+        print("URL final:", response.geturl())
+        print("Content-Type:", response.headers.get("Content-Type"))
+        print("Respuesta inicial:", repr(raw[:500]))
 
-      - name: Leer tasa validada desde Google Sheet
-        env:
-          SHEET_RATE_URL: ${{ secrets.SHEET_RATE_URL }}
+    if not raw.strip():
+        raise RuntimeError(
+            "Apps Script devolvió una respuesta vacía."
+        )
 
-        run: |
-          python3 <<'PY'
-          import json
-          import os
-          import re
-          import urllib.request
-          from pathlib import Path
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError:
+        raise RuntimeError(
+            "Apps Script no devolvió JSON. "
+            "Revisa acceso anónimo y que la URL termine en /exec."
+        )
 
-          url = os.environ["SHEET_RATE_URL"]
-
-          with urllib.request.urlopen(url, timeout=30) as response:
-              payload = json.loads(
-                  response.read().decode("utf-8")
-              )
-
-          print("Fuente:", payload.get("source"))
-          print("Fecha:", payload.get("date"))
-          print("Tasa:", payload.get("rate"))
-          print("Actualizado hoy:", payload.get("updatedToday"))
-          print("Fórmula:", payload.get("spreadFormula"))
-
-          if payload.get("ok") is not True:
-              raise RuntimeError(
-                  "El Google Sheet no pasó la validación."
-              )
-
-          if payload.get("source") != "BOB Mercado!B15":
-              raise RuntimeError(
-                  "Fuente inesperada. Solo se permite BOB Mercado!B15."
-              )
-
-          rate = float(payload["rate"])
-
-          if not 5.0 <= rate <= 30.0:
-              raise RuntimeError(
-                  f"Tasa fuera de rango razonable: {rate}"
-              )
-
-          file = Path("progreso-ciclos.json")
-          original = file.read_text(encoding="utf-8")
-
-          updated, count = re.subn(
-              r'("tasa"\s*:\s*)[0-9]+(?:\.[0-9]+)?',
-              lambda m: f'{m.group(1)}{rate:.2f}',
-              original,
-              count=1
-          )
-
-          if count != 1:
-              raise RuntimeError(
-                  "No se pudo localizar exactamente una propiedad tasa."
-              )
-
-          json.loads(updated)
-
-          file.write_text(updated, encoding="utf-8")
-
-          print(f"Nueva tasa: {rate:.2f}")
-          PY
-
-      - name: Verificar cambios
-        id: changes
-        run: |
-          if git diff --quiet -- progreso-ciclos.json; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "La tasa ya estaba actualizada."
-          else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            git diff -- progreso-ciclos.json
-          fi
-
-      - name: Commit y push
-        if: steps.changes.outputs.changed == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add progreso-ciclos.json
-          git commit -m "Actualiza tasa BOB/USDT desde Google Sheet"
-          git push
+    print("JSON recibido:", payload)
+    PY
