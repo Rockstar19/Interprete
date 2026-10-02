@@ -416,8 +416,8 @@
     ],
     "20": [
       {
-        "tipo": "libre",
-        "min": 0,
+        "tipo": "fijo",
+        "min": 15,
         "real": 0,
         "surge": "no",
         "surgeMin": 0
