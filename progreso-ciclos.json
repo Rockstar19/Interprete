@@ -2,7 +2,7 @@
   "ciclo": 20,
   "mes": 10,
   "metaModo": "ciclo",
-  "metaMonto": 42,
+  "metaMonto": 100,
   "metaTipo": "bruto",
   "tarifa": 0.12,
   "modo": "equitativo",
