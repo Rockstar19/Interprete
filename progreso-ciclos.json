@@ -6,7 +6,7 @@
   "metaTipo": "bruto",
   "tarifa": 0.12,
   "modo": "equitativo",
-  "diaRec": 7,
+  "diaRec": 10,
   "feeCripto": 1.5,
   "feeFijo": 0,
   "tasa": 11.96,
@@ -465,14 +465,14 @@
         "surgeMin": 0
       },
       {
-        "tipo": "auto",
+        "tipo": "libre",
         "min": 0,
         "real": 0,
         "surge": "no",
         "surgeMin": 0
       },
       {
-        "tipo": "auto",
+        "tipo": "libre",
         "min": 0,
         "real": 0,
         "surge": "no",
@@ -480,7 +480,7 @@
       },
       {
         "tipo": "fijo",
-        "min": 0,
+        "min": 58,
         "real": 0,
         "surge": "no",
         "surgeMin": 0
