@@ -444,15 +444,15 @@
         "surgeMin": 0
       },
       {
-        "tipo": "auto",
+        "tipo": "libre",
         "min": 0,
         "real": 0,
         "surge": "no",
         "surgeMin": 0
       },
       {
-        "tipo": "auto",
-        "min": 0,
+        "tipo": "fijo",
+        "min": 60,
         "real": 0,
         "surge": "no",
         "surgeMin": 0
