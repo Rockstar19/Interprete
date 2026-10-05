@@ -6,7 +6,7 @@
   "metaTipo": "netoBOB",
   "tarifa": 0.12,
   "modo": "equitativo",
-  "diaRec": 2,
+  "diaRec": 3,
   "feeCripto": 1.5,
   "feeFijo": 0,
   "tasa": 11.97,
@@ -530,8 +530,8 @@
         "surgeMin": 0
       },
       {
-        "tipo": "auto",
-        "min": 0,
+        "tipo": "fijo",
+        "min": 15,
         "real": 0,
         "surge": "no",
         "surgeMin": 0
