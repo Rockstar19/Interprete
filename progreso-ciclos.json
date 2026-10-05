@@ -517,7 +517,7 @@
     "21": [
       {
         "tipo": "fijo",
-        "min": 0,
+        "min": 14,
         "real": 0,
         "surge": "no",
         "surgeMin": 0
