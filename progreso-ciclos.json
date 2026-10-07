@@ -538,7 +538,7 @@
       },
       {
         "tipo": "fijo",
-        "min": 0,
+        "min": 76,
         "real": 0,
         "surge": "no",
         "surgeMin": 0
