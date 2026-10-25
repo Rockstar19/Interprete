@@ -3,14 +3,38 @@
   "cA": 629,
   "cB": 629,
   "cC": 630,
-  "rating": 4.65,
-  "proyeccionDia": 45,
+  "rating": 4.8,
+  "proyeccionDia": 1300,
   "ultimoCiclo": 22,
-  "usarValoraciones": false,
   "valoraciones": [
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0]
-  ]
+    [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "usarValoraciones": false
 }
