@@ -951,6 +951,7 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
      GitHub (progreso-ciclos.json) y esta página lo lee y lo escribe llamando a /api/ciclos,
      una función serverless de Vercel que guarda el token de GitHub del lado del servidor. */
   var ENDPOINT_NUBE='/api/ciclos';
+  var PROGRESO_PUBLICO='https://raw.githubusercontent.com/Rockstar19/Interprete/main/progreso-ciclos.json';
   var SECRETO_NUBE='';           // opcional: si configuras MEDIDOR_SECRETO en Vercel, copia aquí el mismo valor
   var CLAVE_CACHE='medidor-ciclo-2026-v2-cache'; // copia instantánea en este navegador; no es la fuente de verdad
   var nubeGuardando=false, nubePendiente=false, nubeTimer=null;
@@ -1011,23 +1012,38 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
   }
 
   /* --- lectura desde GitHub (vía el backend) --- */
+  function cargarDesdeArchivoPublico(){
+    var url=PROGRESO_PUBLICO+'?v='+Date.now();
+    return fetch(url,{cache:'no-store'})
+      .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+      .then(function(datos){
+        if(!datos || typeof datos!=='object') throw new Error('JSON inválido');
+        aplicarEstado(datos);
+        pintarEstadoNube('ok','Estado actualizado desde progreso-ciclos.json.');
+        return true;
+      });
+  }
+
   function cargarDesdeNube(){
     pintarEstadoNube('cargando');
-    return fetch(ENDPOINT_NUBE,{headers:cabecerasNube()})
-      .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-      .then(function(r){
-        if(r&&r.existe&&r.datos){
-          aplicarEstado(r.datos);
-          pintarEstadoNube('ok','Estado cargado desde GitHub.');
-          return true;
-        }
-        pintarEstadoNube('idle','GitHub aún no tiene un progreso guardado; se creará con el primer guardado.');
-        return false;
-      })
-      .catch(function(){
-        pintarEstadoNube('error','No se pudo leer desde GitHub. Se usa la copia local mientras tanto.');
-        return false;
-      });
+    /* El JSON publicado es la fuente de lectura: evita depender del despliegue de Vercel
+       y se consulta sin caché para reflejar el último commit del flujo diario. */
+    return cargarDesdeArchivoPublico().catch(function(){
+      /* Conserva Vercel como respaldo para instalaciones donde el JSON público no responda. */
+      return fetch(ENDPOINT_NUBE,{headers:cabecerasNube()})
+        .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+        .then(function(r){
+          if(r&&r.existe&&r.datos){
+            aplicarEstado(r.datos);
+            pintarEstadoNube('ok','Estado cargado desde GitHub.');
+            return true;
+          }
+          throw new Error('Sin datos en GitHub');
+        });
+    }).catch(function(){
+      pintarEstadoNube('error','No se pudo leer el progreso publicado. Se usa la copia local mientras tanto.');
+      return false;
+    });
   }
 
   /* --- escritura en GitHub (vía el backend); hace un commit real al archivo del repo --- */
