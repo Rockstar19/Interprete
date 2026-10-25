@@ -9,6 +9,9 @@ on:
 
 permissions:
   contents: write
+  concurrency:
+  group: update-tasa-from-sheet-main
+  cancel-in-progress: false
 
 jobs:
   update-rate:
@@ -17,6 +20,9 @@ jobs:
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Leer tasa validada desde Google Sheet
         env:
@@ -170,5 +176,6 @@ jobs:
 
           git commit \
             -m "Actualiza tasa BOB/USDT desde Google Sheet"
-
+git pull --rebase origin main
+git push origin HEAD:main
           git push
