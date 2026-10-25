@@ -59,6 +59,7 @@ a{color:var(--acero)}
 /* estructura */
 .marco{max-width:1280px;margin:0 auto;padding:clamp(18px,3vw,34px) clamp(16px,4vw,48px) 60px;
   display:grid;grid-template-columns:320px minmax(0,1fr);gap:clamp(18px,2.4vw,32px);align-items:start}
+.marco > *{min-width:0}
 @media(max-width:960px){.marco{grid-template-columns:1fr}}
 .panel{position:sticky;top:16px}
 @media(max-width:960px){.panel{position:static}}
@@ -69,7 +70,7 @@ a{color:var(--acero)}
 label.campo{display:block;margin-bottom:13px}
 label.campo > span{display:block;font-size:12px;font-weight:600;margin-bottom:5px;color:var(--tinta-60)}
 label.campo > small{display:block;font-size:11px;color:var(--tinta-38);margin-top:3px}
-input[type=number],input[type=text],select{
+input[type=number],input[type=text],input[type=password],select{
   width:100%;font-family:var(--texto);font-size:15px;color:var(--tinta);background:#F7F9FA;
   border:1px solid var(--linea-fuerte);border-radius:var(--radio);padding:8px 10px;font-variant-numeric:tabular-nums}
 input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--guindo);outline-offset:1px}
@@ -148,6 +149,14 @@ tr.fila-hoy td{background:var(--guindo-suave)}
 .alerta{background:#FDF6E6;border:1px solid var(--ambar);border-radius:var(--radio);padding:10px 13px;
   font-size:12.5px;margin-bottom:14px;color:#6B4A05}
 .alerta:empty{display:none}
+.acciones{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.tabla-rating input{min-width:64px;width:72px;padding:7px}
+.resumen-rating{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin:18px 0}
+.resumen-rating div{background:var(--acero-suave);padding:12px}
+.resumen-rating b{display:block;font-size:24px;font-family:var(--display)}
+.panel{max-height:calc(100vh - 32px);overflow-y:auto}
+@media(max-width:960px){.panel{max-height:none;overflow:visible}}
+.formula .fl{overflow-wrap:anywhere}
 footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-size:11.5px;color:var(--tinta-60)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 @media print{
@@ -169,13 +178,13 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
       <h1>Ascenso de <span>rango</span></h1>
     </div>
     <div class="sellos">
-      <div class="sello">Nivel alcanzado hoy<strong id="selloNivel">—</strong></div>
+      <div class="sello">Nivel estimado<strong id="selloNivel">—</strong></div>
       <div class="sello meta">Próxima meta<strong id="selloMeta">—</strong></div>
       <div class="archivo" id="archivoEstado">
         <span class="punto"></span>
-        <span class="txt" id="archivoTexto"><b>Sin archivo conectado</b>Los cambios solo viven en esta pestaña</span>
+        <span class="txt" id="archivoTexto" role="status" aria-live="polite">Cargando repositorio…</span>
       </div>
-      <button type="button" class="btn-archivo" id="btnArchivo">Abrir archivo local</button>
+      <button type="button" class="btn-archivo" id="btnGuardarCab" disabled>Guardar en GitHub</button>
     </div>
   </div>
 </header>
@@ -184,22 +193,30 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
 
   <aside class="panel">
     <div class="bloque">
-      <span class="rotulo">Almacenamiento</span>
-      <p class="nota" style="margin:0 0 12px">
-        Igual que en el medidor de ciclo: Chrome puede recordar un archivo <code>.json</code> propio de esta
-        calculadora en tu disco (por defecto <code>progreso-rango.json</code>, distinto del archivo de pagos).
-      </p>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button type="button" class="btn-archivo" id="btnArchivoPanel" style="flex:1">Abrir mi archivo…</button>
-        <button type="button" class="btn-archivo chico" id="btnArchivoNuevo">Crear nuevo</button>
-        <button type="button" class="btn-archivo chico" id="btnDesconectar" hidden>Desconectar</button>
+      <span class="rotulo">Progreso en el repositorio</span>
+      <p class="nota">Tus datos se guardan en <a href="https://github.com/Rockstar19/Interprete/blob/main/api/progreso-rango.json" target="_blank" rel="noopener">api/progreso-rango.json</a>, en la rama <b>main</b> de Rockstar19/Interprete. Cada guardado crea una revisión.</p>
+      <p class="nota">Los datos tendrán la misma visibilidad que el repositorio y quedarán en su historial.</p>
+      <details id="accesoGithub" style="margin-top:12px">
+        <summary>Acceso para guardar</summary>
+        <label class="campo" style="margin-top:10px"><span>Token de GitHub</span>
+          <input type="password" id="githubToken" autocomplete="off" spellcheck="false" placeholder="Token con acceso a este repositorio">
+          <small>Se mantiene solo en esta pestaña y se envía únicamente a api.github.com.</small></label>
+        <p class="nota">Usa un <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">token de acceso limitado</a> a Interprete con permiso Contents: lectura y escritura.</p>
+        <button type="button" class="btn-archivo chico" id="btnOlvidarToken">Olvidar token</button>
+      </details>
+      <div class="acciones">
+        <button type="button" class="btn-archivo" id="btnGuardar" disabled>Guardar en GitHub</button>
+        <button type="button" class="btn-archivo chico" id="btnRecargar">Recargar datos</button>
       </div>
-      <p class="nota" id="notaArchivo" style="margin-top:10px"></p>
+      <p class="nota" id="notaArchivo" role="status" style="margin-top:10px">Leyendo la última revisión…</p>
     </div>
 
     <div class="bloque">
       <span class="rotulo">Ventana de minutos — últimos 3 ciclos</span>
-      <p class="nota" style="margin:0 0 12px">Propio solo cuenta los ciclos <strong>C<span id="lblCA">—</span>, C<span id="lblCB">—</span> y C<span id="lblCC">—</span></strong> para tu ventana actual. Al cerrar C<span id="lblCD">—</span>, el ciclo más antiguo (C<span id="lblCA2">—</span>) se olvida.</p>
+      <p class="nota" style="margin:0 0 12px">La ventana de minutos de este modelo usa <strong>C<span id="lblCA">—</span>, C<span id="lblCB">—</span> y C<span id="lblCC">—</span></strong>. Al cerrar C<span id="lblCD">—</span>, sale C<span id="lblCA2">—</span>.</p>
+      <label class="campo"><span>Último ciclo cerrado del registro</span>
+        <input type="number" id="ultimoCiclo" min="3" max="10000" step="1">
+        <small>Al cambiar de ciclo, actualiza también los minutos y las valoraciones. Las fechas guardadas no se desplazan solas.</small></label>
       <label class="campo"><span id="lblCicloA">Ciclo más antiguo</span>
         <input type="number" id="cA" min="0" step="1" value="629">
         <small>Se cae de la ventana en el próximo cierre.</small></label>
@@ -214,7 +231,7 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
       <span class="rotulo">Calificación de clientes</span>
       <label class="campo"><span>Promedio actual (sobre 5)</span>
         <input type="number" id="rating" min="0" max="5" step="0.01" value="4.65"></label>
-      <p class="nota">La calificación no se proyecta automáticamente: actualízala aquí cuando Propio te muestre un nuevo promedio.</p>
+      <p class="nota">Usa el promedio de tu panel de Propio o activa el cálculo por valoraciones de la sección de satisfacción.</p>
     </div>
 
     <div class="bloque">
@@ -228,7 +245,7 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
 
   <section>
     <div class="lectura">
-      <span class="rotulo">Nivel alcanzado con la ventana y calificación actuales</span>
+      <span class="rotulo">Nivel estimado con los datos ingresados</span>
       <div class="lectura-grande" id="lectNivel">—</div>
       <p class="lectura-sub" id="lectSub">—</p>
       <div class="mini-kpis">
@@ -244,13 +261,36 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
     <div class="alerta" id="alerta"></div>
 
     <div class="bloque">
+      <span class="rotulo">Satisfacción · 4 períodos de pago</span>
+      <h2 style="font-size:21px">Cada valoración tiene su peso</h2>
+      <p class="nota">Registra cuántas calificaciones recibiste de cada estrella en los tres períodos anteriores y el actual. Se divide la suma de estrellas entre el número de valoraciones; los períodos con más valoraciones pesan más. No todas las llamadas reciben una valoración.</p>
+      <p class="nota">Modelo inspirado en <a href="https://www.reddit.com/r/spanishinterpreters/comments/1xbr2h9/my_guide_to_how_propios_average_satisfaction/" target="_blank" rel="noopener">esta guía de la comunidad</a>, basada en observaciones personales: no es una regla oficial confirmada. La ventana de minutos sigue siendo independiente.</p>
+      <div class="tabla-env" style="margin-top:18px">
+        <table class="tabla-rating">
+          <caption class="nota" style="text-align:left;margin-bottom:10px">Cantidades por estrella, de mayor a menor</caption>
+          <thead><tr><th>Período</th><th>5 ★</th><th>4 ★</th><th>3 ★</th><th>2 ★</th><th>1 ★</th><th>Valoraciones</th><th>Promedio</th></tr></thead>
+          <tbody id="periodosRating"></tbody>
+        </table>
+      </div>
+      <div class="resumen-rating" aria-live="polite">
+        <div><span class="rotulo">Promedio ponderado</span><b id="ratingPonderado">—</b><span class="nota" id="ratingCantidad">Sin valoraciones</span></div>
+        <div><span class="rotulo">Al salir el más antiguo</span><b id="ratingSiguiente">—</b><span class="nota" id="ratingCambio">Sin nuevas valoraciones</span></div>
+      </div>
+      <label><input type="checkbox" id="usarValoraciones"> Usar este promedio para estimar mi nivel</label>
+      <p class="nota">El cambio de período puede subir o bajar el promedio aun sin recibir nuevas calificaciones. La fecha exacta de actualización de Propio no se modela aquí.</p>
+      <div class="acciones"><button type="button" class="btn-archivo chico" id="btnEjemploRating">Cargar ejemplo del post</button></div>
+      <div class="cascada" id="metasRating" style="margin-top:16px"></div>
+      <p class="nota">Las metas suponen que solo llegan nuevas valoraciones de 5 ★ y ninguna sale de la ventana. Se calculan sin redondear el promedio.</p>
+    </div>
+
+    <div class="bloque">
       <span class="rotulo">Los cuatro niveles</span>
       <div class="niveles" id="niveles"></div>
     </div>
 
     <div class="bloque">
       <span class="rotulo">¿Cuánto necesito el próximo ciclo?</span>
-      <p class="nota" style="margin:0 0 14px">Al cerrar el ciclo de hoy, C<span id="lblCA3">—</span> sale de la ventana y quedan
+      <p class="nota" style="margin:0 0 14px">En el próximo cierre, C<span id="lblCA3">—</span> sale de la ventana y quedan
         <strong id="restanteVentana">—</strong> minutos de base. Esto es lo que tendrías que sumar <strong>solo en el próximo ciclo</strong> para tocar cada nivel de inmediato.</p>
       <div class="cascada" id="cascadaProximo"></div>
     </div>
@@ -289,14 +329,15 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
 </div>
 
 <footer>
-  Propio contabiliza tu ventana de ascenso con los <strong>últimos tres ciclos quincenales cerrados</strong>: al cerrar un ciclo nuevo, el ciclo que quedaba en cuarto lugar hacia atrás se olvida y ya no cuenta. Esta calculadora no está conectada a la plataforma de Propio — los minutos y la calificación se ingresan a mano, con lo que veas en tu panel de la empresa. El nivel Platino se describe aquí como referencia de un rumor no oficial; sus condiciones pueden cambiar o no llegar a confirmarse.
+  El modelo de minutos usa los <strong>últimos tres ciclos quincenales cerrados</strong>: al cerrar un ciclo nuevo, el ciclo que quedaba en cuarto lugar hacia atrás se olvida y ya no cuenta. Esta calculadora no está conectada a la plataforma de Propio — los minutos y la calificación se ingresan a mano, con lo que veas en tu panel de la empresa. El nivel Platino se describe aquí como referencia de un rumor no oficial; sus condiciones pueden cambiar o no llegar a confirmarse.
 </footer>
 
+<script src="rango-modelo.js"></script>
+<script src="rango-repositorio.js"></script>
 <script>
 (function(){
   "use strict";
 
-  var CLAVE='calculadora-rango-2026-v1';
   var MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   var BASE=new Date(2025,11,13); // mismo ancla que el medidor de ciclo: sábado 13 dic 2025 = inicio de C1
 
@@ -307,13 +348,14 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
     {id:'platino',nombre:'Platino',min:10000, rating:4.85, tarifaSurge:null, tarifaBase:0.14, rumor:true}
   ];
 
-  var st={ cA:629, cB:629, cC:630, rating:4.65, proyeccionDia:45 };
+  var st={version:2,cA:629,cB:629,cC:630,rating:4.65,proyeccionDia:45,ultimoCiclo:Math.max(3,idxCicloDeHoy()),usarValoraciones:false,valoraciones:Array.from({length:4},function(){return [0,0,0,0,0];})};
   var el={};
   ['selloNivel','selloMeta','lblCA','lblCB','lblCC','lblCD','lblCA2','lblCA3','lblCicloA','lblCicloB','lblCicloC',
    'cA','cB','cC','ventanaTotal','rating','proyeccionDia','proyeccionCicloTxt',
    'lectNivel','lectSub','kVentana','kRating','kProximo','kFaltanMin','kFaltanRating','kSeOlvida',
    'alerta','niveles','restanteVentana','cascadaProximo','notaSimulador','cascadaSimulador','cuerpoSimulador','cuerpoTarifas','formulas',
-   'btnArchivo','btnArchivoPanel','btnArchivoNuevo','btnDesconectar','notaArchivo']
+   'ultimoCiclo','archivoTexto','btnGuardarCab','btnGuardar','btnRecargar','githubToken','accesoGithub','btnOlvidarToken','notaArchivo',
+   'periodosRating','ratingPonderado','ratingCantidad','ratingSiguiente','ratingCambio','usarValoraciones','metasRating','btnEjemploRating']
    .forEach(function(id){ el[id]=document.getElementById(id); });
 
   /* ---- utilidades de fecha / ciclos, mismo patrón que el medidor de ciclo ---- */
@@ -349,19 +391,22 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
   }
 
   /* ---- etiquetas de los tres ciclos vigentes, calculadas a partir de la fecha real ---- */
-  var idxHoy=idxCicloDeHoy();          // ciclo que cierra hoy (o el más reciente si hoy no es cierre)
+  var idxHoy=st.ultimoCiclo-1; // índice del último ciclo cerrado registrado
   var cicA=ciclo(idxHoy-2), cicB=ciclo(idxHoy-1), cicC=ciclo(idxHoy), cicD=ciclo(idxHoy+1);
 
   function pintarEtiquetasCiclos(){
+    idxHoy=st.ultimoCiclo-1;
+    cicA=ciclo(idxHoy-2); cicB=ciclo(idxHoy-1); cicC=ciclo(idxHoy); cicD=ciclo(idxHoy+1);
     el.lblCA.textContent=cicA.n; el.lblCB.textContent=cicB.n; el.lblCC.textContent=cicC.n;
     el.lblCD.textContent=cicD.n; el.lblCA2.textContent=cicA.n; el.lblCA3.textContent=cicA.n;
     el.lblCicloA.textContent='Ciclo C'+cicA.n+' · '+fCorta(cicA.ini)+' → '+fCorta(cicA.fin);
     el.lblCicloB.textContent='Ciclo C'+cicB.n+' · '+fCorta(cicB.ini)+' → '+fCorta(cicB.fin);
-    el.lblCicloC.textContent='Ciclo C'+cicC.n+' · '+fCorta(cicC.ini)+' → '+fCorta(cicC.fin)+' (hoy o el más reciente)';
+    el.lblCicloC.textContent='Ciclo C'+cicC.n+' · '+fCorta(cicC.ini)+' → '+fCorta(cicC.fin)+' (último cerrado)';
   }
 
   /* ---- lectura / escritura de controles ---- */
   function leerControles(){
+    st.ultimoCiclo=Math.max(3,Math.min(10000,Math.trunc(Number(el.ultimoCiclo.value)||3)));
     st.cA=Math.max(0,Number(el.cA.value)||0);
     st.cB=Math.max(0,Number(el.cB.value)||0);
     st.cC=Math.max(0,Number(el.cC.value)||0);
@@ -369,6 +414,8 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
     st.proyeccionDia=Math.max(0,Number(el.proyeccionDia.value)||0);
   }
   function escribirControles(){
+    el.ultimoCiclo.value=st.ultimoCiclo;
+    el.usarValoraciones.checked=st.usarValoraciones;
     el.cA.value=st.cA; el.cB.value=st.cB; el.cC.value=st.cC;
     el.rating.value=st.rating; el.proyeccionDia.value=st.proyeccionDia;
   }
@@ -388,10 +435,12 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
 
   function refrescar(){
     leerControles();
+    pintarEtiquetasCiclos();
+    pintarRating();
     var ventana=st.cA+st.cB+st.cC;
     el.ventanaTotal.textContent=ventana.toLocaleString('es-BO');
 
-    var actual=nivelAlcanzado(ventana,st.rating);
+    var actual=nivelAlcanzado(ventana,calificacionActual());
     var proximo=siguienteNivel(actual);
 
     el.selloNivel.textContent=actual.nombre;
@@ -400,27 +449,28 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
     el.lectNivel.textContent=actual.nombre.toUpperCase()+(actual.rumor?' (rumor)':'');
     if(proximo){
       var faltanMin=Math.max(0,proximo.min-ventana);
-      var faltanRating=Math.max(0,+(proximo.rating-st.rating).toFixed(2));
-      el.lectSub.innerHTML='Con '+ventana.toLocaleString('es-BO')+' minutos en tu ventana de 3 ciclos y '+st.rating.toFixed(2)+'/5 de calificación'+
+      var faltanRating=Math.max(0,proximo.rating-calificacionActual());
+      el.lectSub.innerHTML='Con '+ventana.toLocaleString('es-BO')+' minutos en tu ventana de 3 ciclos y '+formatoRating(calificacionActual())+'/5 de calificación'+
         ((faltanMin>0||faltanRating>0)
           ? ', te faltan '+(faltanMin>0?'<strong>'+faltanMin.toLocaleString('es-BO')+' minutos</strong>':'')+
             (faltanMin>0&&faltanRating>0?' y ':'')+
-            (faltanRating>0?'<strong>'+faltanRating.toFixed(2)+' puntos</strong>':'')+' para '+proximo.nombre+'.'
+            (faltanRating>0?'<strong>'+formatoGap(faltanRating)+' puntos</strong>':'')+' para '+proximo.nombre+'.'
           : ' — ya cumples ambos requisitos de '+proximo.nombre+'; debería reflejarse en el próximo corte de Propio.');
       el.kProximo.textContent=proximo.nombre;
       el.kFaltanMin.textContent=faltanMin>0?faltanMin.toLocaleString('es-BO')+' min':'Cumplido';
-      el.kFaltanRating.textContent=faltanRating>0?faltanRating.toFixed(2):'Cumplido';
+      el.kFaltanRating.textContent=faltanRating>0?formatoGap(faltanRating):'Cumplido';
     } else {
       el.lectSub.textContent='Ya tocas el nivel más alto contemplado en esta calculadora.';
       el.kProximo.textContent='—'; el.kFaltanMin.textContent='—'; el.kFaltanRating.textContent='—';
     }
     el.kVentana.textContent=ventana.toLocaleString('es-BO')+' min';
-    el.kRating.textContent=st.rating.toFixed(2)+'/5';
+    el.kRating.textContent=formatoRating(calificacionActual())+'/5';
     el.kSeOlvida.textContent='C'+cicA.n+' ('+st.cA.toLocaleString('es-BO')+' min)';
 
     var avisos=[];
+    if(st.ultimoCiclo!==idxCicloDeHoy()) avisos.push('El registro corresponde al cierre de C'+st.ultimoCiclo+'. Revisa el ciclo de referencia antes de interpretar las proyecciones.');
     if(st.cA+st.cB+st.cC<=0) avisos.push('Ingresa los minutos de tus tres últimos ciclos para ver tu ventana real.');
-    if(st.rating>0 && st.rating<3) avisos.push('La calificación ingresada es muy baja; revisa que sea sobre 5, no sobre 10 ni en porcentaje.');
+    if(calificacionActual()>0 && calificacionActual()<3) avisos.push('La calificación ingresada es muy baja; revisa que sea sobre 5, no sobre 10 ni en porcentaje.');
     el.alerta.innerHTML=avisos.join('<br>');
 
     pintarNiveles(ventana, actual);
@@ -433,7 +483,7 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
     var idxActual=NIVELES.indexOf(actual);
     el.niveles.innerHTML=NIVELES.map(function(n){
       var sinRequisito = (n.min===0 && n.rating===0);
-      var ok = ventana>=n.min && st.rating>=n.rating;
+      var ok = ventana>=n.min && calificacionActual()>=n.rating;
       var esSiguiente = NIVELES.indexOf(n)===idxActual+1;
       var cls = ok ? 'alcanzado' : (esSiguiente ? 'enfoque' : '');
       if(n.rumor) cls+=' rumor';
@@ -451,18 +501,18 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
       }
 
       var pctMin = Math.min(100, ventana/n.min*100);
-      var pctRating = Math.min(100, st.rating/n.rating*100);
-      var gapMin=Math.max(0,n.min-ventana), gapRating=Math.max(0,+(n.rating-st.rating).toFixed(2));
+      var pctRating = Math.min(100, calificacionActual()/n.rating*100);
+      var gapMin=Math.max(0,n.min-ventana), gapRating=Math.max(0,n.rating-calificacionActual());
       return '<div class="tarjeta-nivel '+cls.trim()+'">'+
         (n.rumor?'<span class="badge-rumor">No confirmado</span><br>':'')+
         '<div class="tn-cab"><span class="tn-nombre">'+n.nombre+'</span>'+chip+'</div>'+
         '<div class="tn-tarifa">'+tarifaTxt+'</div>'+
         '<div class="tn-linea"><span>Minutos</span><b class="num">'+ventana.toLocaleString('es-BO')+' / '+n.min.toLocaleString('es-BO')+'</b></div>'+
         '<div class="barra-progreso"><i style="width:'+pctMin.toFixed(1)+'%"></i></div>'+
-        '<div class="tn-linea"><span>Calificación</span><b class="num">'+st.rating.toFixed(2)+' / '+n.rating.toFixed(2)+'</b></div>'+
+        '<div class="tn-linea"><span>Calificación</span><b class="num">'+formatoRating(calificacionActual())+' / '+n.rating.toFixed(2)+'</b></div>'+
         '<div class="barra-progreso"><i style="width:'+pctRating.toFixed(1)+'%"></i></div>'+
         (ok?'':'<div class="tn-gap">Faltan '+(gapMin>0?'<strong>'+gapMin.toLocaleString('es-BO')+' min</strong>':'0 min')+
-              (gapRating>0?' y <strong>'+gapRating.toFixed(2)+' pts</strong>':'')+'</div>')+
+              (gapRating>0?' y <strong>'+formatoGap(gapRating)+' pts</strong>':'')+'</div>')+
         '</div>';
     }).join('');
   }
@@ -570,7 +620,7 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
       ['Minutos necesarios en el próximo ciclo',
        'necesarioᵢ = máx(0, mínimoᵢ − (c_b + c_c))',
        'necesario_i=\\max(0,\\,m_i-(c_b+c_c))',
-       'Como cₐ va a desaparecer de la ventana, solo c_b y c_c quedan como base; el resto debe salir del ciclo que empieza ahora.'],
+       'Como cₐ va a desaparecer de la ventana, solo c_b y c_c quedan como base; el resto debe salir del próximo ciclo del registro.'],
       ['Minutos por ciclo a partir del ritmo diario',
        'p_ciclo = p_día · 14',
        'p_{ciclo}=p_{dia}\\cdot 14',
@@ -594,227 +644,115 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
     }).join('');
   }
 
-  /* ---- persistencia: archivo local (File System Access API) con respaldo en window.storage ---- */
-  var fsHandle=null;
-  var fsSoportado = (typeof window.showSaveFilePicker==='function' && typeof window.indexedDB!=='undefined');
-  var guardando=false, pendiente=false;
-  var handleRecordado=null;
 
-  var DB_NOMBRE='calculadora-rango-fs', DB_STORE='handles', DB_CLAVE='archivo';
-  function abrirDB(){
-    return new Promise(function(res,rej){
-      var req=indexedDB.open(DB_NOMBRE,1);
-      req.onupgradeneeded=function(){ req.result.createObjectStore(DB_STORE); };
-      req.onsuccess=function(){ res(req.result); };
-      req.onerror=function(){ rej(req.error); };
+  /* ---- satisfacción: cada fila cuenta valoraciones, no llamadas ---- */
+  function formatoRating(valor){return valor.toFixed(st.usarValoraciones?3:2);}
+  function formatoGap(valor){return valor<0.001?'menos de 0.001':valor.toFixed(3);}
+  function calificacionActual(){
+    var r=RangoModelo.resumen(st.valoraciones);
+    return st.usarValoraciones && r.total ? r.promedio : st.rating;
+  }
+  function crearTablaRating(){
+    el.periodosRating.innerHTML=st.valoraciones.map(function(fila,p){
+      return '<tr><td id="periodoNombre'+p+'"></td>'+fila.map(function(n,i){
+        return '<td><input type="number" min="0" max="1000000" step="1" value="'+n+'" data-periodo="'+p+'" data-estrella="'+i+'" aria-label="Período '+(p+1)+', '+(5-i)+' estrellas"></td>';
+      }).join('')+'<td id="periodoTotal'+p+'"></td><td id="periodoMedia'+p+'"></td></tr>';
+    }).join('');
+  }
+  function pintarRating(){
+    var r=RangoModelo.resumen(st.valoraciones), siguiente=RangoModelo.resumen(st.valoraciones.slice(1));
+    st.valoraciones.forEach(function(fila,p){
+      var resumen=RangoModelo.resumen([fila]);
+      document.getElementById('periodoNombre'+p).textContent='C'+(st.ultimoCiclo-2+p)+(p===3?' · actual':p===0?' · sale después':'');
+      document.getElementById('periodoTotal'+p).textContent=resumen.total;
+      document.getElementById('periodoMedia'+p).textContent=resumen.total?resumen.promedio.toFixed(3):'—';
     });
-  }
-  function guardarHandleEnDB(handle){
-    return abrirDB().then(function(db){
-      return new Promise(function(res,rej){
-        var tx=db.transaction(DB_STORE,'readwrite');
-        tx.objectStore(DB_STORE).put(handle,DB_CLAVE);
-        tx.oncomplete=function(){ res(true); }; tx.onerror=function(){ rej(tx.error); };
-      });
-    }).catch(function(){ return false; });
-  }
-  function leerHandleDeDB(){
-    return abrirDB().then(function(db){
-      return new Promise(function(res){
-        var tx=db.transaction(DB_STORE,'readonly');
-        var req=tx.objectStore(DB_STORE).get(DB_CLAVE);
-        req.onsuccess=function(){ res(req.result||null); };
-        req.onerror=function(){ res(null); };
-      });
-    }).catch(function(){ return null; });
-  }
-  function borrarHandleDeDB(){
-    return abrirDB().then(function(db){
-      return new Promise(function(res){
-        var tx=db.transaction(DB_STORE,'readwrite');
-        tx.objectStore(DB_STORE).delete(DB_CLAVE);
-        tx.oncomplete=function(){ res(true); }; tx.onerror=function(){ res(false); };
-      });
-    }).catch(function(){ return false; });
+    el.ratingPonderado.textContent=r.total?r.promedio.toFixed(3)+' / 5':'—';
+    el.ratingCantidad.textContent=r.total?r.puntos+' estrellas / '+r.total+' valoraciones':'Ingresa tus valoraciones; no se deducen del promedio.';
+    el.ratingSiguiente.textContent=siguiente.total?siguiente.promedio.toFixed(3)+' / 5':'—';
+    el.ratingCambio.textContent=r.total && siguiente.total?'Cambio: '+(siguiente.promedio-r.promedio>=0?'+':'')+(siguiente.promedio-r.promedio).toFixed(3)+' · sin nuevas valoraciones':'Sin valoraciones en los períodos restantes.';
+    if(!r.total){st.usarValoraciones=false;el.usarValoraciones.checked=false;}
+    el.usarValoraciones.disabled=!r.total;
+    el.rating.disabled=st.usarValoraciones;
+    el.metasRating.innerHTML=[{nombre:'Plata',meta:4.70},{nombre:'Oro',meta:4.80},{nombre:'Platino (rumor)',meta:4.85}].map(function(n){
+      var faltan=RangoModelo.cincoEstrellas(r,n.meta);
+      return '<div class="paso '+(faltan===0?'ok':'falta')+'"><div class="et"><b>'+n.nombre+' · '+n.meta.toFixed(2)+'</b>Valoraciones adicionales de 5 ★</div><div class="vl">'+(faltan===null?'Sin datos':faltan===0?'Cumplido':faltan.toLocaleString('es-BO'))+'</div></div>';
+    }).join('');
   }
 
-  function pintarEstadoArchivo(estado,detalle){
-    var r={pt:el.archivoTexto,btnPanel:el.btnArchivoPanel,btnCab:el.btnArchivo,btnDesc:el.btnDesconectar,nota:el.notaArchivo};
-    document.getElementById('archivoEstado').className='archivo'+(estado==='ok'?' ok':estado==='error'?' error':'');
-    if(estado==='ok'){
-      r.pt.innerHTML='<b>'+(fsHandle?fsHandle.name:'Conectado')+'</b>Guardando cambios automáticamente';
-    } else if(estado==='error'){
-      r.pt.innerHTML='<b>No se pudo guardar</b>'+(detalle||'Revisa el permiso del archivo');
-    } else if(estado==='recordado'){
-      r.pt.innerHTML='<b>'+(handleRecordado?handleRecordado.name:'archivo recordado')+'</b>Pulsa para reanudar el acceso';
-    } else {
-      r.pt.innerHTML='<b>Sin archivo conectado</b>Los cambios solo viven en esta pestaña';
-    }
-    r.btnDesc.hidden=!fsHandle;
-    if(estado==='recordado'){ r.btnPanel.textContent='Reanudar acceso'; r.btnCab.textContent='Reanudar acceso'; }
-    else if(fsHandle){ r.btnPanel.textContent='Cambiar archivo…'; r.btnCab.textContent='Cambiar archivo'; }
-    else { r.btnPanel.textContent='Abrir mi archivo…'; r.btnCab.textContent='Abrir archivo local'; }
-    if(r.nota){
-      r.nota.textContent = !fsSoportado
-        ? 'Este navegador no admite guardar en un archivo local (funciona en Chrome o Edge de escritorio).'
-        : estado==='recordado'
-          ? 'Este archivo ya estaba conectado antes. Un clic en "Reanudar acceso" confirma el permiso.'
-        : (fsHandle ? 'Conectado a "'+fsHandle.name+'".' : 'Usa "Abrir mi archivo…" si ya tienes uno, o "Crear nuevo" la primera vez.');
-    }
+  /* ---- repositorio: revisión explícita y escritura con SHA ---- */
+  var sha=null, ocupado=false, cambios=false, revision=0;
+  function estado(tipo,mensaje){
+    document.getElementById('archivoEstado').className='archivo '+(tipo==='ok'?'ok':tipo==='error'?'error':'');
+    el.archivoTexto.textContent=mensaje;
+    el.notaArchivo.textContent=mensaje;
+    el.btnGuardar.disabled=el.btnGuardarCab.disabled=ocupado || !sha || !cambios;
+    el.btnRecargar.disabled=ocupado;
   }
-
-  function reconstruirTrasCarga(){
-    if(typeof st.proyeccionDia!=='number' && typeof st.proyeccion==='number'){
-      st.proyeccionDia=Math.round(st.proyeccion/14); // migración: la versión anterior guardaba min/ciclo, no min/día
-    }
-    escribirControles(); refrescar();
+  function marcarCambios(){
+    cambios=true; revision++;
+    if(!ocupado) estado('pendiente',sha?'Cambios sin guardar en GitHub.':'Cambios en pantalla. Carga el repositorio antes de guardar.');
   }
-
-  function adoptarHandle(handle){
-    fsHandle=handle;
-    return fsHandle.getFile().then(function(file){ return file.text(); }).then(function(texto){
-      if(texto && texto.trim()){
-        try{ var g=JSON.parse(texto); Object.keys(g).forEach(function(k){ st[k]=g[k]; }); reconstruirTrasCarga(); }catch(e){}
-      }
-      pintarEstadoArchivo('ok');
-      return guardarHandleEnDB(fsHandle).then(function(){ return escribirArchivo(); }).then(function(){ return true; });
-    }).catch(function(err){
-      fsHandle=null;
-      var noEncontrado = err && (err.name==='NotFoundError' || err.name==='NotAllowedError');
-      if(noEncontrado) return borrarHandleDeDB().then(function(){ throw {codigo:'archivo_ausente',original:err}; });
-      throw err;
-    });
-  }
-
-  function intentarReanudar(){
-    if(!fsSoportado) return Promise.resolve(false);
-    return leerHandleDeDB().then(function(handle){
-      if(!handle) return false;
-      return handle.queryPermission({mode:'readwrite'}).then(function(perm){
-        if(perm==='granted'){
-          return adoptarHandle(handle).catch(function(err){
-            if(err && err.codigo==='archivo_ausente'){
-              pintarEstadoArchivo('error','El archivo recordado ya no está en su ubicación. Pulsa el botón para elegirlo de nuevo.');
-              return false;
-            }
-            return false;
-          });
-        }
-        handleRecordado=handle; pintarEstadoArchivo('recordado'); return false;
-      });
-    }).catch(function(){ return false; });
-  }
-
-  function reanudarConClic(){
-    if(!handleRecordado) return Promise.resolve(false);
-    return handleRecordado.requestPermission({mode:'readwrite'}).then(function(perm){
-      if(perm!=='granted'){ pintarEstadoArchivo('error','Permiso denegado. Puedes abrir el archivo de nuevo manualmente.'); return false; }
-      var h=handleRecordado; handleRecordado=null;
-      return adoptarHandle(h);
-    }).catch(function(err){
-      handleRecordado=null;
-      if(err && err.codigo==='archivo_ausente'){
-        pintarEstadoArchivo('error','No se encontró el archivo en su ubicación anterior. Elígelo o créalo de nuevo.');
-        return abrirSelectorManual(false);
-      }
-      pintarEstadoArchivo('error','No se pudo reanudar el acceso. Ábrelo manualmente.');
-      return false;
-    });
-  }
-
-  function abrirSelectorManual(crearNuevo){
-    var pedirHandle = crearNuevo
-      ? window.showSaveFilePicker({ suggestedName:'progreso-rango.json',
-          types:[{description:'Progreso de rango (JSON)',accept:{'application/json':['.json']}}] })
-      : window.showOpenFilePicker({ types:[{description:'Progreso de rango (JSON)',accept:{'application/json':['.json']}}], multiple:false })
-          .then(function(handles){ return handles[0]; });
-
-    return pedirHandle.then(function(handle){
-      return handle.queryPermission({mode:'readwrite'}).then(function(perm){
-        if(perm!=='granted') return handle.requestPermission({mode:'readwrite'});
-        return perm;
-      }).then(function(perm){
-        if(perm!=='granted'){ pintarEstadoArchivo('error','Permiso de escritura denegado.'); return false; }
-        return adoptarHandle(handle);
-      });
-    }).catch(function(err){
-      if(err && err.name==='AbortError'){ return false; }
-      fsHandle=null; pintarEstadoArchivo('error','No se pudo abrir el selector de archivos.'); return false;
-    });
-  }
-
-  function conectarArchivo(crearNuevo){
-    if(!fsSoportado){ pintarEstadoArchivo('error','Usa Chrome o Edge en computadora para esta función.'); return Promise.resolve(false); }
-    if(handleRecordado && !crearNuevo) return reanudarConClic();
-    return abrirSelectorManual(crearNuevo);
-  }
-
-  function desconectarArchivo(){
-    fsHandle=null; handleRecordado=null; borrarHandleDeDB(); pintarEstadoArchivo('idle');
-  }
-
-  function escribirArchivo(){
-    if(!fsHandle) return Promise.resolve(false);
-    if(guardando){ pendiente=true; return Promise.resolve(false); }
-    guardando=true;
-    return fsHandle.createWritable().then(function(w){
-      return w.write(JSON.stringify(st,null,2)).then(function(){ return w.close(); });
-    }).then(function(){
-      guardando=false; pintarEstadoArchivo('ok');
-      if(pendiente){ pendiente=false; return escribirArchivo(); }
+  function controlesValidos(){
+    return Array.from(document.querySelectorAll('input[type=number]')).every(function(input){
+      if(input.disabled) return true;
+      if(input.value==='' || !input.checkValidity()){input.reportValidity();input.focus();return false;}
       return true;
-    }).catch(function(err){
-      guardando=false;
-      pintarEstadoArchivo('error', err && err.name==='NotAllowedError' ? 'El permiso del archivo expiró; reconéctalo.' : 'Error al escribir el archivo.');
-      if(err && err.name==='NotAllowedError') fsHandle=null;
-      return false;
     });
   }
-
-  function guardar(){
-    if(fsHandle){ escribirArchivo(); return; }
+  async function cargarRepositorio(){
+    if(ocupado) return;
+    if(cambios && !window.confirm('Recargar reemplazará los cambios sin guardar con la última revisión de GitHub. ¿Continuar?')) return;
+    ocupado=true;
+    var revisionInicial=revision;
+    estado('cargando','Cargando la última revisión de GitHub…');
     try{
-      if(window.storage&&typeof window.storage.set==='function'){
-        window.storage.set(CLAVE,JSON.stringify(st)).catch(function(){});
-      }
-    }catch(e){}
+      var resultado=await RangoRepositorio.cargar(el.githubToken.value.trim());
+      var datos=RangoModelo.validar(resultado.datos);
+      if(revision!==revisionInicial) throw new Error('Hay cambios nuevos en pantalla. No se reemplazaron; vuelve a recargar cuando estés listo.');
+      st=datos; sha=resultado.sha; cambios=false;
+      escribirControles(); crearTablaRating(); refrescar();
+      ocupado=false; estado('ok','Datos cargados de main.');
+    }catch(e){ocupado=false;estado('error',e.message);}
   }
-  function cargar(){
-    return new Promise(function(res){
-      try{
-        if(window.storage&&typeof window.storage.get==='function'){
-          window.storage.get(CLAVE).then(function(r){
-            if(r&&r.value){ var g=JSON.parse(r.value); Object.keys(g).forEach(function(k){ st[k]=g[k]; }); res(true); }
-            else res(false);
-          }).catch(function(){res(false);});
-          return;
-        }
-      }catch(e){}
-      res(false);
-    });
-  }
-
-  /* ---- eventos ---- */
-  ['cA','cB','cC','rating','proyeccionDia'].forEach(function(id){
-    el[id].addEventListener('input',function(){ refrescar(); guardar(); });
-  });
-  el.btnArchivo.addEventListener('click',function(){ conectarArchivo(false); });
-  el.btnArchivoPanel.addEventListener('click',function(){ conectarArchivo(false); });
-  el.btnArchivoNuevo.addEventListener('click',function(){ conectarArchivo(true); });
-  el.btnDesconectar.addEventListener('click',desconectarArchivo);
-
-  /* ---- arranque ---- */
-  pintarEtiquetasCiclos();
-  pintarEstadoArchivo('idle');
-  pintarFormulas();
-  cargar().then(function(){
-    if(typeof st.proyeccionDia!=='number' && typeof st.proyeccion==='number'){
-      st.proyeccionDia=Math.round(st.proyeccion/14);
+  async function guardarRepositorio(){
+    if(ocupado || !cambios || !sha) return;
+    if(!el.githubToken.value.trim()){
+      el.accesoGithub.open=true;el.githubToken.focus();
+      estado('error','Introduce un token de GitHub en «Acceso para guardar».');return;
     }
-    escribirControles();
-    refrescar();
-    intentarReanudar().then(function(reconectado){ if(reconectado){ escribirControles(); refrescar(); } });
+    if(!controlesValidos()) return;
+    ocupado=true;estado('guardando','Guardando en GitHub…');
+    var revisionEnviada=revision;
+    try{
+      var datos=RangoModelo.validar(st);
+      sha=await RangoRepositorio.guardar(datos,sha,el.githubToken.value.trim());
+      cambios=revision!==revisionEnviada;
+      ocupado=false;estado(cambios?'pendiente':'ok',cambios?'Revisión guardada. Hay cambios nuevos pendientes.':'Guardado en GitHub · '+new Date().toLocaleTimeString('es-BO'));
+    }catch(e){ocupado=false;estado('error',e.message);}
+  }
+  ['cA','cB','cC','rating','proyeccionDia','ultimoCiclo'].forEach(function(id){
+    el[id].addEventListener('input',function(){refrescar();marcarCambios();});
   });
+  el.periodosRating.addEventListener('input',function(event){
+    var input=event.target;
+    if(!input.matches('input[data-periodo]')) return;
+    st.valoraciones[Number(input.dataset.periodo)][Number(input.dataset.estrella)]=Math.max(0,Math.min(1000000,Math.trunc(Number(input.value)||0)));
+    refrescar();marcarCambios();
+  });
+  el.usarValoraciones.addEventListener('change',function(){st.usarValoraciones=el.usarValoraciones.checked;refrescar();marcarCambios();});
+  el.btnEjemploRating.addEventListener('click',function(){
+    if(RangoModelo.resumen(st.valoraciones).total && !window.confirm('El ejemplo reemplazará las valoraciones de los cuatro períodos. ¿Continuar?')) return;
+    st.valoraciones=[[6,0,0,0,0],[4,2,0,0,0],[6,1,0,1,0],[5,3,0,0,0]];
+    crearTablaRating();refrescar();marcarCambios();
+  });
+  el.btnGuardar.addEventListener('click',guardarRepositorio);
+  el.btnGuardarCab.addEventListener('click',guardarRepositorio);
+  el.btnRecargar.addEventListener('click',cargarRepositorio);
+  el.btnOlvidarToken.addEventListener('click',function(){el.githubToken.value='';});
+  window.addEventListener('beforeunload',function(event){if(cambios || ocupado){event.preventDefault();event.returnValue='';}});
+  escribirControles();crearTablaRating();pintarFormulas();refrescar();cargarRepositorio();
+
 })();
 </script>
 <a class="volver-al-indice" href="index.html" aria-label="Volver al centro de interpretación">← Inicio</a>
