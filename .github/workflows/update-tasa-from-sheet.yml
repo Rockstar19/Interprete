@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
 
   schedule:
-    - cron: "20 8 * * *"
-      timezone: "America/La_Paz"
+    - cron: "0 12 * * *" # 08:00 America/La_Paz (UTC-4)
 
 permissions:
   contents: write
-  concurrency:
+
+concurrency:
   group: update-tasa-from-sheet-main
   cancel-in-progress: false
 
@@ -174,8 +174,6 @@ jobs:
 
           git add progreso-ciclos.json
 
-          git commit \
-            -m "Actualiza tasa BOB/USDT desde Google Sheet"
-            git pull --rebase origin main
-            git push origin HEAD:main
-          git push
+          git commit -m "Actualiza tasa BOB/USDT desde Google Sheet"
+          git pull --rebase origin main
+          git push origin HEAD:main
