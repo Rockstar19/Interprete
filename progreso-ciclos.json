@@ -2,7 +2,7 @@
   "ciclo": 22,
   "mes": 11,
   "metaModo": "ciclo",
-  "metaMonto": 2500,
+  "metaMonto": 3000,
   "metaTipo": "netoBOB",
   "tarifa": 0.12,
   "modo": "equitativo",
@@ -672,7 +672,7 @@
         "surgeMin": 0
       },
       {
-        "tipo": "libre",
+        "tipo": "auto",
         "min": 0,
         "real": 0,
         "surge": "no",
