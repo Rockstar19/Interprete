@@ -841,7 +841,7 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
     pintarCascada(p);
     marcarCalendario();
     refrescarMes();
-    guardar();
+    if(listoParaGuardar) guardar();
   }
 
   function marcarCalendario(){
@@ -955,6 +955,7 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
   var SECRETO_NUBE='';           // opcional: si configuras MEDIDOR_SECRETO en Vercel, copia aquí el mismo valor
   var CLAVE_CACHE='medidor-ciclo-2026-v2-cache'; // copia instantánea en este navegador; no es la fuente de verdad
   var nubeGuardando=false, nubePendiente=false, nubeTimer=null;
+  var listoParaGuardar=false; // evita que el arranque sobrescriba el estado remoto con la copia local
 
   function cabecerasNube(extra){
     var h=extra||{};
@@ -1182,13 +1183,12 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
   }
 
   pintarEstadoNube('idle','Cargando…');
-  cargar().then(function(){
-    // primer pintado, con la copia local si existía, para que la página no se vea vacía
+  // La fuente de verdad se carga antes de pintar. La copia local solo es respaldo si falla.
+  cargarDesdeNube().then(function(cargadoRemoto){
+    if(!cargadoRemoto) return cargar();
+  }).then(function(){
     reconstruirUI();
-    // luego se sobrescribe con lo que haya en GitHub, que es la fuente de verdad entre dispositivos
-    cargarDesdeNube().then(function(actualizadoDesdeNube){
-      if(actualizadoDesdeNube) reconstruirUI();
-    });
+    listoParaGuardar=true;
   });
 })();
 </script>
