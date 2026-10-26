@@ -78,6 +78,7 @@ async function escribirArchivoGitHub(contenidoTexto, shaActual) {
 }
 
 module.exports = async function handler(req, res) {
+  res.setHeader('Cache-Control', 'no-store, max-age=0, must-revalidate');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Medidor-Secreto');

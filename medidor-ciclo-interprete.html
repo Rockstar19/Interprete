@@ -1026,22 +1026,27 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
       });
   }
 
+  function cargarDesdeApiNube(){
+    var separador=ENDPOINT_NUBE.indexOf('?')>=0?'&':'?';
+    var url=ENDPOINT_NUBE+separador+'v='+Date.now();
+    return fetch(url,{headers:cabecerasNube(),cache:'no-store'})
+      .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+      .then(function(r){
+        if(r&&r.existe&&r.datos){
+          aplicarEstado(r.datos);
+          pintarEstadoNube('ok','Estado actualizado desde GitHub.');
+          return true;
+        }
+        throw new Error('Sin datos en GitHub');
+      });
+  }
+
   function cargarDesdeNube(){
     pintarEstadoNube('cargando');
-    /* El JSON publicado es la fuente de lectura: evita depender del despliegue de Vercel
-       y se consulta sin caché para reflejar el último commit del flujo diario. */
-    return cargarDesdeArchivoPublico().catch(function(){
-      /* Conserva Vercel como respaldo para instalaciones donde el JSON público no responda. */
-      return fetch(ENDPOINT_NUBE,{headers:cabecerasNube()})
-        .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-        .then(function(r){
-          if(r&&r.existe&&r.datos){
-            aplicarEstado(r.datos);
-            pintarEstadoNube('ok','Estado cargado desde GitHub.');
-            return true;
-          }
-          throw new Error('Sin datos en GitHub');
-        });
+    /* Vercel lee GitHub en cada petición y evita la caché de la CDN raw.
+       El archivo público queda como respaldo de solo lectura. */
+    return cargarDesdeApiNube().catch(function(){
+      return cargarDesdeArchivoPublico();
     }).catch(function(){
       pintarEstadoNube('error','No se pudo leer el progreso publicado. Se usa la copia local mientras tanto.');
       return false;
@@ -1112,7 +1117,9 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
     if(cambiosPendientes){
       return guardarEnNube().then(function(guardado){
         if(!guardado) return false;
-        return actualizarDesdeGitHub();
+        // GitHub puede tardar unos instantes en propagar un commit nuevo.
+        // Conservamos el estado recién guardado en lugar de reemplazarlo por una lectura anterior.
+        return true;
       });
     }
     return actualizarDesdeGitHub();
