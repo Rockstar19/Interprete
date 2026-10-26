@@ -955,6 +955,7 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
   var SECRETO_NUBE='';           // opcional: si configuras MEDIDOR_SECRETO en Vercel, copia aquí el mismo valor
   var CLAVE_CACHE='medidor-ciclo-2026-v2-cache'; // copia instantánea en este navegador; no es la fuente de verdad
   var nubeGuardando=false, nubePendiente=false, nubeTimer=null;
+  var cambiosPendientes=false;
   var listoParaGuardar=false; // evita que el arranque sobrescriba el estado remoto con la copia local
 
   function cabecerasNube(extra){
@@ -1061,6 +1062,7 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
         nubeGuardando=false;
         pintarEstadoNube('ok');
         if(nubePendiente){ nubePendiente=false; return guardarEnNube(); }
+        cambiosPendientes=false;
         return true;
       }).catch(function(){
         nubeGuardando=false;
@@ -1076,6 +1078,7 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
   }
 
   function guardar(){
+    cambiosPendientes=true;
     guardarLocalCache(JSON.stringify(st));
     programarGuardadoNube();
   }
@@ -1085,6 +1088,34 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
       if(crudo){ try{ aplicarEstado(JSON.parse(crudo)); }catch(e){} }
       return !!crudo;
     });
+  }
+
+  /* Sincronización bidireccional: primero guarda solo si hay cambios locales;
+     si no los hay, actualiza desde GitHub sin sobrescribir el estado remoto. */
+  function aplicarEstadoRemotoEnInterfaz(){
+    var permitirGuardado=listoParaGuardar;
+    listoParaGuardar=false;
+    reconstruirUI();
+    guardarLocalCache(JSON.stringify(st));
+    listoParaGuardar=permitirGuardado;
+    cambiosPendientes=false;
+  }
+  function actualizarDesdeGitHub(){
+    pintarEstadoNube('cargando','Actualizando desde GitHub…');
+    return cargarDesdeNube().then(function(cargado){
+      if(cargado) aplicarEstadoRemotoEnInterfaz();
+      return cargado;
+    });
+  }
+  function sincronizarAhora(){
+    if(nubeTimer){ clearTimeout(nubeTimer); nubeTimer=null; }
+    if(cambiosPendientes){
+      return guardarEnNube().then(function(guardado){
+        if(!guardado) return false;
+        return actualizarDesdeGitHub();
+      });
+    }
+    return actualizarDesdeGitHub();
   }
 
   /* ---- exportación ---- */
@@ -1163,8 +1194,8 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
   el.btnCsv.addEventListener('click',csv);
   el.btnImprimir.addEventListener('click',function(){ try{ window.print(); }catch(e){} });
 
-  document.getElementById('btnNubeSyncCab').addEventListener('click',function(){ if(nubeTimer) clearTimeout(nubeTimer); guardarEnNube(); });
-  document.getElementById('btnNubeSyncPanel').addEventListener('click',function(){ if(nubeTimer) clearTimeout(nubeTimer); guardarEnNube(); });
+  document.getElementById('btnNubeSyncCab').addEventListener('click',sincronizarAhora);
+  document.getElementById('btnNubeSyncPanel').addEventListener('click',sincronizarAhora);
   document.getElementById('btnRespaldo').addEventListener('click',descargarRespaldo);
 
   /* ---- arranque ---- */
@@ -1188,6 +1219,7 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
     if(!cargadoRemoto) return cargar();
   }).then(function(){
     reconstruirUI();
+    guardarLocalCache(JSON.stringify(st));
     listoParaGuardar=true;
   });
 })();
