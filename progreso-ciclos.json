@@ -680,7 +680,7 @@
       },
       {
         "tipo": "fijo",
-        "min": 7,
+        "min": 13,
         "real": 0,
         "surge": "no",
         "surgeMin": 0
