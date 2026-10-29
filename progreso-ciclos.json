@@ -679,7 +679,7 @@
         "surgeMin": 0
       },
       {
-        "tipo": "libre",
+        "tipo": "fijo",
         "min": 0,
         "real": 0,
         "surge": "no",
