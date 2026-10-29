@@ -680,14 +680,14 @@
       },
       {
         "tipo": "fijo",
-        "min": 57,
+        "min": 7,
         "real": 0,
         "surge": "no",
         "surgeMin": 0
       },
       {
-        "tipo": "libre",
-        "min": 0,
+        "tipo": "fijo",
+        "min": 3,
         "real": 0,
         "surge": "no",
         "surgeMin": 0
