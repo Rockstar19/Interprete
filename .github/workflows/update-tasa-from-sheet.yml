@@ -33,10 +33,19 @@ jobs:
           import json
           import os
           import re
+          import sys
+          import urllib.error
           import urllib.request
           from pathlib import Path
 
-          url = os.environ["SHEET_RATE_URL"]
+          def notice(titulo, mensaje):
+              print(f"::notice title={titulo}::{mensaje}")
+
+          url = os.environ.get("SHEET_RATE_URL", "").strip()
+          if not url:
+              raise RuntimeError(
+                  "Falta el secreto SHEET_RATE_URL."
+              )
 
           req = urllib.request.Request(
               url,
@@ -45,18 +54,28 @@ jobs:
               }
           )
 
-          with urllib.request.urlopen(req, timeout=30) as response:
-              raw = response.read().decode(
-                  "utf-8",
-                  errors="replace"
-              )
-
-              print("HTTP:", response.status)
-              print("URL final:", response.geturl())
-              print(
-                  "Content-Type:",
-                  response.headers.get("Content-Type")
-              )
+          try:
+              with urllib.request.urlopen(req, timeout=30) as response:
+                  raw = response.read().decode(
+                      "utf-8",
+                      errors="replace"
+                  )
+                  print("HTTP:", response.status)
+                  print("URL final:", response.geturl())
+                  print(
+                      "Content-Type:",
+                      response.headers.get("Content-Type")
+                  )
+          except urllib.error.HTTPError as err:
+              cuerpo = err.read().decode("utf-8", errors="replace")
+              print("Respuesta de error:", repr(cuerpo[:500]))
+              raise RuntimeError(
+                  f"Apps Script respondió HTTP {err.code}."
+              ) from err
+          except urllib.error.URLError as err:
+              raise RuntimeError(
+                  f"No se pudo contactar Apps Script: {err.reason}."
+              ) from err
 
           if not raw.strip():
               raise RuntimeError(
@@ -82,12 +101,7 @@ jobs:
               "Fórmula:",
               payload.get("spreadFormula")
           )
-
-          if payload.get("ok") is not True:
-              raise RuntimeError(
-                  "El Sheet no pasó la validación. "
-                  "No se modificará el JSON."
-              )
+          print("ok:", payload.get("ok"))
 
           if payload.get("source") != "BOB Mercado!B15":
               raise RuntimeError(
@@ -100,7 +114,12 @@ jobs:
                   "B16 no conserva =B14-B15."
               )
 
-          rate = float(payload["rate"])
+          try:
+              rate = round(float(payload["rate"]), 2)
+          except (KeyError, TypeError, ValueError) as err:
+              raise RuntimeError(
+                  "La respuesta no trae una tasa numérica."
+              ) from err
 
           if not 5.0 <= rate <= 30.0:
               raise RuntimeError(
@@ -108,12 +127,7 @@ jobs:
               )
 
           file = Path("progreso-ciclos.json")
-
-          original = file.read_text(
-              encoding="utf-8"
-          )
-
-          # Validamos el JSON original antes de modificarlo.
+          original = file.read_text(encoding="utf-8")
           original_json = json.loads(original)
 
           if "tasa" not in original_json:
@@ -121,13 +135,40 @@ jobs:
                   "No existe la propiedad tasa."
               )
 
-          old_rate = original_json["tasa"]
+          old_rate = round(float(original_json["tasa"]), 2)
+
+          # Misma cifra a dos decimales: no es un error, no hay commit.
+          if rate == old_rate:
+              notice(
+                  "Tasa BOB/USDT",
+                  f"Sin cambios ({old_rate:.2f}). "
+                  "Se conserva progreso-ciclos.json."
+              )
+              print(f"Tasa anterior: {old_rate:.2f}")
+              print(f"Tasa leída: {rate:.2f}")
+              sys.exit(0)
+
+          # El Sheet no se tocó hoy, o ok=false por frescura, no por
+          # fuente/fórmula. Conservar la tasa ya publicada y salir en verde.
+          if payload.get("ok") is not True:
+              if payload.get("updatedToday") is not True:
+                  notice(
+                      "Tasa BOB/USDT",
+                      "El Sheet no registra cambio hoy. "
+                      f"Se conserva {old_rate:.2f}."
+                  )
+                  print(f"Tasa conservada: {old_rate:.2f}")
+                  print(f"Tasa leída (no aplicada): {rate:.2f}")
+                  sys.exit(0)
+              raise RuntimeError(
+                  "El Sheet no pasó la validación. "
+                  "No se modificará el JSON."
+              )
 
           updated, count = re.subn(
               r'("tasa"\s*:\s*)'
               r'[0-9]+(?:\.[0-9]+)?',
-              lambda m:
-                  f'{m.group(1)}{rate:.2f}',
+              lambda m: f"{m.group(1)}{rate:.2f}",
               original,
               count=1
           )
@@ -138,20 +179,11 @@ jobs:
                   "una propiedad tasa."
               )
 
-          # Confirmamos que el resultado sigue siendo JSON válido.
           json.loads(updated)
+          file.write_text(updated, encoding="utf-8")
 
-          file.write_text(
-              updated,
-              encoding="utf-8"
-          )
-
-          print(
-              f"Tasa anterior: {old_rate}"
-          )
-          print(
-              f"Tasa nueva: {rate:.2f}"
-          )
+          print(f"Tasa anterior: {old_rate:.2f}")
+          print(f"Tasa nueva: {rate:.2f}")
           PY
 
       - name: Verificar cambios
@@ -160,6 +192,7 @@ jobs:
           if git diff --quiet -- progreso-ciclos.json; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "La tasa ya estaba actualizada."
+            echo "::notice title=Tasa BOB/USDT::Sin cambios en el JSON. Job correcto, sin commit."
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
             git diff -- progreso-ciclos.json
