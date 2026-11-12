@@ -3,56 +3,119 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#07111f">
+  <meta name="theme-color" content="#1a2332">
   <title>Centro de Herramientas del Intérprete</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
-  <style>
-    :root{--fondo:#07111f;--panel:rgba(255,255,255,.06);--borde:rgba(255,255,255,.13);--texto:#f7f4ec;--suave:#a9b5c5;--acento:#d9ab5f}
-    *{box-sizing:border-box}
-    html{color-scheme:dark}
-    body{min-height:100vh;margin:0;color:var(--texto);font-family:"DM Sans",system-ui,sans-serif;background:radial-gradient(circle at 8% 8%,rgba(32,101,139,.3),transparent 32rem),radial-gradient(circle at 95% 95%,rgba(128,73,39,.2),transparent 34rem),var(--fondo)}
-    body::before{position:fixed;inset:0;z-index:-1;content:"";opacity:.16;background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:54px 54px;mask-image:linear-gradient(to bottom,black,transparent 80%)}
-    main{width:min(1120px,calc(100% - 32px));margin:0 auto;padding:clamp(64px,10vw,116px) 0 72px}
-    header{max-width:760px;margin-bottom:clamp(42px,7vw,72px)}
-    .sobrelinea{margin:0 0 16px;color:var(--acento);font-size:.76rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase}
-    h1{margin:0;font-family:"Playfair Display",Georgia,serif;font-size:clamp(3rem,8vw,6.75rem);font-weight:700;letter-spacing:-.055em;line-height:.88}
-    h1 em{display:block;color:var(--acento);font-weight:600}
-    nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-    a{position:relative;display:flex;min-height:154px;align-items:flex-end;padding:24px;overflow:hidden;color:var(--texto);text-decoration:none;background:var(--panel);border:1px solid var(--borde);border-radius:18px;backdrop-filter:blur(10px);transition:transform 180ms ease,border-color 180ms ease,background 180ms ease}
-    a::before{position:absolute;top:19px;right:21px;color:var(--suave);content:"\2197";font-size:1.05rem;transition:color 180ms ease,transform 180ms ease}
-    a::after{position:absolute;inset:auto 0 0;height:3px;content:"";background:var(--acento);transform:scaleX(0);transform-origin:left;transition:transform 180ms ease}
-    a:hover,a:focus-visible{background:rgba(255,255,255,.095);border-color:rgba(217,171,95,.7);outline:none;transform:translateY(-4px)}
-    a:hover::before,a:focus-visible::before{color:var(--acento);transform:translate(2px,-2px)}
-    a:hover::after,a:focus-visible::after{transform:scaleX(1)}
-    .titulo{max-width:88%;font-size:clamp(1rem,1.7vw,1.2rem);font-weight:600;line-height:1.25}
-    @media(max-width:800px){nav{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media(max-width:520px){main{width:min(100% - 24px,1120px);padding-top:48px}nav{grid-template-columns:1fr}a{min-height:112px}}
-    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,560;0,9..144,640;1,9..144,560&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilo.css">
 </head>
-<body>
-  <main>
-    <header>
-      <p class="sobrelinea">Espacio de trabajo</p>
-      <h1>Centro de <em>Interpretación</em></h1>
-    </header>
-    <nav aria-label="Herramientas disponibles">
-      <a href="atlas-usa-condados-codigos.html"><span class="titulo">Atlas de Estados Unidos</span></a>
-      <a href="agencias-federales-consulta.html"><span class="titulo">Consulta de Agencias Federales</span></a>
-      <a href="calculadora-ascenso-rango.html"><span class="titulo">Calculadora de Ascenso de Rango</span></a>
-      <a href="consola-911-interprete.html"><span class="titulo">Consola 911</span></a>
-      <a href="copia_reportes.html"><span class="titulo">Copia de Reportes</span></a>
-      <a href="deletreo.html"><span class="titulo">Deletreo Fonético</span></a>
-      <a href="generador_nota_llamada.html"><span class="titulo">Generador de Nota de Llamada</span></a>
-      <a href="interline-generador-scripts.html"><span class="titulo">Panel de Despacho Interline</span></a>
-      <a href="medidor-ciclo-interprete.html"><span class="titulo">Medidor de Ciclo</span></a>
-      <a href="mesa-de-guiones-snap.html"><span class="titulo">Mesa de Guiones SNAP / WIC</span></a>
-      <a href="panel-mbic-mtac.html"><span class="titulo">Panel MBIC / MTAC</span></a>
-      <a href="Patrones_Llamadas_Complejas.html"><span class="titulo">Patrones de Llamadas Complejas</span></a>
-      <a href="scripts-choques-seguro.html"><span class="titulo">Guiones de Choques y Seguros</span></a>
+<body class="portal">
+<a class="portal-saltar" href="#contenido">Saltar al contenido</a>
+<header class="portal-header">
+  <div class="portal-container portal-header__barra">
+    <a class="portal-marca" href="index.html">
+      <span class="portal-marca__sigla" aria-hidden="true">CI</span>
+      <span class="portal-marca__nombre">Centro de Interpretación</span>
+    </a>
+    <nav class="portal-nav" aria-label="Portal">
+      <a href="index.html" aria-current="page">Inicio</a>
+      <details class="portal-menu">
+        <summary>Herramientas</summary>
+        <div class="portal-menu__panel">
+          <ul>
+            <li><a href="atlas-usa-condados-codigos.html">Atlas de Estados Unidos</a></li>
+            <li><a href="agencias-federales-consulta.html">Consulta de Agencias Federales</a></li>
+            <li><a href="calculadora-ascenso-rango.html">Calculadora de Ascenso de Rango</a></li>
+            <li><a href="consola-911-interprete.html">Consola 911</a></li>
+            <li><a href="copia_reportes.html">Copia de Reportes</a></li>
+            <li><a href="deletreo.html">Deletreo Fonético</a></li>
+            <li><a href="generador_nota_llamada.html">Generador de Nota de Llamada</a></li>
+            <li><a href="interline-generador-scripts.html">Panel de Despacho Interline</a></li>
+            <li><a href="medidor-ciclo-interprete.html">Medidor de Ciclo</a></li>
+            <li><a href="mesa-de-guiones-snap.html">Mesa de Guiones SNAP / WIC</a></li>
+            <li><a href="panel-mbic-mtac.html">Panel MBIC / MTAC</a></li>
+            <li><a href="Patrones_Llamadas_Complejas.html">Patrones de Llamadas Complejas</a></li>
+            <li><a href="scripts-choques-seguro.html">Guiones de Choques y Seguros</a></li>
+          </ul>
+        </div>
+      </details>
     </nav>
-  </main>
+  </div>
+</header>
+<main id="contenido">
+  <div class="portal-container portal-pagina">
+    <p class="portal-sobrelinea">Espacio de trabajo</p>
+    <h1 class="portal-titulo">Centro de <em>Interpretación</em></h1>
+    <nav class="portal-herramientas" aria-label="Herramientas disponibles">
+      <a class="btn btn-primario btn-primario--destacado" href="medidor-ciclo-interprete.html">
+        <span class="btn-primario__cuerpo">
+          <span class="btn-primario__etiqueta" aria-hidden="true">Principal</span>
+          <span class="btn-primario__titulo">Medidor de Ciclo</span>
+        </span>
+        <span class="btn-primario__flecha" aria-hidden="true">→</span>
+      </a>
+      <div>
+        <h2 class="portal-grupo__titulo">Otras herramientas</h2>
+        <div class="portal-rejilla">
+        <a class="btn btn-secundario" href="atlas-usa-condados-codigos.html">
+          <span class="btn-secundario__titulo">Atlas de Estados Unidos</span>
+          <span class="btn-secundario__flecha" aria-hidden="true">→</span>
+        </a>
+        <a class="btn btn-secundario" href="agencias-federales-consulta.html">
+          <span class="btn-secundario__titulo">Consulta de Agencias Federales</span>
+          <span class="btn-secundario__flecha" aria-hidden="true">→</span>
+        </a>
+        <a class="btn btn-secundario" href="calculadora-ascenso-rango.html">
+          <span class="btn-secundario__titulo">Calculadora de Ascenso de Rango</span>
+          <span class="btn-secundario__flecha" aria-hidden="true">→</span>
+        </a>
+        <a class="btn btn-secundario" href="consola-911-interprete.html">
+          <span class="btn-secundario__titulo">Consola 911</span>
+          <span class="btn-secundario__flecha" aria-hidden="true">→</span>
+        </a>
+        <a class="btn btn-secundario" href="copia_reportes.html">
+          <span class="btn-secundario__titulo">Copia de Reportes</span>
+          <span class="btn-secundario__flecha" aria-hidden="true">→</span>
+        </a>
+        <a class="btn btn-secundario" href="deletreo.html">
+          <span class="btn-secundario__titulo">Deletreo Fonético</span>
+          <span class="btn-secundario__flecha" aria-hidden="true">→</span>
+        </a>
+        <a class="btn btn-secundario" href="generador_nota_llamada.html">
+          <span class="btn-secundario__titulo">Generador de Nota de Llamada</span>
+          <span class="btn-secundario__flecha" aria-hidden="true">→</span>
+        </a>
+        <a class="btn btn-secundario" href="interline-generador-scripts.html">
+          <span class="btn-secundario__titulo">Panel de Despacho Interline</span>
+          <span class="btn-secundario__flecha" aria-hidden="true">→</span>
+        </a>
+        <a class="btn btn-secundario" href="mesa-de-guiones-snap.html">
+          <span class="btn-secundario__titulo">Mesa de Guiones SNAP / WIC</span>
+          <span class="btn-secundario__flecha" aria-hidden="true">→</span>
+        </a>
+        <a class="btn btn-secundario" href="panel-mbic-mtac.html">
+          <span class="btn-secundario__titulo">Panel MBIC / MTAC</span>
+          <span class="btn-secundario__flecha" aria-hidden="true">→</span>
+        </a>
+        <a class="btn btn-secundario" href="Patrones_Llamadas_Complejas.html">
+          <span class="btn-secundario__titulo">Patrones de Llamadas Complejas</span>
+          <span class="btn-secundario__flecha" aria-hidden="true">→</span>
+        </a>
+        <a class="btn btn-secundario" href="scripts-choques-seguro.html">
+          <span class="btn-secundario__titulo">Guiones de Choques y Seguros</span>
+          <span class="btn-secundario__flecha" aria-hidden="true">→</span>
+        </a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</main>
+<footer class="portal-footer">
+  <div class="portal-container portal-footer__barra">
+    <p>Centro de Herramientas del Intérprete</p>
+    <a href="index.html">Volver al inicio</a>
+  </div>
+</footer>
 </body>
 </html>
