@@ -1,403 +1,276 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1a2332">
+  <meta name="description" content="Prepare en su dispositivo las respuestas en inglés para el formulario confidencial de cumplimiento de Propio. Esta página no envía ni guarda nada en un servidor.">
+  <title>Reporte de cumplimiento | Centro de Interpretación</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,560;0,9..144,640;1,9..144,560&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/estilo.css">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Generador de Nota de Llamada</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Lato:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg: #0c1016;
-    --panel: #141b26;
-    --panel-2: #1c2532;
-    --border: #2a3444;
-    --text: #e9edf5;
-    --text-dim: #8a93a8;
-    --text-dimmer: #5c6479;
-    --ok: #34d399;
-    --warn: #f5a623;
-    --critical: #f2545b;
-    --info: #4fb0e8;
-    --accent: #a78bfa;
-    --radius: 10px;
-  }
-  *{ box-sizing: border-box; }
-  html,body{ margin:0; padding:0; }
-  body{
-    background: var(--bg);
-    background-image:
-      radial-gradient(circle at 15% 0%, rgba(79,176,232,0.06), transparent 40%),
-      radial-gradient(circle at 85% 100%, rgba(167,139,250,0.05), transparent 40%);
-    color: var(--text);
-    font-family: 'Lato', sans-serif;
-    min-height: 100vh;
-    padding: 28px 20px 60px;
-  }
-  h1,h2,h3, .display{
-    font-family: 'Montserrat', sans-serif;
-  }
-  .wrap{ max-width: 1180px; margin: 0 auto; }
-
-  /* ---------- Header ---------- */
-  header.top{
-    display:flex; align-items:flex-end; justify-content: space-between;
-    gap: 20px; flex-wrap: wrap;
-    margin-bottom: 26px;
-    padding-bottom: 18px;
-    border-bottom: 1px solid var(--border);
-  }
-  .brand-eyebrow{
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--info);
-    margin: 0 0 6px;
-  }
-  header.top h1{
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    margin: 0;
-    color: var(--text);
-  }
-  header.top p{
-    margin: 6px 0 0;
-    color: var(--text-dim);
-    font-size: 14.5px;
-    max-width: 560px;
-  }
-  .clock{
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--text-dim);
-    text-align: right;
-    line-height: 1.5;
-    white-space: nowrap;
-  }
-  .clock b{ color: var(--text); font-weight: 600; }
-
-  /* ---------- Layout ---------- */
-  .grid{
-    display: grid;
-    grid-template-columns: 1.35fr 1fr;
-    gap: 24px;
-    align-items: start;
-  }
-  @media (max-width: 900px){
-    .grid{ grid-template-columns: 1fr; }
-  }
-
-  .panel{
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px 22px;
-    margin-bottom: 20px;
-  }
-  .panel h2{
-    font-size: 12.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.09em;
-    font-weight: 700;
-    color: var(--text-dim);
-    margin: 0 0 4px;
-  }
-  .panel .en-label{
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 15px;
-    color: var(--text);
-    margin: 0 0 14px;
-    font-weight: 500;
-  }
-  .panel .section-hint{
-    font-size: 13px;
-    color: var(--text-dimmer);
-    margin: -8px 0 14px;
-  }
-
-  /* ---------- Outcome chip grid ---------- */
-  .chip-grid{
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 10px;
-  }
-  .chip{
-    position: relative;
-    display:block;
-    background: var(--panel-2);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--chip-color, var(--border));
-    border-radius: 8px;
-    padding: 11px 14px 11px 14px;
-    cursor: pointer;
-    transition: border-color .15s ease, background .15s ease, transform .1s ease;
-  }
-  .chip:hover{ background: #212b3a; }
-  .chip input{ position:absolute; opacity:0; pointer-events:none; }
-  .chip .chip-label{
-    font-size: 13.5px;
-    font-weight: 600;
-    color: var(--text);
-    display:flex; align-items:center; gap:8px;
-  }
-  .chip .chip-label::before{
-    content:'';
-    width:8px; height:8px; border-radius: 50%;
-    background: var(--chip-color, var(--text-dimmer));
-    flex-shrink:0;
-    box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
-  }
-  .chip .chip-hint{
-    font-size: 11.5px;
-    color: var(--text-dimmer);
-    margin-top: 3px;
-    padding-left: 16px;
-  }
-  .chip:has(input:checked){
-    background: rgba(255,255,255,0.03);
-    border-color: var(--chip-color, var(--border));
-    box-shadow: inset 0 0 0 1px var(--chip-color, var(--border));
-  }
-  .chip:has(input:focus-visible){ outline: 2px solid var(--info); outline-offset: 2px; }
-
-  /* checkbox chips (sector / circumstances) — more compact, pill style */
-  .pill-grid{ display:flex; flex-wrap:wrap; gap:8px; }
-  .pill{
-    position:relative;
-    background: var(--panel-2);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 8px 14px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor:pointer;
-    color: var(--text-dim);
-    transition: all .15s ease;
-  }
-  .pill input{ position:absolute; opacity:0; pointer-events:none; }
-  .pill:hover{ background:#212b3a; }
-  .pill:has(input:checked){
-    background: rgba(167,139,250,0.12);
-    border-color: var(--accent);
-    color: var(--text);
-  }
-  .pill:has(input:focus-visible){ outline: 2px solid var(--info); outline-offset: 2px; }
-
-  /* ---------- Conditional field blocks ---------- */
-  .field-block{
-    display:none;
-    margin-top: 14px;
-    padding: 14px 14px 4px;
-    background: rgba(255,255,255,0.02);
-    border: 1px dashed var(--border);
-    border-radius: 8px;
-  }
-  .field-block.show{ display:block; }
-  .field-row{ margin-bottom: 12px; }
-  .field-row label{
-    display:block;
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-bottom: 5px;
-    font-weight: 600;
-  }
-  input[type="text"], input[type="number"], select, textarea{
-    width: 100%;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text);
-    font-family: 'Lato', sans-serif;
-    font-size: 13.5px;
-    padding: 9px 11px;
-  }
-  input:focus, select:focus, textarea:focus{
-    outline: none;
-    border-color: var(--info);
-  }
-  textarea{ resize: vertical; min-height: 64px; }
-  .two-col{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  @media (max-width: 520px){ .two-col{ grid-template-columns: 1fr; } }
-
-  /* ---------- Call details ---------- */
-  .arrow{ color: var(--text-dimmer); font-family:'JetBrains Mono',monospace; }
-
-  /* ---------- Ticket / output panel ---------- */
-  .ticket-wrap{ position: sticky; top: 20px; }
-  .ticket{
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow:hidden;
-  }
-  .ticket-perf{
-    height: 14px;
-    background-image: radial-gradient(circle, var(--bg) 3px, transparent 3.5px);
-    background-size: 16px 16px;
-    background-position: -4px -8px;
-    background-color: var(--panel-2);
-  }
-  .ticket-head{
-    background: var(--panel-2);
-    padding: 14px 20px;
-    display:flex; align-items:center; justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-  }
-  .ticket-head .title-group{ display:flex; align-items:center; gap:10px; }
-  .led{
-    width: 10px; height:10px; border-radius:50%;
-    background: var(--border);
-    box-shadow: 0 0 8px 1px transparent;
-    transition: background .2s ease;
-  }
-  .led.on{ box-shadow: 0 0 8px 1px currentColor; }
-  @media (prefers-reduced-motion: no-preference){
-    .led.on{ animation: pulse 2.2s ease-in-out infinite; }
-  }
-  @keyframes pulse{
-    0%,100%{ opacity:1; } 50%{ opacity:.55; }
-  }
-  .ticket-head h3{
-    margin:0; font-size: 12.5px; letter-spacing:0.08em; text-transform:uppercase;
-    color: var(--text-dim); font-weight:700;
-  }
-  .lang-toggle{
-    display:flex; background: var(--panel); border:1px solid var(--border); border-radius: 6px; overflow:hidden;
-  }
-  .lang-toggle label{
-    padding: 5px 11px; font-size: 11.5px; font-weight:700; cursor:pointer; color: var(--text-dimmer);
-    font-family:'JetBrains Mono',monospace;
-  }
-  .lang-toggle input{ position:absolute; opacity:0; pointer-events:none; }
-  .lang-toggle label:has(input:checked){ background: var(--info); color: #06121c; }
-
-  .ticket-body{
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12.8px;
-    line-height: 1.65;
-    color: var(--text);
-    white-space: pre-wrap;
-    word-break: break-word;
-    padding: 18px 20px;
-    min-height: 220px;
-  }
-  .ticket-body.placeholder{ color: var(--text-dimmer); font-style: italic; }
-
-  .ticket-foot{
-    display:flex; align-items:center; justify-content: space-between;
-    padding: 12px 20px 18px;
-    gap: 10px;
-  }
-  .char-count{ font-size: 11px; color: var(--text-dimmer); font-family:'JetBrains Mono',monospace; }
-
-  button{
-    font-family: 'Lato', sans-serif;
-    font-weight: 700;
-    font-size: 13.5px;
-    border-radius: 7px;
-    border: 1px solid transparent;
-    padding: 10px 16px;
-    cursor: pointer;
-    transition: all .15s ease;
-    display:inline-flex; align-items:center; gap:7px;
-  }
-  .btn-primary{
-    background: var(--info);
-    color: #06121c;
-  }
-  .btn-primary:hover{ filter: brightness(1.08); }
-  .btn-primary:disabled{ background: var(--border); color: var(--text-dimmer); cursor: not-allowed; }
-  .btn-ghost{
-    background: transparent;
-    border-color: var(--border);
-    color: var(--text-dim);
-  }
-  .btn-ghost:hover{ border-color: var(--text-dimmer); color: var(--text); }
-
-  .footer-actions{ display:flex; justify-content:flex-end; margin-top: -6px; margin-bottom: 18px; }
-
-  ::selection{ background: rgba(79,176,232,0.3); }
-
-  /* ---------- Verbal scripts panel ---------- */
-  .verbal-panel{ margin-bottom: 20px; }
-  .verbal-head{
-    display:flex; align-items:center; justify-content: space-between;
-    flex-wrap: wrap; gap: 10px;
-    margin-bottom: 4px;
-  }
-  .verbal-cards{
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    margin-top: 16px;
-  }
-  @media (max-width: 900px){ .verbal-cards{ grid-template-columns: 1fr; } }
-
-  .script-card{
-    background: var(--panel-2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 15px 15px;
-    display:flex; flex-direction:column;
-  }
-  .script-card .script-title{
-    display:flex; align-items:center; gap:8px;
-    font-size: 13px; font-weight: 700; color: var(--text);
-    margin-bottom: 3px;
-  }
-  .script-card .script-title .dot{
-    width:7px; height:7px; border-radius:50%; flex-shrink:0;
-  }
-  .script-card .script-sub{
-    font-size: 11.5px; color: var(--text-dimmer); margin-bottom: 10px;
-  }
-  .script-card .mini-field{ margin-bottom: 10px; }
-  .script-card .mini-field label{
-    display:block; font-size: 11px; color: var(--text-dim); margin-bottom: 4px; font-weight:600;
-  }
-  .script-card .mini-field input{ font-size: 12.5px; padding: 6px 9px; }
-
-  .script-stage{ margin-top: 10px; }
-  .script-stage:first-of-type{ margin-top: 0; }
-  .script-stage .stage-label{
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10.5px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 5px;
-    display:block;
-  }
-  .script-stage .stage-text{
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11.8px;
-    line-height: 1.55;
-    color: var(--text);
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 10px 11px;
-    white-space: pre-wrap;
-  }
-  .script-stage .copy-mini{
-    margin-top: 6px;
-    font-size: 11px;
-    padding: 5px 10px;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-  }
-  .script-stage .copy-mini:hover{ border-color: var(--info); color: var(--text); }
-</style>
+  <style>
+    /* Estilos de la herramienta. Tokens del portal con reserva por si no carga estilo.css. */
+    :root {
+      --rep-ink: var(--color-ink, #1a2332);
+      --rep-ink-soft: var(--color-ink-soft, #3e4c5e);
+      --rep-muted: var(--color-muted, #4e5d6c);
+      --rep-paper: var(--color-paper, #f3eee6);
+      --rep-raised: var(--color-paper-raised, #fffcf8);
+      --rep-line: var(--color-line, #e3d9cb);
+      --rep-line-strong: var(--color-line-strong, #cdbfae);
+      --rep-accent: var(--color-accent, #0c5852);
+      --rep-accent-hover: var(--color-accent-hover, #084640);
+      --rep-accent-soft: var(--color-accent-soft, #e4f2f0);
+      --rep-on-accent: var(--color-on-accent, #f7f4ee);
+      --rep-warn: #8a3b12;
+      --rep-warn-bg: #f8eadc;
+      --rep-warn-line: #e2c19a;
+      --rep-ok: #0c5852;
+      --rep-display: var(--font-display, "Fraunces", Georgia, serif);
+      --rep-body: var(--font-body, "Source Sans 3", "Segoe UI", sans-serif);
+      --rep-radius: var(--radius-md, 0.75rem);
+    }
+    body.portal { background-color: var(--rep-paper); color: var(--rep-ink); font-family: var(--rep-body); }
+    .rep-lead { max-width: 46rem; color: var(--rep-ink-soft); margin: 0 0 1.25rem; }
+    .rep-banner {
+      background: var(--rep-warn-bg);
+      border: 1px solid var(--rep-warn-line);
+      border-radius: var(--rep-radius);
+      padding: 0.9rem 1rem;
+      color: var(--rep-warn);
+      margin: 0 0 1.5rem;
+    }
+    .rep-banner strong { color: var(--rep-ink); }
+    .rep-banner p { margin: 0; }
+    .rep-banner p + p { margin-top: 0.45rem; }
+    .rep-toolbar {
+      display: flex; flex-wrap: wrap; gap: 0.6rem 1rem;
+      align-items: center; justify-content: space-between;
+      margin: 0 0 1.5rem;
+    }
+    .rep-draft { font-size: 0.875rem; color: var(--rep-muted); }
+    .rep-draft b { color: var(--rep-ink-soft); font-weight: 600; }
+    .rep-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.9fr);
+      gap: 1.5rem;
+      align-items: start;
+    }
+    @media (max-width: 64rem) {
+      .rep-layout { grid-template-columns: 1fr; }
+    }
+    .rep-card {
+      background: var(--rep-raised);
+      border: 1px solid var(--rep-line);
+      border-radius: var(--rep-radius);
+      box-shadow: var(--shadow-sm, 0 1px 2px rgba(26,35,50,.05));
+      padding: 1.15rem 1.2rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .rep-card h2 {
+      font-family: var(--rep-display);
+      font-size: 1.35rem;
+      font-weight: 560;
+      margin: 0 0 0.35rem;
+      letter-spacing: -0.01em;
+      color: var(--rep-ink);
+    }
+    .rep-hint { margin: 0 0 1rem; color: var(--rep-muted); font-size: 0.95rem; }
+    .rep-en {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--rep-ink-soft);
+      font-style: italic;
+      margin: 0.15rem 0 0.55rem;
+      line-height: 1.45;
+    }
+    .rep-req { color: #9a3412; font-weight: 700; }
+    .rep-choice {
+      display: block;
+      position: relative;
+      background: var(--rep-paper);
+      border: 1px solid var(--rep-line-strong);
+      border-radius: 0.6rem;
+      padding: 0.7rem 0.85rem 0.7rem 2.35rem;
+      margin: 0 0 0.5rem;
+      cursor: pointer;
+      color: var(--rep-ink);
+      transition: border-color 180ms ease, background 180ms ease;
+    }
+    .rep-choice:hover { border-color: var(--rep-accent); }
+    .rep-choice input {
+      position: absolute;
+      left: 0.8rem;
+      top: 0.85rem;
+    }
+    .rep-choice:has(input:checked) {
+      background: var(--rep-accent-soft);
+      border-color: var(--rep-accent);
+    }
+    .rep-choice:has(input:focus-visible) {
+      outline: 3px solid var(--rep-accent);
+      outline-offset: 2px;
+    }
+    .rep-choice .rep-en { margin-bottom: 0; }
+    .rep-pills { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+    .rep-pill {
+      position: relative;
+      display: inline-flex;
+      align-items: flex-start;
+      gap: 0.4rem;
+      border: 1px solid var(--rep-line-strong);
+      background: var(--rep-paper);
+      border-radius: 999px;
+      padding: 0.45rem 0.8rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--rep-ink-soft);
+    }
+    .rep-pill input { position: absolute; opacity: 0; pointer-events: none; }
+    .rep-pill:has(input:checked) {
+      background: var(--rep-accent-soft);
+      border-color: var(--rep-accent);
+      color: var(--rep-ink);
+    }
+    .rep-pill:has(input:focus-visible) { outline: 3px solid var(--rep-accent); outline-offset: 2px; }
+    .rep-field { display: block; margin: 0 0 0.9rem; font-weight: 600; color: var(--rep-ink); }
+    .rep-field[hidden] { display: none !important; }
+    .rep-field input[type="text"],
+    .rep-field input[type="email"],
+    .rep-field input[type="tel"],
+    .rep-field input[type="date"],
+    .rep-field input[type="time"],
+    .rep-field select,
+    .rep-field textarea,
+    .rep-input {
+      display: block;
+      width: 100%;
+      margin-top: 0.35rem;
+      font: inherit;
+      font-weight: 400;
+      font-size: 1rem;
+      color: var(--rep-ink);
+      background: var(--rep-paper);
+      border: 1px solid var(--rep-line-strong);
+      border-radius: 0.5rem;
+      padding: 0.6rem 0.75rem;
+    }
+    .rep-field textarea, textarea.rep-input { min-height: 9rem; resize: vertical; line-height: 1.5; }
+    .rep-field input:focus, .rep-field select:focus, .rep-field textarea:focus, .rep-input:focus {
+      outline: 3px solid var(--rep-accent);
+      outline-offset: 2px;
+    }
+    .rep-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem 1rem;
+    }
+    @media (max-width: 40rem) { .rep-grid-2 { grid-template-columns: 1fr; } }
+    .rep-notice {
+      display: none;
+      background: var(--rep-warn-bg);
+      border: 1px solid var(--rep-warn-line);
+      color: var(--rep-ink);
+      border-radius: var(--rep-radius);
+      padding: 0.9rem 1rem;
+      margin: 0.75rem 0 0;
+    }
+    .rep-notice.is-on { display: block; }
+    .rep-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.75rem 0 0; }
+    .rep-btn {
+      appearance: none;
+      display: inline-block;
+      border: 1px solid var(--rep-accent);
+      background: var(--rep-accent);
+      color: var(--rep-on-accent);
+      font: inherit;
+      font-weight: 650;
+      line-height: 1.3;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 0.5rem;
+      padding: 0.55rem 0.95rem;
+      cursor: pointer;
+    }
+    .rep-btn:hover { background: var(--rep-accent-hover); }
+    .rep-btn:focus-visible { outline: 3px solid var(--rep-accent); outline-offset: 2px; }
+    .rep-btn--ghost {
+      background: transparent;
+      color: var(--rep-accent);
+    }
+    .rep-btn--ghost:hover { background: var(--rep-accent-soft); }
+    .rep-btn--small { font-size: 0.85rem; padding: 0.35rem 0.65rem; font-weight: 650; }
+    .rep-warn-list {
+      display: none;
+      margin: 0.4rem 0 0.8rem;
+      padding: 0.65rem 0.75rem;
+      background: var(--rep-warn-bg);
+      border: 1px solid var(--rep-warn-line);
+      border-radius: 0.5rem;
+      color: var(--rep-warn);
+      font-size: 0.9rem;
+    }
+    .rep-warn-list.is-on { display: block; }
+    .rep-warn-list ul { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+    .rep-has-phi { border-color: #b45309 !important; box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.18); }
+    .rep-out { position: sticky; top: 0.75rem; }
+    .rep-out-head {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      align-items: flex-start; justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    .rep-block {
+      border: 1px solid var(--rep-line);
+      border-radius: 0.6rem;
+      padding: 0.7rem 0.75rem 0.8rem;
+      margin: 0 0 0.55rem;
+      background: var(--rep-paper);
+    }
+    .rep-block-top {
+      display: flex; gap: 0.5rem; align-items: flex-start;
+      justify-content: space-between;
+    }
+    .rep-q {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: none;
+      color: var(--rep-muted);
+      margin: 0 0.5rem 0.35rem 0;
+      line-height: 1.35;
+    }
+    .rep-a {
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 0.95rem;
+      color: var(--rep-ink);
+      margin: 0;
+      line-height: 1.45;
+    }
+    .rep-a.is-empty { color: var(--rep-muted); font-style: italic; }
+    .rep-stickybar {
+      display: none;
+      position: sticky;
+      bottom: 0;
+      z-index: 20;
+      margin: 1rem -1rem -1rem;
+      padding: 0.7rem 1rem 0.9rem;
+      background: rgba(243, 238, 230, 0.94);
+      border-top: 1px solid var(--rep-line);
+      backdrop-filter: blur(8px);
+    }
+    @media (max-width: 64rem) {
+      .rep-out { position: static; }
+      .rep-stickybar { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
 </head>
-<body>
+<body class="portal">
 <a class="portal-saltar" href="#contenido">Saltar al contenido</a>
 <header class="portal-header">
   <div class="portal-container portal-header__barra">
@@ -430,569 +303,906 @@
     </nav>
   </div>
 </header>
-<span id="contenido"></span>
-<div class="wrap">
+<main id="contenido">
+  <div class="portal-container portal-pagina">
+    <p class="portal-sobrelinea">Formulario confidencial de Propio</p>
+    <h1 class="portal-titulo">Reporte de cumplimiento</h1>
+    <p class="rep-lead">Prepare aquí, en español, las respuestas en inglés para el formulario oficial de denuncias de cumplimiento de Propio: fraude, desperdicio, abuso, HIPAA o privacidad, falsificación de registros, ética u otras preocupaciones de cumplimiento. Esta página no envía ni guarda nada en un servidor. Usted copia cada respuesta y la pega en el formulario.</p>
 
-  <header class="top">
-    <div>
-      <p class="brand-eyebrow">// dispatch note builder</p>
-      <h1>Generador de Nota de Llamada</h1>
-      <p>Arma la nota de disposición lista para copiar y pegar en el portal. Selecciona el resultado de la llamada, agrega el contexto que aplique y copia el texto final.</p>
+    <div class="rep-banner" role="note">
+      <p><strong>No incluya datos confidenciales.</strong> El formulario de Propio prohíbe PHI, PII, NPI o PCI: nombres de pacientes, fechas de nacimiento, números de expediente, direcciones, teléfonos, números de Seguro Social, números de reclamo u otros identificadores.</p>
+      <p>El formulario solo admite preocupaciones de cumplimiento, legales, normativas, de fraude, desperdicio, abuso, privacidad, seguridad o ética. Las respuestas que se copian van en inglés, tal como las pide Propio.</p>
     </div>
-    <div class="clock" id="clock"></div>
-  </header>
 
-  <div class="footer-actions">
-    <button class="btn-ghost" id="resetBtn" type="button">↺ Nueva llamada</button>
-  </div>
-
-  <div class="panel verbal-panel">
-    <div class="verbal-head">
-      <div>
-        <h2>Avisos verbales al REP</h2>
-        <p class="section-hint" style="margin-bottom:0;">Lo que debes decir en el momento — no la nota de cierre. Úsalos para dejar aviso previo por instrucción del REP/dispatcher/provider antes de colgar.</p>
-      </div>
-      <div class="lang-toggle">
-        <label><input type="radio" name="verbalLang" value="en" checked>EN</label>
-        <label><input type="radio" name="verbalLang" value="es">ES</label>
+    <div class="rep-toolbar">
+      <p class="rep-draft" id="draftStatus">El borrador se puede guardar solo en este dispositivo.</p>
+      <div class="rep-actions">
+        <button type="button" class="rep-btn rep-btn--ghost" id="btnClear">Borrar borrador</button>
       </div>
     </div>
 
-    <div class="verbal-cards">
-      <!-- HOLD PROLONGADO -->
-      <div class="script-card">
-        <div class="script-title"><span class="dot" style="background:var(--warn)"></span>Hold prolongado</div>
-        <div class="script-sub">REP sigue en línea, pero la espera se ha extendido demasiado.</div>
-        <div class="mini-field">
-          <label>Umbral de espera (minutos)</label>
-          <input type="number" min="0" id="verbal-holdMinutes" placeholder="Ej: 10">
-        </div>
-        <div class="script-stage">
-          <span class="stage-label">Aviso previo</span>
-          <div class="stage-text" id="verbal-hold-warn"></div>
-          <button class="btn-ghost copy-mini" type="button" data-copy-target="verbal-hold-warn">⧉ Copiar</button>
-        </div>
-        <div class="script-stage">
-          <span class="stage-label">Justo antes de desconectar</span>
-          <div class="stage-text" id="verbal-hold-final"></div>
-          <button class="btn-ghost copy-mini" type="button" data-copy-target="verbal-hold-final">⧉ Copiar</button>
-        </div>
-      </div>
+    <div class="rep-layout">
+      <div class="rep-form-col">
 
-      <!-- CORTE / DESCONEXIÓN -->
-      <div class="script-card">
-        <div class="script-title"><span class="dot" style="background:var(--critical)"></span>Corte / desconexión</div>
-        <div class="script-sub">La llamada se cortó o debes desconectarte tú por un problema técnico.</div>
-        <div class="script-stage">
-          <span class="stage-label">Si logras reconectar o hablar antes de colgar</span>
-          <div class="stage-text" id="verbal-drop-note"></div>
-          <button class="btn-ghost copy-mini" type="button" data-copy-target="verbal-drop-note">⧉ Copiar</button>
-        </div>
-      </div>
+        <section class="rep-card" id="sec-alcance">
+          <h2>1. Alcance y reconocimientos</h2>
+          <p class="rep-hint">Marque cada casilla si está de acuerdo. En el formulario la opción exacta es «I acknowledge».</p>
 
-      <!-- SIN CONEXIÓN -->
-      <div class="script-card">
-        <div class="script-title"><span class="dot" style="background:var(--text-dimmer)"></span>Cliente no se conecta</div>
-        <div class="script-sub">Aviso al REP mientras esperas, y antes de liberar la llamada.</div>
-        <div class="mini-field">
-          <label>Minutos esperando</label>
-          <input type="number" min="0" id="verbal-neverConnMinutes" placeholder="Ej: 5">
-        </div>
-        <div class="script-stage">
-          <span class="stage-label">Mientras esperas</span>
-          <div class="stage-text" id="verbal-neverconn-warn"></div>
-          <button class="btn-ghost copy-mini" type="button" data-copy-target="verbal-neverconn-warn">⧉ Copiar</button>
-        </div>
-        <div class="script-stage">
-          <span class="stage-label">Antes de liberar la llamada</span>
-          <div class="stage-text" id="verbal-neverconn-final"></div>
-          <button class="btn-ghost copy-mini" type="button" data-copy-target="verbal-neverconn-final">⧉ Copiar</button>
-        </div>
-      </div>
-    </div>
-  </div>
+          <label class="rep-choice"><input type="checkbox" name="ack1" data-output="I acknowledge"> Entiendo que este mecanismo sirve solo para denunciar sospechas de incumplimiento, cuestiones legales o normativas, fraude, desperdicio o abuso de CMS, o preocupaciones de privacidad, seguridad o ética.
+            <span class="rep-en">I understand this reporting mechanism is intended solely for reporting suspected compliance, legal, regulatory, CMS fraud, waste, abuse, privacy, security, or ethical concerns.</span>
+          </label>
+          <label class="rep-choice"><input type="checkbox" name="ack2" data-output="I acknowledge"> Entiendo que un reporte que quede fuera del Programa de Cumplimiento se cerrará sin investigación.
+            <span class="rep-en">I understand that reports determined to be outside the scope of the Compliance Program will be closed without investigation.</span>
+          </label>
+          <label class="rep-choice"><input type="checkbox" name="ack3" data-output="I acknowledge"> Entiendo que las preocupaciones ajenas al cumplimiento debo plantearlas por los canales de la empresa que correspondan, y que el equipo de Cumplimiento no las reenviará.
+            <span class="rep-en">I understand that it is my responsibility to raise concerns unrelated to compliance through the appropriate business channels. Reports that do not fall within the scope of Compliance will not be forwarded to the relevant business unit by the Compliance team.</span>
+          </label>
+          <label class="rep-choice"><input type="checkbox" name="ack4" data-output="I acknowledge"> Presento este reporte de buena fe.
+            <span class="rep-en">I am submitting this report in good faith.</span>
+          </label>
 
-  <div class="grid">
-    <!-- LEFT COLUMN: FORM -->
-    <div>
-
-      <div class="panel">
-        <h2>How did the call go?</h2>
-        <p class="section-hint">Elige la opción tal como aparece en el portal.</p>
-        <div class="chip-grid" id="outcomeGrid"></div>
-
-        <!-- conditional field blocks per outcome -->
-        <div class="field-block" data-for="never_connected">
-          <div class="field-row">
-            <label>¿Cuántos minutos esperaste en línea?</label>
-            <input type="number" min="0" id="never_connected-waitMinutes" placeholder="Ej: 5">
+          <p class="rep-field" style="margin-top:1.1rem">¿Su preocupación involucra una posible cuestión de cumplimiento, legal, normativa, de fraude, desperdicio o abuso de CMS, o de privacidad, seguridad o ética? <span class="rep-req">*</span>
+            <span class="rep-en">Does your concern involve a suspected compliance, legal, regulatory, CMS fraud, waste, abuse, privacy, security, or ethical issue?</span>
+          </p>
+          <label class="rep-choice"><input type="radio" name="scope" value="Yes"> Sí — entra en el alcance del formulario
+            <span class="rep-en">Yes</span>
+          </label>
+          <label class="rep-choice"><input type="radio" name="scope" value="No"> No — no es una preocupación de cumplimiento
+            <span class="rep-en">No</span>
+          </label>
+          <div class="rep-notice" id="scopeNotice" role="status">
+            <p><strong>Este formulario de Propio solo admite denuncias de cumplimiento</strong> (fraude, desperdicio, abuso, HIPAA o privacidad, falsificación, ética, o otras preocupaciones de cumplimiento, legales o normativas). Si su preocupación no entra en ese alcance, no corresponde enviarla por este formulario.</p>
           </div>
-        </div>
+        </section>
 
-        <div class="field-block" data-for="no_interpreter">
-          <div class="field-row">
-            <label>Motivo (opcional)</label>
-            <input type="text" id="no_interpreter-reason" placeholder="Ej: el cliente continuó en inglés">
-          </div>
-        </div>
+        <section class="rep-card" id="sec-tipo">
+          <h2>2. Tipo de preocupación e impacto</h2>
+          <p class="rep-hint">Elija la etiqueta exacta en inglés que pide el formulario. Al lado va una ayuda en español.</p>
+          <p class="rep-field">¿Qué tipo de preocupación está reportando? <span class="rep-req">*</span>
+            <span class="rep-en">What type of concern are you reporting?</span>
+          </p>
+          <div id="concernTypes"></div>
+          <label class="rep-field" id="otherTypeWrap" hidden>Otro (en inglés, como lo pegará en «Other»)
+            <input type="text" id="otherType" maxlength="200" autocomplete="off">
+          </label>
 
-        <div class="field-block" data-for="audio_issue">
-          <div class="field-row">
-            <label>Describe el problema</label>
-            <input type="text" id="audio_issue-description" placeholder="Ej: audio unidireccional, estática, eco">
+          <p class="rep-field" style="margin-top:1.1rem">¿Este asunto podría causar daño o un efecto negativo en alguno de los siguientes? Marque todos los que apliquen. <span class="rep-req">*</span>
+            <span class="rep-en">Could this issue potentially result in harm or negative impact to any of the following? Select all that apply.</span>
+          </p>
+          <div id="harmChoices"></div>
+        </section>
+
+        <section class="rep-card" id="sec-plantilla">
+          <h2>3. Armar la descripción en inglés</h2>
+          <p class="rep-hint">Elija un escenario y las frases que correspondan. Los campos estructurados se convierten en un texto factual, neutro y en inglés para pegar en el formulario. No se usa ningún servicio de traducción externo. Si necesita un detalle extra, escríbalo en inglés en el recuadro de al final, o ajuste a mano los textos generados.</p>
+
+          <p class="rep-field">Escenario de la llamada o del hecho</p>
+          <div class="rep-pills" id="scenarios"></div>
+
+          <div class="rep-grid-2" style="margin-top:1rem">
+            <label class="rep-field">Fecha del hecho <span class="rep-req">*</span>
+              <input type="date" id="occDate">
+            </label>
+            <label class="rep-field">Hora aproximada (opcional)
+              <input type="time" id="occTime">
+            </label>
           </div>
-          <div class="field-row">
-            <label>Desenlace</label>
-            <select id="audio_issue-resolution">
-              <option value="">— Selecciona —</option>
-              <option value="resolved">Se resolvió y la llamada continuó normal</option>
-              <option value="unresolved">No se pudo resolver, la llamada no se completó</option>
-              <option value="proceeded">Se completó pese al problema intermitente</option>
+
+          <label class="rep-field">Modalidad del encuentro
+            <select id="modality">
+              <option value="">No lo indico</option>
+              <option value="OPI">Interpretación por teléfono (OPI)</option>
+              <option value="VRI">Interpretación por video (VRI)</option>
+              <option value="onsite">Encuentro presencial</option>
+              <option value="other">Otra / no aplica</option>
             </select>
-          </div>
-        </div>
+          </label>
 
-        <div class="field-block" data-for="video_issue">
-          <div class="field-row">
-            <label>Describe el problema</label>
-            <input type="text" id="video_issue-description" placeholder="Ej: video congelado, sin señal, pixelado">
-          </div>
-          <div class="field-row">
-            <label>Desenlace</label>
-            <select id="video_issue-resolution">
-              <option value="">— Selecciona —</option>
-              <option value="resolved">Se resolvió y la llamada continuó normal</option>
-              <option value="unresolved">No se pudo resolver, la llamada no se completó</option>
-              <option value="proceeded">Se completó pese al problema intermitente</option>
-            </select>
-          </div>
-        </div>
+          <p class="rep-field">¿Cómo se enteró? <span class="rep-req">*</span>
+            <span class="rep-en">How did you become aware of this concern?</span>
+          </p>
+          <div id="awareChoices"></div>
+          <label class="rep-field" id="otherAwareWrap" hidden>Otro (en inglés)
+            <input type="text" id="otherAware" maxlength="200" autocomplete="off">
+          </label>
 
-        <div class="field-block" data-for="dropped">
-          <div class="field-row">
-            <label>¿En qué momento se cortó? (opcional)</label>
-            <input type="text" id="dropped-duration" placeholder="Ej: 5 minutos después de iniciar">
-          </div>
-        </div>
+          <p class="rep-field">¿Es una preocupación que continúa? <span class="rep-req">*</span>
+            <span class="rep-en">Is this an ongoing concern?</span>
+          </p>
+          <label class="rep-choice"><input type="radio" name="ongoing" value="Yes"> Sí <span class="rep-en">Yes</span></label>
+          <label class="rep-choice"><input type="radio" name="ongoing" value="No"> No <span class="rep-en">No</span></label>
+          <label class="rep-choice"><input type="radio" name="ongoing" value="Unsure"> No estoy seguro/a <span class="rep-en">Unsure</span></label>
 
-        <div class="field-block" data-for="wrong_language">
-          <div class="field-row">
-            <label>Idioma real que necesitaba el cliente (opcional)</label>
-            <input type="text" id="wrong_language-identifiedLanguage" placeholder="Ej: portugués">
+          <p class="rep-field">Personas involucradas (solo por rol; sin nombres ni datos de pacientes)</p>
+          <div class="rep-pills" id="roles"></div>
+
+          <p class="rep-field" style="margin-top:1rem">Frases rápidas (se traducen a oraciones en inglés)</p>
+          <div id="phrases" class="rep-stack-phrases"></div>
+
+          <label class="rep-field">Detalle adicional, en inglés (opcional)
+            <textarea id="extraEn" rows="3" placeholder="Add only facts, in English, with no identifiers."></textarea>
+          </label>
+
+          <div class="rep-actions">
+            <button type="button" class="rep-btn" id="btnGenerate">Generar textos en inglés</button>
+            <button type="button" class="rep-btn rep-btn--ghost" id="btnRegen">Regenerar (reemplaza el texto editado)</button>
           </div>
-        </div>
+        </section>
+
+        <section class="rep-card" id="sec-textos">
+          <h2>4. Textos para pegar (inglés)</h2>
+          <p class="rep-hint">Revise y, si hace falta, edite. Un aviso aparece si el texto parece incluir PHI o PII; el aviso no bloquea la copia.</p>
+
+          <label class="rep-field">Descripción de la preocupación
+            <span class="rep-en">Please describe the concern or violation you are reporting. No confidential data such as PHI, PII, NPI, or PCI is permitted in this form.</span>
+            <textarea id="concernText" rows="8" spellcheck="true"></textarea>
+          </label>
+          <div class="rep-warn-list" id="warnConcern"></div>
+
+          <label class="rep-field">Detalles del incidente
+            <span class="rep-en">Incident Details. Provide names of staff or project/client information, dates and times that may assist review. Do not include PHI, PII, PCI, or NPI.</span>
+            <textarea id="incidentText" rows="8" spellcheck="true"></textarea>
+          </label>
+          <div class="rep-warn-list" id="warnIncident"></div>
+        </section>
+
+        <section class="rep-card" id="sec-phi">
+          <h2>5. Información de salud (PHI)</h2>
+          <p class="rep-field">¿Cree que pudo haberse involucrado PHI? <span class="rep-req">*</span>
+            <span class="rep-en">Do you believe PHI may have been involved?</span>
+          </p>
+          <label class="rep-choice"><input type="radio" name="phi" value="Yes"> Sí <span class="rep-en">Yes</span></label>
+          <label class="rep-choice"><input type="radio" name="phi" value="No"> No <span class="rep-en">No</span></label>
+          <label class="rep-choice"><input type="radio" name="phi" value="Unsure"> No estoy seguro/a <span class="rep-en">Unsure</span></label>
+
+          <div id="phiDescWrap" hidden>
+            <label class="rep-field">Si pudo haberse involucrado PHI, describa solo el tipo de información, en términos generales y en inglés.
+              <span class="rep-en">If PHI may have been involved, briefly describe the type(s) of information involved. DO NOT include or share any PHI. Provide only a general description, such as “name and date of birth may have been disclosed.”</span>
+              <textarea id="phiDesc" rows="4" placeholder="Example: A patient name and date of birth may have been disclosed."></textarea>
+            </label>
+            <div class="rep-warn-list" id="warnPhi"></div>
+          </div>
+        </section>
+
+        <section class="rep-card" id="sec-contacto">
+          <h2>6. Contacto (por defecto, anónimo)</h2>
+          <p class="rep-field">¿Desea que Cumplimiento pueda contactarlo si el asunto resulta ser de cumplimiento? <span class="rep-req">*</span>
+            <span class="rep-en">Would you like Compliance to be able to contact you regarding this report if it is deemed to be compliance-related?</span>
+          </p>
+          <label class="rep-choice"><input type="radio" name="contact" value="Yes"> Sí
+            <span class="rep-en">Yes</span>
+          </label>
+          <label class="rep-choice"><input type="radio" name="contact" value="No - I wish to remain anonymous" checked> No: deseo permanecer en el anonimato
+            <span class="rep-en">No - I wish to remain anonymous</span>
+          </label>
+
+          <div id="contactWrap" hidden>
+            <label class="rep-field">Nombre
+              <span class="rep-en">Name:</span>
+              <input type="text" id="contactName" autocomplete="name">
+            </label>
+            <label class="rep-field">Correo
+              <span class="rep-en">Email address:</span>
+              <input type="email" id="contactEmail" autocomplete="email">
+            </label>
+            <label class="rep-field">Teléfono
+              <span class="rep-en">Phone number:</span>
+              <input type="tel" id="contactPhone" autocomplete="tel">
+            </label>
+            <p class="rep-field">Método de contacto preferido
+              <span class="rep-en">Preferred Method of Contact:</span>
+            </p>
+            <label class="rep-choice"><input type="radio" name="prefContact" value="Email"> Correo <span class="rep-en">Email</span></label>
+            <label class="rep-choice"><input type="radio" name="prefContact" value="Phone"> Teléfono <span class="rep-en">Phone</span></label>
+            <label class="rep-choice"><input type="radio" name="prefContact" value="Either"> Cualquiera de los dos <span class="rep-en">Either</span></label>
+          </div>
+        </section>
+
+        <section class="rep-card" id="sec-cert">
+          <h2>7. Certificación</h2>
+          <label class="rep-choice"><input type="checkbox" name="certify" data-output="Yes"> Certifico que, a mi leal saber y entender, la información es verdadera, exacta y se presenta de buena fe.
+            <span class="rep-en">I certify that, to the best of my knowledge, the information provided is true, accurate, and is being submitted in good faith. — Yes</span>
+          </label>
+        </section>
       </div>
 
-      <div class="panel">
-        <h2>Contexto del entorno</h2>
-        <p class="section-hint">Marca si aplica — toda situación anormal en estos entornos debe quedar registrada.</p>
-        <div class="pill-grid">
-          <label class="pill"><input type="checkbox" name="sector" value="banking"> Bancario / Financiero</label>
-          <label class="pill"><input type="checkbox" name="sector" value="emergency911"> Emergencias 911</label>
-          <label class="pill"><input type="checkbox" name="sector" value="insurance"> Seguros / Underwriting</label>
-          <label class="pill"><input type="checkbox" name="sector" value="education"> Educación</label>
-          <label class="pill"><input type="checkbox" name="sector" value="medical"> Interpretación médica</label>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h2>Circunstancias especiales</h2>
-        <p class="section-hint">Respaldo presencial, terceros en la línea, o espera indicada por REP/dispatcher/provider.</p>
-        <div class="pill-grid">
-          <label class="pill"><input type="checkbox" id="circ-backup"> Actué como respaldo (intérprete presencial en sitio)</label>
-          <label class="pill"><input type="checkbox" id="circ-thirdparty"> Llamada con terceros (third party)</label>
-          <label class="pill"><input type="checkbox" id="circ-wait"> Se me indicó esperar varios minutos</label>
-          <label class="pill"><input type="checkbox" id="circ-hold"> Hold prolongado (avisé al REP antes de desconectar)</label>
-        </div>
-
-        <div class="field-block" id="block-hold">
-          <div class="field-row">
-            <label>¿A partir de cuántos minutos avisaste que desconectarías? (opcional)</label>
-            <input type="number" min="0" id="holdMinutes" placeholder="Ej: 10">
-          </div>
-        </div>
-
-        <div class="field-block" id="block-backup">
-          <div class="field-row">
-            <label>Detalle de tu rol (opcional)</label>
-            <input type="text" id="backupDetail" placeholder="Ej: apoyo de relevo únicamente">
-          </div>
-        </div>
-
-        <div class="field-block" id="block-thirdparty">
-          <div class="field-row">
-            <label>¿Quién participó además de las partes principales? (opcional)</label>
-            <input type="text" id="thirdPartyDetail" placeholder="Ej: un familiar del cliente">
-          </div>
-        </div>
-
-        <div class="field-block" id="block-wait">
-          <div class="two-col">
-            <div class="field-row">
-              <label>¿Quién lo indicó?</label>
-              <input type="text" id="instructedBy" placeholder="Ej: REP, Dispatcher, Provider">
+      <aside class="rep-out" id="salida" aria-label="Respuestas para copiar">
+        <div class="rep-card">
+          <div class="rep-out-head">
+            <div>
+              <h2>Respuestas para el formulario</h2>
+              <p class="rep-hint">Un bloque por pregunta, en el mismo orden del formulario de Propio. Esta página no rellena ni envía el formulario.</p>
             </div>
-            <div class="field-row">
-              <label>¿Cuántos minutos?</label>
-              <input type="number" min="0" id="waitInstructedMinutes" placeholder="Ej: 8">
-            </div>
           </div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h2>Detalles de la llamada</h2>
-        <div class="two-col">
-          <div class="field-row">
-            <label>ID de llamada / Referencia (opcional)</label>
-            <input type="text" id="callId" placeholder="Ej: #48213">
+          <div class="rep-actions" style="margin-top:0;margin-bottom:0.8rem">
+            <button type="button" class="rep-btn" id="btnCopyAll">Copiar todo</button>
+            <a class="rep-btn rep-btn--ghost" id="btnOpenForm" href="https://forms.cloud.microsoft/pages/responsepage.aspx?id=Sxv01p_aqk6XbHexr5e5kcjfDzEAPgxBh1u3E9yiUuBUOTZaRDJZWE42OVZLUVJTSUJSUFkySlNOUS4u&amp;route=shorturl" target="_blank" rel="noopener noreferrer">Abrir formulario de Propio</a>
           </div>
-          <div class="field-row">
-            <label>Par de idiomas (opcional)</label>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <input type="text" id="langFrom" placeholder="Inglés">
-              <span class="arrow">→</span>
-              <input type="text" id="langTo" placeholder="Español">
-            </div>
-          </div>
+          <div id="outputBlocks"></div>
         </div>
-        <div class="field-row">
-          <label>Notas adicionales (opcional)</label>
-          <textarea id="extraNotes" placeholder="Cualquier detalle extra que quieras dejar por escrito..."></textarea>
-        </div>
-      </div>
-
+      </aside>
     </div>
 
-    <!-- RIGHT COLUMN: TICKET OUTPUT -->
-    <div class="ticket-wrap">
-      <div class="ticket">
-        <div class="ticket-perf"></div>
-        <div class="ticket-head">
-          <div class="title-group">
-            <span class="led" id="ledDot"></span>
-            <h3>Nota generada</h3>
-          </div>
-          <div class="lang-toggle">
-            <label><input type="radio" name="outLang" value="en" checked>EN</label>
-            <label><input type="radio" name="outLang" value="es">ES</label>
-          </div>
-        </div>
-        <div class="ticket-body placeholder" id="ticketBody">Selecciona el resultado de la llamada para generar la nota.</div>
-        <div class="ticket-foot">
-          <span class="char-count" id="charCount"></span>
-          <button class="btn-primary" id="copyBtn" type="button" disabled>⧉ Copiar nota</button>
-        </div>
-      </div>
+    <div class="rep-stickybar">
+      <a class="rep-btn rep-btn--ghost" href="#salida">Ver respuestas</a>
+      <button type="button" class="rep-btn" id="btnCopyAllMobile">Copiar todo</button>
+      <a class="rep-btn rep-btn--ghost" href="https://forms.cloud.microsoft/pages/responsepage.aspx?id=Sxv01p_aqk6XbHexr5e5kcjfDzEAPgxBh1u3E9yiUuBUOTZaRDJZWE42OVZLUVJTSUJSUFkySlNOUS4u&amp;route=shorturl" target="_blank" rel="noopener noreferrer">Abrir formulario</a>
     </div>
   </div>
-</div>
-
-<script>
-const OUTCOMES = [
-  {id:'success', label:'Call completed successfully with no issues', color:'var(--ok)', hint:'Sin incidentes que reportar.'},
-  {id:'never_connected', label:'Client never connected', color:'var(--warn)', hint:'El cliente nunca entró a la llamada.'},
-  {id:'no_interpreter', label:'Client did not need an interpreter', color:'var(--text-dimmer)', hint:'No se necesitó intérprete.'},
-  {id:'audio_issue', label:'Technical audio issue', color:'var(--warn)', hint:'Falla técnica de audio.'},
-  {id:'video_issue', label:'Technical video issue', color:'var(--warn)', hint:'Falla técnica de video (VRI).'},
-  {id:'dropped', label:'Client dropped unexpectedly', color:'var(--critical)', hint:'La llamada se cortó sin aviso.'},
-  {id:'wrong_language', label:'Wrong Language', color:'var(--critical)', hint:'El idioma despachado no era el correcto.'},
-  {id:'test_call', label:'Test Call', color:'var(--info)', hint:'Prueba interna, sin cliente real.'}
-];
-
-const grid = document.getElementById('outcomeGrid');
-OUTCOMES.forEach((o, i)=>{
-  const label = document.createElement('label');
-  label.className = 'chip';
-  label.style.setProperty('--chip-color', o.color);
-  label.innerHTML = `
-    <input type="radio" name="outcome" value="${o.id}" ${i===0 ? '' : ''}>
-    <span class="chip-label">${o.label}</span>
-    <div class="chip-hint">${o.hint}</div>
-  `;
-  grid.appendChild(label);
-});
-
-function resolutionText(lang, val){
-  const map = {
-    en: {resolved:'The issue was resolved and the call proceeded normally.', unresolved:'The issue could not be resolved, and the call could not be completed as a result.', proceeded:'Despite the intermittent issue, the call was completed.'},
-    es: {resolved:'El problema se resolvió y la llamada continuó con normalidad.', unresolved:'No fue posible resolver el problema y, como resultado, la llamada no pudo completarse.', proceeded:'A pesar del problema intermitente, la llamada se completó.'}
-  };
-  return map[lang][val] || (lang==='en' ? 'Outcome of the issue not specified.' : 'No se especificó el desenlace del problema.');
-}
-
-const TEMPLATES = {
-  en: {
-    success: () => "Call completed successfully with no issues. Interpretation was provided from start to finish, with no technical, linguistic, or procedural issues to report.",
-    never_connected: (f) => `The client never connected to the call. I remained on the line for approximately ${f.waitMinutes || '[X]'} minute(s) awaiting connection before the call was released. No interpretation was rendered.`,
-    no_interpreter: (f) => `Upon connection, it was determined that the client did not require interpretation services for this call${f.reason ? `, as ${f.reason}` : ''}. Interpretation was not necessary.`,
-    audio_issue: (f) => `A technical audio issue was experienced during the call${f.description ? `: ${f.description}` : ''}. ${resolutionText('en', f.resolution)}`,
-    video_issue: (f) => `A technical video issue was experienced during the call${f.description ? `: ${f.description}` : ''}. ${resolutionText('en', f.resolution)}`,
-    dropped: (f) => `The client disconnected unexpectedly during the call${f.duration ? ` at approximately ${f.duration}` : ''}. No reason for the drop was given, and I remained available in case of reconnection.`,
-    wrong_language: (f) => `The language requested/dispatched did not match the language needed by the client${f.identifiedLanguage ? `; the client's actual language need was identified as ${f.identifiedLanguage}` : ''}. I was unable to proceed with interpretation, and the call was released for correct language dispatch.`,
-    test_call: () => "This was a test call used to verify audio/video/connection quality. No client was present and no interpretation was rendered."
-  },
-  es: {
-    success: () => "Llamada completada con éxito, sin incidentes. La interpretación se brindó de principio a fin, sin problemas técnicos, lingüísticos ni de procedimiento.",
-    never_connected: (f) => `El cliente nunca se conectó a la llamada. Permanecí en línea aproximadamente ${f.waitMinutes || '[X]'} minuto(s) esperando la conexión antes de liberar la llamada. No se brindó interpretación.`,
-    no_interpreter: (f) => `Al conectarse, se determinó que el cliente no requería servicios de interpretación para esta llamada${f.reason ? `, debido a que ${f.reason}` : ''}. No fue necesaria la interpretación.`,
-    audio_issue: (f) => `Se presentó un problema técnico de audio durante la llamada${f.description ? `: ${f.description}` : ''}. ${resolutionText('es', f.resolution)}`,
-    video_issue: (f) => `Se presentó un problema técnico de video durante la llamada${f.description ? `: ${f.description}` : ''}. ${resolutionText('es', f.resolution)}`,
-    dropped: (f) => `El cliente se desconectó de forma inesperada durante la llamada${f.duration ? ` aproximadamente a los ${f.duration}` : ''}. No se indicó el motivo de la desconexión y permanecí disponible en caso de reconexión.`,
-    wrong_language: (f) => `El idioma solicitado/despachado no coincidía con el idioma que necesitaba el cliente${f.identifiedLanguage ? `; se identificó que el idioma real requerido era ${f.identifiedLanguage}` : ''}. No fue posible continuar con la interpretación y la llamada fue liberada para un despacho con el idioma correcto.`,
-    test_call: () => "Esta fue una llamada de prueba utilizada para verificar la calidad de audio, video o conexión. No hubo cliente presente y no se brindó interpretación."
-  }
-};
-
-const SECTOR_TEMPLATES = {
-  en: {
-    banking: "Sector note: this call took place in a banking/financial services context; standard identity-verification and confidentiality protocols were observed throughout.",
-    emergency911: "Sector note: this was a 911/emergency services call. Given the safety-critical nature of the call, the situation was reported immediately and emergency interpretation protocol was followed.",
-    insurance: "Sector note: this call involved insurance/underwriting matters; standard confidentiality and accuracy protocols for policy-related information were maintained.",
-    education: "Sector note: this call took place in an educational services context (school/district communication).",
-    medical: "Sector note: this was a medical interpretation encounter. All applicable confidentiality and accuracy standards for healthcare interpretation were maintained throughout."
-  },
-  es: {
-    banking: "Nota de sector: esta llamada se realizó en un contexto bancario/financiero; se observaron los protocolos estándar de verificación de identidad y confidencialidad durante toda la llamada.",
-    emergency911: "Nota de sector: esta fue una llamada de emergencia/911. Dada la naturaleza crítica de la llamada, la situación se reportó de inmediato y se siguió el protocolo de interpretación para emergencias.",
-    insurance: "Nota de sector: esta llamada correspondía a asuntos de seguros/underwriting; se mantuvieron los protocolos estándar de confidencialidad y precisión para la información relacionada con pólizas.",
-    education: "Nota de sector: esta llamada se realizó en un contexto de servicios educativos (comunicación escolar/distrital).",
-    medical: "Nota de sector: este fue un encuentro de interpretación médica. Se mantuvieron durante toda la llamada los estándares de confidencialidad y precisión aplicables a la interpretación en salud."
-  }
-};
-
-const CIRC_TEMPLATES = {
-  backup: (lang, f) => lang==='en'
-    ? `Interpreter role note: I served in a backup/standby capacity for this call, as an in-person interpreter was present on-site; my involvement was limited to ${f.backupDetail || 'standby support only'}.`
-    : `Nota de rol: actué en calidad de intérprete de respaldo/standby para esta llamada, ya que había un intérprete presencial en el sitio; mi participación se limitó a ${f.backupDetail || 'un rol de espera (standby) únicamente'}.`,
-  thirdParty: (lang, f) => lang==='en'
-    ? `Call composition note: this was a third-party call; ${f.thirdPartyDetail || 'an additional party'} participated on the line in addition to the primary parties.`
-    : `Nota de composición: esta fue una llamada con terceros; ${f.thirdPartyDetail || 'una parte adicional'} participó en la línea además de las partes principales.`,
-  waitInstructed: (lang, f) => lang==='en'
-    ? `Instruction note: I was instructed by the ${f.instructedBy || 'REP/dispatcher'} to remain on the line for approximately ${f.waitInstructedMinutes || '[X]'} minute(s) before proceeding/disconnecting. This wait time was observed per their direction.`
-    : `Nota de instrucción: se me indicó por parte de ${f.instructedBy || 'REP/dispatcher'} que permaneciera en línea aproximadamente ${f.waitInstructedMinutes || '[X]'} minuto(s) antes de proceder o desconectar. Este tiempo de espera se cumplió según su indicación.`,
-  holdProlonged: (lang, f) => lang==='en'
-    ? `Hold note: this call involved an extended hold with the REP still on the line. The REP was notified in advance that I would need to disconnect if the hold continued past approximately ${f.holdMinutes || '[X]'} minute(s), per company policy.`
-    : `Nota de espera: esta llamada implicó un hold prolongado con el REP aún en línea. Se le avisó al REP con anticipación que tendría que desconectarme si la espera continuaba más de aproximadamente ${f.holdMinutes || '[X]'} minuto(s), según la política de la compañía.`
-};
-
-const VERBAL_TEMPLATES = {
-  en: {
-    holdWarn: (m) => `I want to let you know that per my company's policy, I'm only able to remain on hold for a limited amount of time. If we're not able to proceed within the next ${m || '[X]'} minutes, I'll need to disconnect. I'm not ending the call — I just wanted to give you a heads-up in advance.`,
-    holdFinal: () => `As mentioned, I have to disconnect now due to the extended hold time. This isn't a reflection of the call itself — please feel free to redial and request an interpreter when you're ready to proceed.`,
-    dropNote: () => `I want to note for the record that the call disconnected unexpectedly. I did not intentionally end the call. If needed, I'm available to reconnect, or you're welcome to redial and request an interpreter.`,
-    neverConnWarn: (m) => `I just want to confirm — the client hasn't connected to the call yet. I'll continue holding for a few more minutes, but wanted to flag that in case there's an issue on their end.`,
-    neverConnFinal: (m) => `Since the client hasn't connected after approximately ${m || '[X]'} minutes, I'll need to release this call. Please feel free to redial and request an interpreter once the client is available.`
-  },
-  es: {
-    holdWarn: (m) => `Quiero informarle que, según la política de mi compañía, solo puedo permanecer en espera por un tiempo limitado. Si no podemos continuar en los próximos ${m || '[X]'} minutos, tendré que desconectarme. No estoy terminando la llamada — solo quería avisarle con anticipación.`,
-    holdFinal: () => `Como le mencioné, debo desconectarme ahora debido al tiempo prolongado de espera. Esto no refleja la llamada en sí — puede volver a marcar y solicitar un intérprete cuando estén listos para continuar.`,
-    dropNote: () => `Quiero dejar constancia de que la llamada se desconectó de forma inesperada. No terminé la llamada intencionalmente. Si es necesario, estoy disponible para reconectarme, o puede volver a marcar y solicitar un intérprete.`,
-    neverConnWarn: (m) => `Solo quiero confirmar — el cliente aún no se ha conectado a la llamada. Continuaré en espera unos minutos más, pero quería avisarle por si hay algún problema de su lado.`,
-    neverConnFinal: (m) => `Como el cliente no se ha conectado después de aproximadamente ${m || '[X]'} minutos, tendré que liberar esta llamada. Puede volver a marcar y solicitar un intérprete cuando el cliente esté disponible.`
-  }
-};
-
-function val(id){ const el = document.getElementById(id); return el ? el.value.trim() : ''; }
-
-function updateVisibility(){
-  const checked = document.querySelector('input[name="outcome"]:checked');
-  const outcomeId = checked ? checked.value : null;
-  document.querySelectorAll('.field-block[data-for]').forEach(block=>{
-    block.classList.toggle('show', block.dataset.for === outcomeId);
-  });
-  document.getElementById('block-backup').classList.toggle('show', document.getElementById('circ-backup').checked);
-  document.getElementById('block-thirdparty').classList.toggle('show', document.getElementById('circ-thirdparty').checked);
-  document.getElementById('block-wait').classList.toggle('show', document.getElementById('circ-wait').checked);
-  document.getElementById('block-hold').classList.toggle('show', document.getElementById('circ-hold').checked);
-}
-
-function generate(){
-  const outcomeEl = document.querySelector('input[name="outcome"]:checked');
-  const lang = document.querySelector('input[name="outLang"]:checked').value;
-  const ticketBody = document.getElementById('ticketBody');
-  const copyBtn = document.getElementById('copyBtn');
-  const charCount = document.getElementById('charCount');
-  const ledDot = document.getElementById('ledDot');
-
-  if(!outcomeEl){
-    ticketBody.textContent = lang==='en' ? 'Select the call outcome above to generate the note.' : 'Selecciona el resultado de la llamada para generar la nota.';
-    ticketBody.classList.add('placeholder');
-    copyBtn.disabled = true;
-    charCount.textContent = '';
-    ledDot.classList.remove('on');
-    ledDot.style.background = '';
-    ledDot.style.color = '';
-    return;
-  }
-
-  ticketBody.classList.remove('placeholder');
-  copyBtn.disabled = false;
-
-  const outcomeId = outcomeEl.value;
-  const outcomeMeta = OUTCOMES.find(o=>o.id===outcomeId);
-  ledDot.classList.add('on');
-  ledDot.style.background = outcomeMeta.color;
-  ledDot.style.color = outcomeMeta.color;
-
-  const f = {
-    waitMinutes: val('never_connected-waitMinutes'),
-    reason: val('no_interpreter-reason'),
-    description: val(outcomeId+'-description'),
-    resolution: val(outcomeId+'-resolution'),
-    duration: val('dropped-duration'),
-    identifiedLanguage: val('wrong_language-identifiedLanguage'),
-    backupDetail: val('backupDetail'),
-    thirdPartyDetail: val('thirdPartyDetail'),
-    waitInstructedMinutes: val('waitInstructedMinutes'),
-    instructedBy: val('instructedBy'),
-    holdMinutes: val('holdMinutes')
-  };
-
-  const lines = [];
-  const callId = val('callId');
-  const langFrom = val('langFrom');
-  const langTo = val('langTo');
-  const now = new Date();
-  const dateStr = now.toLocaleString(lang==='en' ? 'en-US' : 'es-BO', {dateStyle:'medium', timeStyle:'short'});
-
-  lines.push(lang==='en' ? 'CALL DISPOSITION NOTE' : 'NOTA DE DISPOSICIÓN DE LLAMADA');
-  lines.push((lang==='en' ? 'Date/Time: ' : 'Fecha/Hora: ') + dateStr);
-  if(callId) lines.push((lang==='en' ? 'Call ID/Reference: ' : 'ID de llamada / Referencia: ') + callId);
-  if(langFrom || langTo) lines.push((lang==='en' ? 'Language pair: ' : 'Par de idiomas: ') + (langFrom || '—') + ' → ' + (langTo || '—'));
-  lines.push('');
-  lines.push(TEMPLATES[lang][outcomeId](f));
-
-  const sectors = Array.from(document.querySelectorAll('input[name="sector"]:checked')).map(el=>el.value);
-  const circLines = [];
-  sectors.forEach(s=>{ circLines.push('- ' + SECTOR_TEMPLATES[lang][s]); });
-  if(document.getElementById('circ-backup').checked) circLines.push('- ' + CIRC_TEMPLATES.backup(lang, f));
-  if(document.getElementById('circ-thirdparty').checked) circLines.push('- ' + CIRC_TEMPLATES.thirdParty(lang, f));
-  if(document.getElementById('circ-wait').checked) circLines.push('- ' + CIRC_TEMPLATES.waitInstructed(lang, f));
-  if(document.getElementById('circ-hold').checked) circLines.push('- ' + CIRC_TEMPLATES.holdProlonged(lang, f));
-
-  if(circLines.length){
-    lines.push('');
-    lines.push(...circLines);
-  }
-
-  const extra = val('extraNotes');
-  if(extra){
-    lines.push('');
-    lines.push((lang==='en' ? 'Additional notes: ' : 'Notas adicionales: ') + extra);
-  }
-
-  const finalText = lines.join('\n');
-  ticketBody.textContent = finalText;
-  charCount.textContent = finalText.length + (lang==='en' ? ' characters' : ' caracteres');
-}
-
-function updateVerbalScripts(){
-  const lang = document.querySelector('input[name="verbalLang"]:checked').value;
-  const t = VERBAL_TEMPLATES[lang];
-  const holdM = val('verbal-holdMinutes');
-  const neverConnM = val('verbal-neverConnMinutes');
-
-  document.getElementById('verbal-hold-warn').textContent = t.holdWarn(holdM);
-  document.getElementById('verbal-hold-final').textContent = t.holdFinal();
-  document.getElementById('verbal-drop-note').textContent = t.dropNote();
-  document.getElementById('verbal-neverconn-warn').textContent = t.neverConnWarn(neverConnM);
-  document.getElementById('verbal-neverconn-final').textContent = t.neverConnFinal(neverConnM);
-}
-
-document.querySelectorAll('.copy-mini').forEach(btn=>{
-  btn.addEventListener('click', async ()=>{
-    const targetId = btn.dataset.copyTarget;
-    const text = document.getElementById(targetId).textContent;
-    const original = btn.textContent;
-    try{
-      await navigator.clipboard.writeText(text);
-      btn.textContent = '✓ Copiado';
-    }catch(err){
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
-      try{ document.execCommand('copy'); btn.textContent = '✓ Copiado'; }
-      catch(e2){ btn.textContent = '✗ Error'; }
-      document.body.removeChild(ta);
-    }
-    setTimeout(()=>{ btn.textContent = original; }, 1400);
-  });
-});
-
-document.addEventListener('input', (e)=>{
-  updateVisibility();
-  generate();
-  updateVerbalScripts();
-});
-document.addEventListener('change', (e)=>{
-  updateVisibility();
-  generate();
-  updateVerbalScripts();
-});
-
-document.getElementById('copyBtn').addEventListener('click', async ()=>{
-  const text = document.getElementById('ticketBody').textContent;
-  const btn = document.getElementById('copyBtn');
-  const original = btn.innerHTML;
-  try{
-    await navigator.clipboard.writeText(text);
-    btn.innerHTML = '✓ Copiado';
-  }catch(err){
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    try{ document.execCommand('copy'); btn.innerHTML = '✓ Copiado'; }
-    catch(e2){ btn.innerHTML = '✗ Error al copiar'; }
-    document.body.removeChild(ta);
-  }
-  setTimeout(()=>{ btn.innerHTML = original; }, 1600);
-});
-
-document.getElementById('resetBtn').addEventListener('click', ()=>{
-  document.querySelectorAll('input[type="radio"][name="outcome"]').forEach(el=>el.checked = false);
-  document.querySelectorAll('input[type="checkbox"]').forEach(el=>el.checked = false);
-  document.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(el=>el.value = '');
-  document.querySelectorAll('select').forEach(el=>el.value = '');
-  document.querySelector('input[name="outLang"][value="en"]').checked = true;
-  document.querySelector('input[name="verbalLang"][value="en"]').checked = true;
-  updateVisibility();
-  generate();
-  updateVerbalScripts();
-});
-
-function tickClock(){
-  const el = document.getElementById('clock');
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('es-BO', {weekday:'short', day:'2-digit', month:'short'});
-  const timeStr = now.toLocaleTimeString('es-BO', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-  el.innerHTML = `${dateStr}<br><b>${timeStr}</b>`;
-}
-tickClock();
-setInterval(tickClock, 1000);
-
-updateVisibility();
-generate();
-updateVerbalScripts();
-</script>
-<a class="volver-al-indice" href="index.html" aria-label="Volver al centro de interpretación">← Inicio</a>
-<style>
-  .volver-al-indice{position:fixed;left:18px;bottom:18px;z-index:2147483647;display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 17px;color:#f7f4ec!important;background:#07111f!important;border:1px solid rgba(217,171,95,.7)!important;border-radius:999px!important;box-shadow:0 8px 24px rgba(0,0,0,.28)!important;font:600 14px/1 system-ui,sans-serif!important;letter-spacing:.01em!important;text-decoration:none!important;opacity:.92;transition:transform .18s ease,opacity .18s ease!important}
-  .volver-al-indice:hover,.volver-al-indice:focus-visible{color:#07111f!important;background:#d9ab5f!important;outline:2px solid #f7f4ec!important;outline-offset:2px!important;opacity:1;transform:translateY(-2px)}
-  @media(max-width:520px){.volver-al-indice{left:12px;bottom:12px;min-height:40px;padding:0 14px;font-size:13px!important}}
-  @media(prefers-reduced-motion:reduce){.volver-al-indice{transition:none!important}}
-</style>
+</main>
 <footer class="portal-footer">
   <div class="portal-container portal-footer__barra">
     <p>Centro de Herramientas del Intérprete</p>
     <a href="index.html">Volver al inicio</a>
   </div>
 </footer>
+<script>
+(function () {
+  "use strict";
+
+  var FORM_URL = "https://forms.cloud.microsoft/pages/responsepage.aspx?id=Sxv01p_aqk6XbHexr5e5kcjfDzEAPgxBh1u3E9yiUuBUOTZaRDJZWE42OVZLUVJTSUJSUFkySlNOUS4u&route=shorturl";
+  var STORE_KEY = "propio-cumplimiento-borrador-v1";
+  var EMPTY = "(sin respuesta)";
+  var textsDirty = false;
+  var saveTimer = null;
+
+  var CONCERN_TYPES = [
+    ["Medicare/Medicaid-related Fraud", "Fraude relacionado con Medicare/Medicaid"],
+    ["Medicare/Medicaid-related Waste", "Desperdicio relacionado con Medicare/Medicaid"],
+    ["Medicare/Medicaid-related Abuse", "Abuso relacionado con Medicare/Medicaid"],
+    ["HIPAA/Privacy Violation", "Violación de HIPAA o de la privacidad"],
+    ["Information Security Policy Violation", "Violación de la política de seguridad de la información"],
+    ["Conflict of Interest", "Conflicto de intereses"],
+    ["Falsification of Records or Documentation", "Falsificación de registros o documentación"],
+    ["Medicare/Medicaid Billing or Financial Concerns", "Preocupaciones de facturación o financieras de Medicare/Medicaid"],
+    ["Ethical Misconduct", "Falta ética"],
+    ["Regulatory or Legal Violation", "Violación normativa o legal"],
+    ["Code of Conduct Violation", "Violación del código de conducta"],
+    ["__other__", "Otro (Other)"]
+  ];
+
+  var HARM_OPTIONS = [
+    ["A patient, member or end user (LEPP)", "Un paciente, afiliado o usuario final (LEPP)"],
+    ["A Propio client", "Un cliente de Propio"],
+    ["Propio", "Propio"],
+    ["PHI or other confidential data", "PHI u otros datos confidenciales"],
+    ["Company financial resources", "Recursos financieros de la empresa"],
+    ["Compliance with laws, regulations, contracts, or policies", "Cumplimiento de leyes, reglamentos, contratos o políticas"],
+    ["The quality or accuracy of services provided", "La calidad o exactitud de los servicios prestados"],
+    ["None of the above", "Ninguna de las anteriores"]
+  ];
+
+  var AWARE_OPTIONS = [
+    ["Directly observed", "Lo observé de forma directa"],
+    ["Personally involved", "Estuve involucrado/a personalmente (como intérprete)"],
+    ["Told by another individual", "Me lo comentó otra persona"],
+    ["Reviewed documentation or records", "Lo vi al revisar documentación o registros"],
+    ["Prefer not to say", "Prefiero no decirlo"],
+    ["__other__", "Otro (Other)"]
+  ];
+
+  var AWARE_SENTENCE = {
+    "Directly observed": "I directly observed the issue.",
+    "Personally involved": "I was personally involved as the interpreter on the encounter.",
+    "Told by another individual": "I became aware of this concern after being told by another individual.",
+    "Reviewed documentation or records": "I became aware of this concern after reviewing documentation or records.",
+    "Prefer not to say": ""
+  };
+
+  var ROLES = [
+    ["another interpreter (role only; no name)", "Otro intérprete"],
+    ["Propio staff (role only; no name)", "Personal de Propio"],
+    ["a healthcare provider (role only; no name)", "Un proveedor de atención"],
+    ["client staff (role only; no name)", "Personal del cliente"],
+    ["the caller or a family member (role only; no identifiers)", "El llamante o un familiar"],
+    ["another party, described by role only", "Otra persona (solo por rol)"]
+  ];
+
+  var SCENARIOS = [
+    {
+      id: "fraud",
+      label: "Posible fraude",
+      type: "Medicare/Medicaid-related Fraud",
+      opening: "I am reporting a possible Medicare/Medicaid-related fraud concern identified in connection with an interpretation encounter.",
+      phrases: [
+        ["Posible facturación de un servicio que no se prestó", "A service may have been billed that was not provided."],
+        ["El tiempo o la duración reportados no coincidían con lo ocurrido", "The reported call time or duration may not have matched what occurred."],
+        ["Posible uso indebido de un código, programa o beneficio de Medicare/Medicaid", "A Medicare/Medicaid code, program, or benefit may have been used improperly."],
+        ["Se pidió o se insinuó registrar algo que no ocurrió", "Someone asked or implied that an event should be recorded that did not occur."]
+      ]
+    },
+    {
+      id: "waste",
+      label: "Posible desperdicio",
+      type: "Medicare/Medicaid-related Waste",
+      opening: "I am reporting a possible Medicare/Medicaid-related waste concern identified in connection with an interpretation encounter.",
+      phrases: [
+        ["Recursos o servicios usados de forma ineficiente o innecesaria", "Medicare/Medicaid resources or services may have been used in an inefficient or unnecessary way."],
+        ["Se duplicó un servicio o un trámite sin una razón aparente", "A service or process may have been duplicated without an apparent reason."],
+        ["Se usó un canal o un recurso más costoso sin una necesidad clara", "A more costly channel or resource may have been used without a clear need."]
+      ]
+    },
+    {
+      id: "abuse",
+      label: "Posible abuso",
+      type: "Medicare/Medicaid-related Abuse",
+      opening: "I am reporting a possible Medicare/Medicaid-related abuse concern identified in connection with an interpretation encounter.",
+      phrases: [
+        ["Prácticas que podrían no ajustarse a las normas del programa", "Practices may not have been consistent with program rules and could result in an improper payment."],
+        ["Posible presión para prestar o registrar un servicio de forma irregular", "There may have been pressure to provide or document a service in an irregular manner."],
+        ["Un beneficio o un servicio pudo haberse usado de forma contraria a las reglas", "A benefit or service may have been used in a manner contrary to program rules."]
+      ]
+    },
+    {
+      id: "hipaa",
+      label: "HIPAA o privacidad",
+      type: "HIPAA/Privacy Violation",
+      opening: "I am reporting a possible HIPAA or privacy concern identified in connection with an interpretation encounter.",
+      phrases: [
+        ["Información de salud audible en un entorno que no era privado", "Health information may have been audible in a setting that was not private."],
+        ["Pantalla o documentos con información de salud visibles para personas ajenas", "A screen or documents with health information may have been visible to unauthorized individuals."],
+        ["Posible revelación de información a una persona no autorizada", "Information may have been disclosed to an unauthorized person."],
+        ["Información de salud en un mensaje, chat o correo", "Health information may have been included in a message, chat, or email."],
+        ["Documentos o notas con información de salud quedaron sin resguardar", "Documents or notes containing health information may have been left unsecured."],
+        ["Posible acceso o uso de información de salud sin una necesidad laboral", "There may have been access to or use of health information without a job-related need."]
+      ]
+    },
+    {
+      id: "security",
+      label: "Seguridad de la información",
+      type: "Information Security Policy Violation",
+      opening: "I am reporting a possible information security policy concern identified in connection with an interpretation encounter.",
+      phrases: [
+        ["Posible uso o envío de información por un canal no autorizado", "Information may have been used or sent through an unauthorized channel."],
+        ["Un dispositivo, una cuenta o un archivo pudo haberse dejado sin resguardo", "A device, account, or file may have been left unsecured."],
+        ["Posible acceso a sistemas o datos sin autorización o sin necesidad laboral", "There may have been access to systems or data without authorization or a job-related need."]
+      ]
+    },
+    {
+      id: "falsification",
+      label: "Falsificación de registros",
+      type: "Falsification of Records or Documentation",
+      opening: "I am reporting a possible falsification of records or documentation identified in connection with an interpretation encounter.",
+      phrases: [
+        ["La documentación de la llamada o del encuentro no coincidía con lo ocurrido", "Call or encounter documentation may not have matched what occurred."],
+        ["Posible alteración de registros, horarios o reportes", "Records, times, or reports may have been altered."],
+        ["Se pidió firmar, confirmar o enviar información que yo no podía verificar", "I was asked to sign, confirm, or submit information I could not verify."],
+        ["Se pidió omitir o cambiar un hecho en la documentación", "I was asked to omit or change a fact in the documentation."]
+      ]
+    },
+    {
+      id: "billing",
+      label: "Facturación o finanzas",
+      type: "Medicare/Medicaid Billing or Financial Concerns",
+      opening: "I am reporting a possible Medicare/Medicaid billing or financial concern identified in connection with an interpretation encounter.",
+      phrases: [
+        ["La facturación o el registro de pagos no parecía coincidir con el servicio", "Billing or payment records may not have matched the service that occurred."],
+        ["Posible cobro o reporte financiero irregular", "There may have been irregular billing or financial reporting."],
+        ["Se pidió registrar un código o un tiempo distinto al del encuentro", "I was asked to record a code or a time that did not match the encounter."]
+      ]
+    },
+    {
+      id: "ethics",
+      label: "Falta ética o código de conducta",
+      type: "Ethical Misconduct",
+      opening: "I am reporting a possible ethical misconduct or Code of Conduct concern identified in connection with an interpretation encounter.",
+      phrases: [
+        ["Se pidió cambiar el sentido de lo interpretado", "I was asked to change the meaning of what was interpreted."],
+        ["Posible presión o conducta contraria al código de conducta", "There may have been pressure or conduct contrary to the Code of Conduct."],
+        ["Posible favor, regalo o beneficio que genera un conflicto de intereses", "A favor, gift, or benefit may have created a conflict of interest."],
+        ["Se pidió ocultar o no reportar un hecho relevante", "I was asked to conceal or not report a relevant fact."]
+      ]
+    },
+    {
+      id: "conflict",
+      label: "Conflicto de intereses",
+      type: "Conflict of Interest",
+      opening: "I am reporting a possible conflict of interest identified in connection with an interpretation encounter or related work.",
+      phrases: [
+        ["Una relación personal, laboral o económica pudo afectar una decisión o un servicio", "A personal, employment, or financial relationship may have affected a decision or a service."],
+        ["Posible favor, regalo o beneficio vinculado al trabajo", "A favor, gift, or benefit may have been connected to work responsibilities."]
+      ]
+    }
+  ];
+
+  var PHI_PATTERNS = [
+    { label: "Posible nombre junto a «patient», «paciente» u otro rol de usuario", re: /\b(?:[Pp]atient|[Pp]aciente|[Mm]ember|[Aa]filiado|[Bb]eneficiary|[Bb]eneficiario)(?:\s*[:,-]\s*|\s+)(?!(?:Name|Names|Nombre|Nombres|Information|Informaci[oó]n|Data|Datos|Record|Records|Identifier|Identifiers|ID|Number|N[uú]mero)\b)[A-ZÁÉÍÓÚÑ][\p{L}'’-]+(?:\s+[A-ZÁÉÍÓÚÑ][\p{L}'’-]+)?/gu },
+    { label: "Posible fecha de nacimiento", re: /\b(?:DOB|D\.O\.B\.|date of birth|fecha de nacimiento|f\.?\s*nac(?:imiento)?|born on|nacid[oa] el)\b[:\s,]*\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4}/gi },
+    { label: "Posible fecha de nacimiento", re: /\b(?:DOB|date of birth|fecha de nacimiento)\b[:\s]*[A-Za-z]{3,9}\s+\d{1,2},?\s+\d{4}/gi },
+    { label: "Posible número de teléfono", re: /(?:\+?1[\s.-])?(?:\(\d{3}\)|\b\d{3})[\s.-]\d{3}[\s.-]\d{4}\b/g },
+    { label: "Posible número de teléfono", re: /\+\d{1,3}(?:[\s.-]?\d){7,14}\b/g },
+    { label: "Posible correo electrónico", re: /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi },
+    { label: "Posible número de Seguro Social", re: /\b(?:SSN|Social Security(?: number)?|número de seguro social)\b[:\s#]*\d{3}[-\s]?\d{2}[-\s]?\d{4}\b/gi },
+    { label: "Posible SSN (formato ###-##-####)", re: /\b\d{3}-\d{2}-\d{4}\b/g },
+    { label: "Posible número de expediente, reclamo o cuenta", re: /\b(?:MRN|medical record(?: number)?|n[úu]mero de (?:historia|prontuario|expediente|reclamo|cuenta|afiliado|miembro)|claim(?: number)?|account(?: number)?|member\s*(?:number|#|id)|authorization(?: number)?|auth(?: number|#)?)\s*[:#]?\s*[A-Z0-9-]{4,}\b/gi },
+    { label: "Posible dirección", re: /\b\d{1,6}\s+(?:[NSEW]\.?\s+)?[A-Za-z0-9.'’-]+(?:\s+[A-Za-z0-9.'’-]+){0,4}\s+(?:St(?:reet)?|Ave(?:nue)?|Rd|Road|Blvd|Boulevard|Ln|Lane|Dr(?:ive)?|Ct|Court|Way|Pkwy|Hwy|Calle|Avenida|Av\.|Carrera)\b\.?/gi },
+    { label: "Posible código postal", re: /\b(?:ZIP(?:\s*code)?|código postal)\s*[:#]?\s*\d{5}(?:-\d{4})?\b/gi },
+    { label: "Posible código postal (después del estado)", re: /\b(?:AL|AK|AZ|AR|CA|CO|CT|DC|DE|FL|GA|HI|IA|ID|IL|IN|KS|KY|LA|MA|MD|ME|MI|MN|MO|MS|MT|NC|ND|NE|NH|NJ|NM|NV|NY|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VA|VT|WA|WI|WV)\s+\d{5}(?:-\d{4})?\b/g }
+  ];
+
+  function el(id) { return document.getElementById(id); }
+  function qs(sel, root) { return (root || document).querySelector(sel); }
+  function qsa(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+  function checkedVal(name) {
+    var n = qs("input[name=\"" + name + "\"]:checked");
+    return n ? n.value : "";
+  }
+
+  function radioList(container, name, options) {
+    container.innerHTML = options.map(function (opt) {
+      var value = opt[0], es = opt[1];
+      return '<label class="rep-choice"><input type="radio" name="' + name + '" value="' + value.replace(/"/g, "&quot;") + '"> ' +
+        es + '<span class="rep-en">' + (value === "__other__" ? "Other" : value) + "</span></label>";
+    }).join("");
+  }
+
+  function checkList(container, name, options, isHarm) {
+    container.innerHTML = options.map(function (opt) {
+      var value = opt[0], es = opt[1];
+      var extra = isHarm && value === "None of the above" ? ' data-none="1"' : "";
+      return '<label class="rep-choice"><input type="checkbox" name="' + name + '" value="' + value.replace(/"/g, "&quot;") + '"' + extra + "> " +
+        es + '<span class="rep-en">' + value + "</span></label>";
+    }).join("");
+  }
+
+  function pillList(container, name, items, isRadio) {
+    container.innerHTML = items.map(function (it) {
+      var value = typeof it === "string" ? it : it[0];
+      var label = typeof it === "string" ? it : it[1];
+      var type = isRadio ? "radio" : "checkbox";
+      return '<label class="rep-pill"><input type="' + type + '" name="' + name + '" value="' + String(value).replace(/"/g, "&quot;") + '"> ' + label + "</label>";
+    }).join("");
+  }
+
+  function formatDateMDY(iso) {
+    if (!iso) return "";
+    var p = iso.split("-");
+    if (p.length !== 3) return iso;
+    return p[1] + "/" + p[2] + "/" + p[0];
+  }
+
+  function formatTime(t) {
+    if (!t) return "";
+    var p = t.split(":");
+    var h = parseInt(p[0], 10);
+    var m = p[1] || "00";
+    var ampm = h >= 12 ? "p.m." : "a.m.";
+    var h12 = h % 12;
+    if (h12 === 0) h12 = 12;
+    return h12 + ":" + m + " " + ampm;
+  }
+
+  function modalityPhrase(code) {
+    if (code === "OPI") return "an over-the-phone interpretation (OPI) encounter";
+    if (code === "VRI") return "a video remote interpretation (VRI) encounter";
+    if (code === "onsite") return "an on-site interpretation encounter";
+    if (code === "other") return "an interpretation encounter";
+    return "";
+  }
+
+  function currentScenario() {
+    var id = checkedVal("scenario");
+    for (var i = 0; i < SCENARIOS.length; i++) if (SCENARIOS[i].id === id) return SCENARIOS[i];
+    return null;
+  }
+
+  function selectedPhrases() {
+    return qsa("input[name=\"phrase\"]:checked").map(function (n) { return n.value; });
+  }
+
+  function selectedRoles() {
+    return qsa("input[name=\"role\"]:checked").map(function (n) { return n.value; });
+  }
+
+  function concernTypeValue() {
+    var v = checkedVal("concernType");
+    if (v === "__other__") {
+      var other = (el("otherType").value || "").trim();
+      return other ? "Other: " + other : "Other";
+    }
+    return v;
+  }
+
+  function awareValue() {
+    var v = checkedVal("aware");
+    if (v === "__other__") {
+      var other = (el("otherAware").value || "").trim();
+      return other ? "Other: " + other : "Other";
+    }
+    return v;
+  }
+
+  function harmValues() {
+    return qsa("input[name=\"harm\"]:checked").map(function (n) { return n.value; });
+  }
+
+  function scanPHI(text) {
+    var hits = [];
+    var seen = {};
+    if (!text) return hits;
+    PHI_PATTERNS.forEach(function (p) {
+      var re = p.re;
+      re.lastIndex = 0;
+      var m;
+      while ((m = re.exec(text))) {
+        var snippet = m[0].replace(/\s+/g, " ").trim();
+        var key = p.label + "|" + snippet.toLowerCase();
+        if (seen[key]) continue;
+        seen[key] = true;
+        hits.push({ label: p.label, snippet: snippet });
+        if (hits.length >= 12) return;
+      }
+    });
+    return hits;
+  }
+
+  function renderWarnings(targetId, fieldId, hits) {
+    var box = el(targetId);
+    var field = el(fieldId);
+    if (!box || !field) return;
+    if (!hits.length) {
+      box.classList.remove("is-on");
+      box.innerHTML = "";
+      field.classList.remove("rep-has-phi");
+      return;
+    }
+    field.classList.add("rep-has-phi");
+    box.classList.add("is-on");
+    box.innerHTML = "<strong>Posible PHI o PII.</strong> Revise y quite identificadores antes de pegar en el formulario. El aviso no impide copiar." +
+      "<ul>" + hits.map(function (h) {
+        return "<li>" + escapeHtml(h.label) + ": «" + escapeHtml(h.snippet) + "»</li>";
+      }).join("") + "</ul>";
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[c];
+    });
+  }
+
+  function generateTexts() {
+    var sc = currentScenario();
+    var dateIso = el("occDate").value;
+    var dateText = formatDateMDY(dateIso);
+    var timeText = formatTime(el("occTime").value);
+    var modality = modalityPhrase(el("modality").value);
+    var aware = awareValue();
+    var phrasesEn = selectedPhrases();
+    var roles = selectedRoles();
+    var extra = (el("extraEn").value || "").trim();
+    var type = concernTypeValue();
+    if (type === "Other") type = "compliance concern";
+
+    var when = [];
+    if (modality) when.push("during " + modality);
+    if (dateText) when.push("on " + dateText);
+    if (timeText) when.push("at approximately " + timeText);
+
+    var concern = [];
+    if (sc && sc.opening) {
+      concern.push(sc.opening);
+    } else if (type) {
+      concern.push("I am reporting a possible " + type + " identified in connection with an interpretation encounter.");
+    } else {
+      concern.push("I am reporting a possible compliance concern identified in connection with an interpretation encounter.");
+    }
+    if (when.length) {
+      concern.push("This was identified " + when.join(" ") + ".");
+    }
+    var awareEn = AWARE_SENTENCE[aware] || (aware && aware.indexOf("Other:") === 0 ? "How I became aware: " + aware.slice(7).trim() + "." : "");
+    if (awareEn) concern.push(awareEn);
+    phrasesEn.forEach(function (p) { concern.push(p); });
+    if (extra) concern.push(extra);
+    concern.push("This report is submitted in good faith and does not include PHI, PII, PCI, or NPI.");
+
+    var details = [];
+    if (dateText) details.push("Date of occurrence: " + dateText + ".");
+    if (timeText) details.push("Approximate time: " + timeText + ".");
+    if (modality) details.push("Encounter type: " + modality + ".");
+    if (aware && aware !== "Prefer not to say") details.push("How I became aware: " + (aware.indexOf("Other:") === 0 ? aware.slice(7).trim() : aware) + ".");
+    if (roles.length) details.push("Individuals involved, described by role only (no names or patient identifiers): " + roles.join("; ") + ".");
+    if (phrasesEn.length) {
+      details.push("Observed or reported facts:");
+      phrasesEn.forEach(function (p) { details.push("- " + p); });
+    }
+    if (extra) details.push(extra);
+    details.push("No confidential data such as patient names, dates of birth, medical record numbers, addresses, phone numbers, Social Security numbers, or claim numbers are included.");
+
+    return {
+      concern: concern.join("\n\n"),
+      incident: details.join("\n")
+    };
+  }
+
+  function applyGenerated(force) {
+    if (textsDirty && !force) return;
+    var t = generateTexts();
+    el("concernText").value = t.concern;
+    el("incidentText").value = t.incident;
+    textsDirty = false;
+    runScanners();
+    renderOutput();
+    scheduleSave();
+  }
+
+  function runScanners() {
+    renderWarnings("warnConcern", "concernText", scanPHI(el("concernText").value));
+    renderWarnings("warnIncident", "incidentText", scanPHI(el("incidentText").value));
+    if (el("phiDesc")) renderWarnings("warnPhi", "phiDesc", scanPHI(el("phiDesc").value));
+  }
+
+  function collectAnswers() {
+    var ack = function (name) {
+      var n = qs("input[name=\"" + name + "\"]");
+      return n && n.checked ? "I acknowledge" : "";
+    };
+    var type = concernTypeValue();
+    var aware = awareValue();
+    var phi = checkedVal("phi");
+    var contact = checkedVal("contact") || "No - I wish to remain anonymous";
+    var wantContact = contact === "Yes";
+    return [
+      { title: "I understand this reporting mechanism is intended solely for reporting suspected compliance, legal, regulatory, CMS fraud, waste, abuse, privacy, security, or ethical concerns.", value: ack("ack1") },
+      { title: "I understand that reports determined to be outside the scope of the Compliance Program will be closed without investigation.", value: ack("ack2") },
+      { title: "I understand that it is my responsibility to raise concerns unrelated to compliance through the appropriate business channels. Reports that do not fall within the scope of Compliance will not be forwarded to the relevant business unit by the Compliance team.", value: ack("ack3") },
+      { title: "I am submitting this report in good faith.", value: ack("ack4") },
+      { title: "Does your concern involve a suspected compliance, legal, regulatory, CMS fraud, waste, abuse, privacy, security, or ethical issue?", value: checkedVal("scope") },
+      { title: "What type of concern are you reporting?", value: type },
+      { title: "Could this issue potentially result in harm or negative impact to any of the following? Select all that apply.", value: harmValues().join("\n") },
+      { title: "Please describe the concern or violation you are reporting.", value: (el("concernText").value || "").trim() },
+      { title: "Date of Occurrence", value: formatDateMDY(el("occDate").value) },
+      { title: "Is this an ongoing concern?", value: checkedVal("ongoing") },
+      { title: "Incident Details", value: (el("incidentText").value || "").trim() },
+      { title: "How did you become aware of this concern?", value: aware },
+      { title: "Do you believe PHI may have been involved?", value: phi },
+      { title: "If PHI may have been involved, briefly describe the type(s) of information involved.", value: phi === "Yes" ? (el("phiDesc").value || "").trim() : "" },
+      { title: "Would you like Compliance to be able to contact you regarding this report if it is deemed to be compliance-related?", value: contact },
+      { title: "Name:", value: wantContact ? (el("contactName").value || "").trim() : "" },
+      { title: "Email address:", value: wantContact ? (el("contactEmail").value || "").trim() : "" },
+      { title: "Phone number:", value: wantContact ? (el("contactPhone").value || "").trim() : "" },
+      { title: "Preferred Method of Contact:", value: wantContact ? checkedVal("prefContact") : "" },
+      { title: "I certify that, to the best of my knowledge, the information provided is true, accurate, and is being submitted in good faith.", value: qs("input[name=\"certify\"]").checked ? "Yes" : "" }
+    ];
+  }
+
+  function renderOutput() {
+    var blocks = collectAnswers();
+    el("outputBlocks").innerHTML = blocks.map(function (b, i) {
+      var empty = !b.value;
+      return '<div class="rep-block" data-idx="' + i + '">' +
+        '<div class="rep-block-top">' +
+        '<p class="rep-q">' + escapeHtml(b.title) + "</p>" +
+        '<button type="button" class="rep-btn rep-btn--ghost rep-btn--small" data-copy="' + i + '">Copiar</button>' +
+        "</div>" +
+        '<p class="rep-a' + (empty ? " is-empty" : "") + '">' + escapeHtml(empty ? EMPTY : b.value) + "</p>" +
+        "</div>";
+    }).join("");
+  }
+
+  function allText() {
+    return collectAnswers().map(function (b) {
+      return b.title + "\n" + (b.value || EMPTY);
+    }).join("\n\n");
+  }
+
+  function copyText(text, btn) {
+    function ok() {
+      if (!btn) return;
+      var prev = btn.textContent;
+      btn.textContent = "Copiado";
+      setTimeout(function () { btn.textContent = prev; }, 1600);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok).catch(function () { fallbackCopy(text); ok(); });
+    } else {
+      fallbackCopy(text);
+      ok();
+    }
+  }
+
+  function fallbackCopy(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+
+  function toggleUi() {
+    el("scopeNotice").classList.toggle("is-on", checkedVal("scope") === "No");
+    el("otherTypeWrap").hidden = checkedVal("concernType") !== "__other__";
+    el("otherAwareWrap").hidden = checkedVal("aware") !== "__other__";
+    el("phiDescWrap").hidden = checkedVal("phi") !== "Yes";
+    var want = checkedVal("contact") === "Yes";
+    el("contactWrap").hidden = !want;
+    if (!want) {
+      qsa("input[name=\"prefContact\"]").forEach(function (n) { n.checked = false; });
+    }
+  }
+
+  function renderPhrases() {
+    var sc = currentScenario();
+    var box = el("phrases");
+    if (!sc) {
+      box.innerHTML = '<p class="rep-hint">Elija un escenario para ver frases rápidas en español.</p>';
+      return;
+    }
+    box.innerHTML = sc.phrases.map(function (p, i) {
+      return '<label class="rep-choice"><input type="checkbox" name="phrase" value="' + escapeHtml(p[1]) + '"> ' +
+        escapeHtml(p[0]) + '<span class="rep-en">' + escapeHtml(p[1]) + "</span></label>";
+    }).join("");
+  }
+
+  function onScenarioChange() {
+    var sc = currentScenario();
+    renderPhrases();
+    if (sc && sc.type) {
+      var radio = qs("input[name=\"concernType\"][value=\"" + sc.type + "\"]");
+      if (radio) radio.checked = true;
+      el("otherTypeWrap").hidden = true;
+    }
+    if (!textsDirty) applyGenerated(false);
+    else { renderOutput(); scheduleSave(); }
+  }
+
+  function onHarmChange(e) {
+    var t = e.target;
+    if (!t || t.name !== "harm") return;
+    if (t.getAttribute("data-none") === "1" && t.checked) {
+      qsa("input[name=\"harm\"]").forEach(function (n) {
+        if (n !== t) n.checked = false;
+      });
+    } else if (t.checked) {
+      qsa("input[name=\"harm\"][data-none]").forEach(function (n) { n.checked = false; });
+    }
+  }
+
+  function gatherDraft() {
+    var data = { textsDirty: textsDirty, fields: {} };
+    qsa("input, select, textarea").forEach(function (n) {
+      if (!n.name && !n.id) return;
+      var key = n.name ? (n.type === "radio" || n.type === "checkbox" ? n.name + "::" + n.value : n.name) : n.id;
+      if (n.type === "checkbox" || n.type === "radio") data.fields[key] = !!n.checked;
+      else data.fields[n.id || n.name] = n.value;
+    });
+    return data;
+  }
+
+  function applyDraft(data) {
+    if (!data || !data.fields) return;
+    var fields = data.fields;
+    qsa("input, select, textarea").forEach(function (n) {
+      if (!n.name && !n.id) return;
+      if (n.type === "checkbox" || n.type === "radio") {
+        var key = n.name + "::" + n.value;
+        if (Object.prototype.hasOwnProperty.call(fields, key)) n.checked = !!fields[key];
+      } else if (n.id && Object.prototype.hasOwnProperty.call(fields, n.id)) {
+        n.value = fields[n.id];
+      }
+    });
+    textsDirty = !!data.textsDirty;
+    renderPhrases();
+    // Restore phrase checks after re-render
+    qsa("input, select, textarea").forEach(function (n) {
+      if ((n.type === "checkbox" || n.type === "radio") && n.name) {
+        var key = n.name + "::" + n.value;
+        if (Object.prototype.hasOwnProperty.call(fields, key)) n.checked = !!fields[key];
+      }
+    });
+    toggleUi();
+    runScanners();
+    renderOutput();
+  }
+
+  function scheduleSave() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveDraft, 300);
+  }
+
+  function saveDraft() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(gatherDraft()));
+      var now = new Date();
+      var opts = { hour: "2-digit", minute: "2-digit", timeZone: "America/La_Paz" };
+      el("draftStatus").innerHTML = "Borrador guardado en este dispositivo a las <b>" +
+        now.toLocaleTimeString("es-BO", opts) + " (hora de Bolivia)</b>. No se envía a ningún servidor.";
+    } catch (e) {
+      el("draftStatus").textContent = "No se pudo guardar el borrador en este dispositivo.";
+    }
+  }
+
+  function clearDraft() {
+    if (!window.confirm("¿Borrar el borrador de este dispositivo y vaciar el formulario?")) return;
+    clearTimeout(saveTimer);
+    saveTimer = null;
+    try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+    textsDirty = false;
+    qsa("input[type=\"checkbox\"], input[type=\"radio\"]").forEach(function (n) {
+      n.checked = false;
+    });
+    var anon = qs("input[name=\"contact\"][value=\"No - I wish to remain anonymous\"]");
+    if (anon) anon.checked = true;
+    qsa("input[type=\"text\"], input[type=\"email\"], input[type=\"tel\"], input[type=\"date\"], input[type=\"time\"], textarea, select").forEach(function (n) {
+      n.value = "";
+    });
+    renderPhrases();
+    toggleUi();
+    runScanners();
+    renderOutput();
+    el("draftStatus").textContent = "Borrador borrado. Puede empezar de nuevo. Nada se guarda en un servidor.";
+  }
+
+  function onFormChange(e) {
+    var t = e.target;
+    if (!t) return;
+    if (t.name === "scenario") onScenarioChange();
+    if (t.name === "harm") onHarmChange(e);
+    if (t.name === "concernType" || t.name === "aware" || t.name === "scope" || t.name === "phi" || t.name === "contact") toggleUi();
+    if (t.id === "concernText" || t.id === "incidentText") {
+      textsDirty = true;
+      runScanners();
+    }
+    if (t.id === "phiDesc") runScanners();
+    if (!textsDirty && (t.name === "phrase" || t.name === "role" || t.name === "aware" || t.id === "occDate" || t.id === "occTime" || t.id === "modality" || t.id === "extraEn")) {
+      applyGenerated(false);
+    } else {
+      renderOutput();
+    }
+    scheduleSave();
+  }
+
+  function init() {
+    radioList(el("concernTypes"), "concernType", CONCERN_TYPES);
+    checkList(el("harmChoices"), "harm", HARM_OPTIONS, true);
+    radioList(el("awareChoices"), "aware", AWARE_OPTIONS);
+    pillList(el("scenarios"), "scenario", SCENARIOS.map(function (s) { return [s.id, s.label]; }), true);
+    pillList(el("roles"), "role", ROLES, false);
+    renderPhrases();
+    renderOutput();
+    toggleUi();
+
+    document.addEventListener("change", onFormChange);
+    document.addEventListener("input", function (e) {
+      var id = e.target && e.target.id;
+      if (id === "concernText" || id === "incidentText" || id === "phiDesc" || id === "extraEn" || id === "otherType" || id === "otherAware" || id === "contactName" || id === "contactEmail" || id === "contactPhone") {
+        if (id === "concernText" || id === "incidentText") textsDirty = true;
+        if (id === "concernText" || id === "incidentText" || id === "phiDesc") runScanners();
+        if (!textsDirty && id === "extraEn") applyGenerated(false);
+        else renderOutput();
+        scheduleSave();
+      }
+    });
+
+    el("btnGenerate").addEventListener("click", function () { applyGenerated(true); });
+    el("btnRegen").addEventListener("click", function () { applyGenerated(true); });
+    el("btnClear").addEventListener("click", clearDraft);
+    el("btnCopyAll").addEventListener("click", function () { copyText(allText(), el("btnCopyAll")); });
+    el("btnCopyAllMobile").addEventListener("click", function () { copyText(allText(), el("btnCopyAllMobile")); });
+    el("outputBlocks").addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-copy]");
+      if (!btn) return;
+      var i = parseInt(btn.getAttribute("data-copy"), 10);
+      var answers = collectAnswers();
+      if (!answers[i]) return;
+      copyText(answers[i].value || "", btn);
+    });
+
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (raw) {
+        applyDraft(JSON.parse(raw));
+        el("draftStatus").textContent = "Se restauró un borrador guardado en este dispositivo. Puede seguir editándolo o borrarlo.";
+      }
+    } catch (e) {}
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
 </body>
 </html>
