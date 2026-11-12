@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1a2332">
+  <title>Ayuda Workers' Comp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,560;0,9..144,640;1,9..144,560&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body class="portal wc">
+<a class="portal-saltar" href="#contenido">Saltar al contenido</a>
+<header class="portal-header">
+  <div class="portal-container portal-header__barra">
+    <a class="portal-marca" href="index.html">
+      <span class="portal-marca__sigla" aria-hidden="true">CI</span>
+      <span class="portal-marca__nombre">Centro de Interpretación</span>
+    </a>
+    <nav class="portal-nav" aria-label="Portal">
+      <a href="index.html">Inicio</a>
+      <a class="portal-nav__wc" href="workers_comp.html" aria-current="page">Ayuda Workers' Comp</a>
+      <details class="portal-menu">
+        <summary>Herramientas</summary>
+        <div class="portal-menu__panel">
+          <ul>
+            <li><a href="workers_comp.html" aria-current="page">Ayuda Workers' Comp</a></li>
+            <li><a href="atlas-usa-condados-codigos.html">Atlas de Estados Unidos</a></li>
+            <li><a href="agencias-federales-consulta.html">Consulta de Agencias Federales</a></li>
+            <li><a href="calculadora-ascenso-rango.html">Calculadora de Ascenso de Rango</a></li>
+            <li><a href="consola-911-interprete.html">Consola 911</a></li>
+            <li><a href="copia_reportes.html">Copia de Reportes</a></li>
+            <li><a href="deletreo.html">Deletreo Fonético</a></li>
+            <li><a href="generador_nota_llamada.html">Reporte de Cumplimiento (Propio)</a></li>
+            <li><a href="interline-generador-scripts.html">Panel de Despacho Interline</a></li>
+            <li><a href="medidor-ciclo-interprete.html">Medidor de Ciclo</a></li>
+            <li><a href="mesa-de-guiones-snap.html">Mesa de Guiones SNAP / WIC</a></li>
+            <li><a href="panel-mbic-mtac.html">Panel MBIC / MTAC</a></li>
+            <li><a href="Patrones_Llamadas_Complejas.html">Patrones de Llamadas Complejas</a></li>
+            <li><a href="scripts-choques-seguro.html">Guiones de Choques y Seguros</a></li>
+          </ul>
+        </div>
+      </details>
+    </nav>
+  </div>
+</header>
+<main id="contenido">
+  <div class="portal-container portal-pagina">
+    <p class="portal-sobrelinea">Durante la llamada</p>
+    <h1 class="portal-titulo">Ayuda <em>Workers' Comp</em></h1>
+    <p class="wc-lead">Ficha rápida para orientarse en una llamada de accidente laboral en Estados Unidos: agencia del estado, programas federales del Departamento de Trabajo y glosario inglés–español. Todo se consulta en este navegador. No se envía ni se guarda ningún dato de la llamada.</p>
+
+    <div class="wc-aviso" role="note">
+      <p><strong>Referencia general, no asesoría legal ni médica.</strong> Los plazos, formularios y reglas cambian y dependen del caso. Confirme cada dato en la fuente oficial enlazada. Si un campo dice «Verificar en el sitio oficial», esta revisión no encontró ese dato en una fuente oficial y no debe inventarse en la llamada.</p>
+      <p>No anote aquí nombres, fechas de nacimiento, números de Seguro Social, números de reclamo ni otros datos del paciente.</p>
+    </div>
+
+    <nav class="wc-saltos" aria-label="En esta página">
+      <a href="#estado">Estado</a>
+      <a href="#federal">Federal</a>
+      <a href="#glosario">Glosario</a>
+      <a href="#consejos">Consejos</a>
+    </nav>
+
+    <section class="wc-seccion" id="estado" aria-labelledby="titulo-estado">
+      <h2 id="titulo-estado">Sistema estatal</h2>
+      <p>La mayoría de los trabajadores de empresas privadas, y muchos empleados de gobiernos estatales o locales, usan el sistema del estado donde se trabaja. El <a class="wc-enlace" href="https://www.dol.gov/agencies/owcp/wc">directorio del U.S. Department of Labor</a> no administra esos sistemas: solo publica el contacto de cada agencia. American Samoa y las Islas Marianas del Norte no aparecen en el directorio consultado el 12 de noviembre de 2026; no hay ficha para no inventar una agencia.</p>
+      <div class="wc-controles">
+        <label class="portal-campo">Buscar estado o territorio
+          <input id="wc-filtro-estado" class="portal-entrada" type="search" autocomplete="off" placeholder="Nombre, sigla o nombre en inglés">
+        </label>
+        <label class="portal-campo">Estado o territorio
+          <select id="wc-estado" class="portal-entrada">
+            <option value="">Cargando…</option>
+          </select>
+        </label>
+      </div>
+      <p class="wc-estado" id="wc-recordado"></p>
+      <div id="wc-ficha" aria-live="polite"></div>
+    </section>
+
+    <section class="wc-seccion" id="federal" aria-labelledby="titulo-federal">
+      <h2 id="titulo-federal">Programas federales (DOL OWCP)</h2>
+      <p>El Office of Workers' Compensation Programs administra cuatro programas, no el workers' compensation de cada estado. Según su <a class="wc-enlace" href="https://www.dol.gov/agencies/owcp/owcpkeyp">página de contacto</a>, corresponde lo federal cuando la persona es empleada civil federal (FECA), trabajadora portuaria o de muelle, o contratista federal lesionada en el extranjero (Longshore), minera del carbón con pneumoconiosis (Black Lung), o trabajadora de armas nucleares del Departamento de Energía o de un contratista del DOE (EEOICPA). Si trabajaba para una empresa privada o un gobierno estatal, el propio DOL indica acudir al programa del estado. El intérprete no elige el programa: interpreta lo que digan las partes.</p>
+      <div id="wc-federal" aria-live="polite"></div>
+    </section>
+
+    <section class="wc-seccion" id="glosario" aria-labelledby="titulo-glosario">
+      <h2 id="titulo-glosario">Glosario de la llamada</h2>
+      <p>Equivalentes para interpretar. No son definiciones legales. Si la persona usa el término en inglés, puede mantenerlo junto al equivalente.</p>
+      <label class="portal-campo">Filtrar términos
+        <input id="wc-filtro-glosario" class="portal-entrada" type="search" autocomplete="off" placeholder="claim, IME, acuerdo, médico…">
+      </label>
+      <p class="wc-estado" id="wc-glosario-cuenta" aria-live="polite"></p>
+      <div id="wc-glosario"></div>
+    </section>
+
+    <section class="wc-seccion" id="consejos" aria-labelledby="titulo-consejos">
+      <h2 id="titulo-consejos">Consejos de interpretación</h2>
+      <ul class="wc-consejos">
+        <li>Traduzca lo que se dice. No agregue derechos, plazos ni si conviene firmar, aceptar un médico o llegar a un acuerdo.</li>
+        <li>Si preguntan «¿qué me corresponde?», interprete la pregunta y deje que responda el profesional de la llamada.</li>
+        <li>Con «adjuster», «claim», «IME» o «MMI», use el equivalente y, si hace falta para la precisión, repita el término en inglés.</li>
+        <li>Pida que repitan números de formulario, fechas, números de reclamo y nombres. Deletree si hace falta.</li>
+        <li>No decida si el caso es estatal o federal. Si no entiende una sigla, pida aclaración en lugar de adivinarla.</li>
+        <li>Mantenga un registro neutro: no suavice ni refuerce una denegación, una advertencia ni una oferta.</li>
+        <li>Esta página no es el lugar para anotar datos del paciente. No los deje en el buscador ni en notas del navegador.</li>
+      </ul>
+    </section>
+  </div>
+</main>
+<footer class="portal-footer">
+  <div class="portal-container portal-footer__barra">
+    <p>Centro de Herramientas del Intérprete</p>
+    <a href="index.html">Volver al inicio</a>
+  </div>
+</footer>
+<script src="workers_comp.js"></script>
+</body>
+</html>

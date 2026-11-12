@@ -61,8 +61,10 @@ Clases: `.portal-sobrelinea` (rótulo en versalitas), `.portal-titulo` (h1),
 ### Encabezado y pie
 
 Mismo marcado en todas las páginas. El encabezado lleva la marca
-«Centro de Interpretación», el enlace Inicio y el menú Herramientas.
-El pie repite el título del portal y «Volver al inicio».
+«Centro de Interpretación», el enlace Inicio, el enlace visible
+«Ayuda Workers' Comp» (`workers_comp.html`, clase `portal-nav__wc`)
+y el menú Herramientas. El pie repite el título del portal y
+«Volver al inicio».
 
 Clases: `.portal-header`, `.portal-footer`, `.portal-marca`, `.portal-nav`,
 `.portal-menu`. En las herramientas, estos bloques se aíslan de los estilos
