@@ -1,11 +1,10 @@
 name: Actualizar tasa desde Google Sheet
 
 on:
-  workflow_dispatch:
-
   schedule:
-        - cron: '17 */2 * * *' # Cada 2 horas al minuto 17 UTC (00:17, 02:17, ... en Bolivia).
-
+    - cron: '0 */2 * * *' # Cada 2 horas UTC (00:00, 02:00, ... en Bolivia).
+  workflow_dispatch:
+  
 permissions:
   contents: write
 
