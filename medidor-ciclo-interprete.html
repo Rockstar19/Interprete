@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="es-BO">
 <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,560;0,9..144,640;1,9..144,560&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilo.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Medidor de ciclo 2026 — Interpretación remota</title>
@@ -197,6 +201,39 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
 </style>
 </head>
 <body>
+<a class="portal-saltar" href="#contenido">Saltar al contenido</a>
+<header class="portal-header">
+  <div class="portal-container portal-header__barra">
+    <a class="portal-marca" href="index.html">
+      <span class="portal-marca__sigla" aria-hidden="true">CI</span>
+      <span class="portal-marca__nombre">Centro de Interpretación</span>
+    </a>
+    <nav class="portal-nav" aria-label="Portal">
+      <a href="index.html">Inicio</a>
+      <details class="portal-menu">
+        <summary>Herramientas</summary>
+        <div class="portal-menu__panel">
+          <ul>
+            <li><a href="atlas-usa-condados-codigos.html">Atlas de Estados Unidos</a></li>
+            <li><a href="agencias-federales-consulta.html">Consulta de Agencias Federales</a></li>
+            <li><a href="calculadora-ascenso-rango.html">Calculadora de Ascenso de Rango</a></li>
+            <li><a href="consola-911-interprete.html">Consola 911</a></li>
+            <li><a href="copia_reportes.html">Copia de Reportes</a></li>
+            <li><a href="deletreo.html">Deletreo Fonético</a></li>
+            <li><a href="generador_nota_llamada.html">Generador de Nota de Llamada</a></li>
+            <li><a href="interline-generador-scripts.html">Panel de Despacho Interline</a></li>
+            <li><a href="medidor-ciclo-interprete.html" aria-current="page">Medidor de Ciclo</a></li>
+            <li><a href="mesa-de-guiones-snap.html">Mesa de Guiones SNAP / WIC</a></li>
+            <li><a href="panel-mbic-mtac.html">Panel MBIC / MTAC</a></li>
+            <li><a href="Patrones_Llamadas_Complejas.html">Patrones de Llamadas Complejas</a></li>
+            <li><a href="scripts-choques-seguro.html">Guiones de Choques y Seguros</a></li>
+          </ul>
+        </div>
+      </details>
+    </nav>
+  </div>
+</header>
+<span id="contenido"></span>
 
 <header class="barra">
   <div class="barra-int">
@@ -1238,5 +1275,11 @@ footer{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 50px;font-s
   @media(max-width:520px){.volver-al-indice{left:12px;bottom:12px;min-height:40px;padding:0 14px;font-size:13px!important}}
   @media(prefers-reduced-motion:reduce){.volver-al-indice{transition:none!important}}
 </style>
+<footer class="portal-footer">
+  <div class="portal-container portal-footer__barra">
+    <p>Centro de Herramientas del Intérprete</p>
+    <a href="index.html">Volver al inicio</a>
+  </div>
+</footer>
 </body>
 </html>
