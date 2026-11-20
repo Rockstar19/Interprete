@@ -117,6 +117,47 @@
     return html;
   }
 
+  function puenteHtml(item) {
+    var mapa = {
+      CA: {
+        href: "#california",
+        texto: "Abrir el proceso de California en 10 etapas"
+      },
+      NY: {
+        href: "#ficha-ny",
+        abrir: "ny",
+        texto: "Abrir la ficha detallada de Nueva York"
+      },
+      TX: {
+        href: "#ficha-tx",
+        abrir: "tx",
+        texto: "Abrir la ficha detallada de Texas"
+      },
+      PR: {
+        href: "#ficha-pr",
+        abrir: "pr",
+        texto: "Abrir la ficha detallada de Puerto Rico"
+      },
+      FL: {
+        href: "#ficha-fl",
+        abrir: "fl",
+        texto: "Abrir la ficha detallada de Florida (Miami)"
+      }
+    };
+    var guia = mapa[item.codigo];
+    if (!guia) return "";
+    var attrs = guia.abrir ? ' data-wc-abrir="' + escapar(guia.abrir) + '"' : "";
+    return (
+      '<p class="wc-puente"><a class="wc-enlace" href="' +
+      guia.href +
+      '"' +
+      attrs +
+      ">" +
+      escapar(guia.texto) +
+      "</a></p>"
+    );
+  }
+
   function tieneDatoClave(item) {
     return [
       "formulario_trabajador",
@@ -151,6 +192,7 @@
       "<h3>" +
       escapar(etiqueta(item)) +
       "</h3>" +
+      puenteHtml(item) +
       "<p><strong>" +
       escapar(item.agencia) +
       "</strong></p>" +
@@ -225,6 +267,7 @@
   }
 
   function pintarGlosario() {
+    if (document.getElementById("wc-glosario-chips")) return;
     var q = (filtroGlosario.value || "").trim().toLowerCase();
     var lista = datos.glosario.filter(function (item) {
       if (!q) return true;
@@ -305,7 +348,10 @@
   });
 
   selectEstado.addEventListener("change", alCambiarEstado);
-  filtroGlosario.addEventListener("input", function () {
-    if (datos) pintarGlosario();
-  });
+  if (filtroGlosario) {
+    filtroGlosario.addEventListener("input", function () {
+      if (document.getElementById("wc-glosario-chips")) return;
+      if (datos) pintarGlosario();
+    });
+  }
 })();

@@ -1,0 +1,1805 @@
+{
+  "fuente": "Artefacto Glosario Laboral Bilingüe, más los términos del directorio que no estaban ya en el artefacto.",
+  "agregadosDelDirectorio": [
+    "adjuster",
+    "carrier",
+    "permanent partial disability",
+    "impairment rating",
+    "work status",
+    "nurse case manager",
+    "pre-authorization",
+    "form",
+    "mileage reimbursement",
+    "recorded statement",
+    "claim number",
+    "body part",
+    "occupational disease",
+    "treating physician",
+    "authorized treating physician",
+    "panel of physicians",
+    "compensable",
+    "accepted claim",
+    "denial",
+    "lost time",
+    "causation",
+    "aggravation",
+    "ombudsman",
+    "second opinion"
+  ],
+  "sections": [
+    {
+      "id": "siglas",
+      "chip": "Siglas",
+      "title": "Siglas",
+      "sub": "Las que más se oyen en las llamadas.",
+      "heads": [
+        "Sigla",
+        "Inglés",
+        "Español",
+        "Nota"
+      ],
+      "cls": [
+        "sig",
+        "",
+        "es",
+        "note"
+      ],
+      "cols": "0.7fr 1.5fr 1.7fr 1.5fr",
+      "rows": [
+        [
+          "WC",
+          "Workers' Compensation",
+          "Compensación de trabajadores",
+          "En llamadas dicen \"workers' comp\""
+        ],
+        [
+          "DWC",
+          "Division of Workers' Compensation",
+          "División de Compensación de Trabajadores",
+          "Organismo estatal que supervisa los beneficios"
+        ],
+        [
+          "DIR",
+          "Department of Industrial Relations",
+          "Departamento de Relaciones Industriales",
+          "La DWC depende de él"
+        ],
+        [
+          "WCAB",
+          "Workers' Compensation Appeals Board",
+          "Junta de Apelaciones de Compensación de Trabajadores",
+          "Aquí se presentan los casos ante un juez"
+        ],
+        [
+          "I&A",
+          "Information and Assistance (officer)",
+          "Oficial de Información y Asistencia",
+          "Orienta gratis a trabajadores lesionados"
+        ],
+        [
+          "DWC-1",
+          "Workers' Compensation Claim Form",
+          "Formulario de reclamo de compensación de trabajadores",
+          "Abre el caso"
+        ],
+        [
+          "TD",
+          "Temporary Disability",
+          "Incapacidad temporal",
+          "TTD = total, TPD = parcial"
+        ],
+        [
+          "TTD",
+          "Temporary Total Disability",
+          "Incapacidad temporal total",
+          "No puede trabajar nada"
+        ],
+        [
+          "TPD",
+          "Temporary Partial Disability",
+          "Incapacidad temporal parcial",
+          "Trabaja con restricciones y gana menos"
+        ],
+        [
+          "PD",
+          "Permanent Disability",
+          "Incapacidad permanente",
+          "PPD = parcial; PTD = total"
+        ],
+        [
+          "PTD",
+          "Permanent Total Disability",
+          "Incapacidad permanente total",
+          ""
+        ],
+        [
+          "MPN",
+          "Medical Provider Network",
+          "Red de proveedores médicos",
+          "Médicos que el empleador o aseguradora designa"
+        ],
+        [
+          "QME",
+          "Qualified Medical Evaluator",
+          "Evaluador médico calificado",
+          "Evalúa cuando hay disputa"
+        ],
+        [
+          "AME",
+          "Agreed Medical Evaluator",
+          "Evaluador médico acordado",
+          "Lo eligen ambas partes de común acuerdo"
+        ],
+        [
+          "UR",
+          "Utilization Review",
+          "Revisión de utilización",
+          "Decide si un tratamiento es necesario"
+        ],
+        [
+          "IMR",
+          "Independent Medical Review",
+          "Revisión médica independiente",
+          "Se pide si UR niega el tratamiento"
+        ],
+        [
+          "SJDB",
+          "Supplemental Job Displacement Benefit",
+          "Beneficio suplementario por pérdida de trabajo (vale)",
+          "La DWC lo llama \"vale\""
+        ],
+        [
+          "EDD",
+          "Employment Development Department",
+          "Departamento de Desarrollo del Empleo",
+          "Administra el SDI"
+        ],
+        [
+          "SDI",
+          "State Disability Insurance",
+          "Seguro Estatal de Incapacidad",
+          "Incluye DI y PFL"
+        ],
+        [
+          "DI",
+          "Disability Insurance",
+          "Seguro de Incapacidad",
+          "Para causas no laborales"
+        ],
+        [
+          "PFL",
+          "Paid Family Leave",
+          "Permiso Familiar Pagado",
+          "En otros textos: \"licencia\""
+        ],
+        [
+          "DIEC",
+          "Disability Insurance Elective Coverage",
+          "Cobertura electiva del Seguro de Incapacidad",
+          "Para cuenta propia"
+        ],
+        [
+          "VP",
+          "Voluntary Plan",
+          "Plan voluntario",
+          "Plan privado que sustituye al SDI"
+        ],
+        [
+          "WBA",
+          "Weekly Benefit Amount",
+          "Monto semanal del beneficio",
+          ""
+        ],
+        [
+          "PDL",
+          "Pregnancy Disability Leave",
+          "Licencia por incapacidad por embarazo",
+          "Hasta 4 meses"
+        ],
+        [
+          "CFRA",
+          "California Family Rights Act",
+          "Ley de Derechos Familiares de California",
+          "12 semanas, puesto protegido"
+        ],
+        [
+          "FMLA",
+          "Family and Medical Leave Act",
+          "Ley de Licencia Familiar y Médica",
+          "Federal, 12 semanas sin sueldo"
+        ],
+        [
+          "PWFA",
+          "Pregnant Workers Fairness Act",
+          "Ley de Equidad para Trabajadoras Embarazadas",
+          "Acomodos razonables"
+        ],
+        [
+          "PDA",
+          "Pregnancy Discrimination Act",
+          "Ley contra la Discriminación por Embarazo",
+          ""
+        ],
+        [
+          "ADA",
+          "Americans with Disabilities Act",
+          "Ley de Estadounidenses con Discapacidades",
+          "Aquí sí se usa \"discapacidades\""
+        ],
+        [
+          "EEOC",
+          "Equal Employment Opportunity Commission",
+          "Comisión para la Igualdad de Oportunidades en el Empleo",
+          "Federal"
+        ],
+        [
+          "CRD",
+          "Civil Rights Department",
+          "Departamento de Derechos Civiles",
+          "Estatal de California"
+        ],
+        [
+          "SSDI",
+          "Social Security Disability Insurance",
+          "Seguro Social por incapacidad",
+          "Largo plazo, trámite federal aparte"
+        ],
+        [
+          "FECA",
+          "Federal Employees' Compensation Act",
+          "Ley de Compensación para Empleados Federales",
+          "Para empleados civiles federales"
+        ],
+        [
+          "SAWW",
+          "State Average Weekly Wage",
+          "Salario semanal promedio estatal",
+          "Define el tope anual de TD"
+        ],
+        [
+          "AWW",
+          "Average Weekly Wage",
+          "Salario semanal promedio",
+          "Base para calcular beneficios"
+        ]
+      ]
+    },
+    {
+      "id": "laboral",
+      "chip": "Compensación laboral",
+      "title": "Compensación laboral",
+      "sub": "Beneficios, partes y términos de la DWC.",
+      "heads": [
+        "Inglés",
+        "Español",
+        "Nota"
+      ],
+      "cls": [
+        "",
+        "es",
+        "note"
+      ],
+      "cols": "1.4fr 1.6fr 1.5fr",
+      "rows": [
+        [
+          "workers' compensation",
+          "compensación de trabajadores",
+          "También: \"compensación al trabajador\". No usar \"indemnización\" a secas"
+        ],
+        [
+          "work-related injury / industrial injury",
+          "lesión laboral / lesión relacionada con el trabajo",
+          "\"Industrial\" no significa de fábrica: es laboral"
+        ],
+        [
+          "occupational illness",
+          "enfermedad ocupacional",
+          ""
+        ],
+        [
+          "cumulative trauma (CT)",
+          "trauma acumulativo",
+          "Lesión por años de esfuerzo repetitivo"
+        ],
+        [
+          "repetitive stress injury",
+          "lesión por esfuerzo repetitivo",
+          ""
+        ],
+        [
+          "date of injury (DOI)",
+          "fecha de la lesión",
+          "Fija la tarifa de beneficios"
+        ],
+        [
+          "injured worker",
+          "trabajador lesionado",
+          ""
+        ],
+        [
+          "applicant",
+          "solicitante",
+          "En la WCAB, el trabajador es \"applicant\""
+        ],
+        [
+          "employer",
+          "empleador",
+          ""
+        ],
+        [
+          "insurance carrier",
+          "aseguradora",
+          "Quien paga el reclamo"
+        ],
+        [
+          "claims administrator",
+          "administrador de reclamos",
+          "La persona o empresa que maneja el caso"
+        ],
+        [
+          "claims adjuster",
+          "ajustador de reclamos",
+          "Es quien suele llamar al trabajador"
+        ],
+        [
+          "third-party administrator (TPA)",
+          "administrador externo",
+          ""
+        ],
+        [
+          "self-insured employer",
+          "empleador autoasegurado",
+          ""
+        ],
+        [
+          "uninsured employer",
+          "empleador sin seguro",
+          ""
+        ],
+        [
+          "claim form",
+          "formulario de reclamo",
+          ""
+        ],
+        [
+          "file a claim",
+          "presentar un reclamo",
+          "\"Reclamo\" aquí es la solicitud inicial"
+        ],
+        [
+          "accept / deny / delay a claim",
+          "aceptar / negar / demorar un reclamo",
+          "\"Delay\" = el administrador sigue investigando (hasta 90 días)"
+        ],
+        [
+          "presumption of compensability",
+          "presunción de que es cubierto",
+          "Si no responden en 90 días"
+        ],
+        [
+          "benefits",
+          "beneficios / prestaciones",
+          "\"Prestaciones\" aparece en la hoja informativa C"
+        ],
+        [
+          "medical treatment",
+          "atención médica / tratamiento médico",
+          ""
+        ],
+        [
+          "temporary disability (TD)",
+          "incapacidad temporal",
+          "Pago por salarios perdidos"
+        ],
+        [
+          "temporary total disability (TTD)",
+          "incapacidad temporal total",
+          ""
+        ],
+        [
+          "temporary partial disability (TPD)",
+          "incapacidad temporal parcial",
+          ""
+        ],
+        [
+          "permanent disability (PD)",
+          "incapacidad permanente",
+          ""
+        ],
+        [
+          "permanent and stationary (P&S)",
+          "permanente y estacionario",
+          "El médico dice que ya no mejorará más"
+        ],
+        [
+          "maximum medical improvement (MMI)",
+          "máxima mejoría médica",
+          "Sinónimo práctico de P&S"
+        ],
+        [
+          "disability rating",
+          "calificación de incapacidad",
+          "Porcentaje de incapacidad permanente"
+        ],
+        [
+          "supplemental job displacement benefit",
+          "beneficio suplementario por pérdida de trabajo (vale)",
+          "Vale de $6,000 para reentrenamiento"
+        ],
+        [
+          "death benefits",
+          "beneficios por muerte",
+          "Para cónyuge, hijos u otros dependientes"
+        ],
+        [
+          "funeral expenses",
+          "gastos funerarios",
+          ""
+        ],
+        [
+          "average weekly wage",
+          "salario semanal promedio",
+          ""
+        ],
+        [
+          "maximum / minimum rate",
+          "tarifa máxima / mínima",
+          ""
+        ],
+        [
+          "waiting period",
+          "período de espera",
+          "En TD: 3 días"
+        ],
+        [
+          "retroactive payment",
+          "pago retroactivo",
+          ""
+        ],
+        [
+          "two-thirds of wages",
+          "dos tercios del salario",
+          "Fórmula de TD"
+        ],
+        [
+          "tax-free",
+          "libre de impuestos",
+          ""
+        ],
+        [
+          "return to work",
+          "regreso al trabajo",
+          ""
+        ],
+        [
+          "modified duty / light duty",
+          "trabajo modificado / trabajo ligero",
+          ""
+        ],
+        [
+          "work restrictions",
+          "restricciones laborales",
+          "Lo que el médico indica que no puede hacer"
+        ],
+        [
+          "released to full duty",
+          "dado de alta para trabajo completo",
+          ""
+        ],
+        [
+          "off work / off duty",
+          "fuera del trabajo",
+          "\"Off work\" = el médico lo mantiene sin trabajar"
+        ],
+        [
+          "exclusive remedy",
+          "remedio exclusivo",
+          "Doctrina legal: no se demanda al empleador"
+        ],
+        [
+          "retaliation",
+          "represalia",
+          "Ilegal despedir por presentar reclamo"
+        ],
+        [
+          "fraud",
+          "fraude",
+          "Falsear un reclamo es delito mayor (felonía)"
+        ],
+        [
+          "adjuster",
+          "ajustador",
+          "Persona de la aseguradora o del administrador que maneja el reclamo. Conviene decir «ajustador» y, si hace falta, «adjuster»."
+        ],
+        [
+          "carrier",
+          "aseguradora",
+          "La compañía de seguros de workers' compensation del empleador. También se oye «insurance carrier»."
+        ],
+        [
+          "permanent partial disability",
+          "incapacidad parcial permanente",
+          "Beneficio cuando queda una pérdida permanente y la persona aún puede trabajar en alguna medida. Se oye como PPD."
+        ],
+        [
+          "impairment rating",
+          "calificación de deterioro",
+          "Porcentaje o grado que un médico asigna a la pérdida permanente. No lo convierta en un monto de dinero."
+        ],
+        [
+          "work status",
+          "situación laboral",
+          "Lo que el médico dice que la persona puede hacer ahora: sin trabajar, con restricciones o sin restricciones."
+        ],
+        [
+          "nurse case manager",
+          "enfermera coordinadora del caso",
+          "Enfermera que coordina el tratamiento o el regreso al trabajo. No es la médica tratante. Se oye como NCM."
+        ],
+        [
+          "pre-authorization",
+          "preautorización",
+          "Aprobación que se pide antes de cierto tratamiento, estudio o equipo. También se oye «prior authorization»."
+        ],
+        [
+          "form",
+          "formulario",
+          "Impreso o trámite con número. Repita el número tal como lo digan, por ejemplo DWC-1 o C-3."
+        ],
+        [
+          "mileage reimbursement",
+          "reembolso de millaje",
+          "Pago de los kilómetros recorridos para ir al tratamiento autorizado. No invente la tarifa."
+        ],
+        [
+          "recorded statement",
+          "declaración grabada",
+          "Relato que la aseguradora quiere grabar. Interprete lo que pidan; no aconseje si hay que darla."
+        ],
+        [
+          "claim number",
+          "número de reclamo",
+          "Identificador del expediente. Pida que lo repitan y deletreen letras."
+        ],
+        [
+          "body part",
+          "parte del cuerpo",
+          "Zona lesionada. No agregue partes que la persona no mencionó."
+        ],
+        [
+          "occupational disease",
+          "enfermedad ocupacional",
+          "Enfermedad atribuida a la exposición del trabajo a lo largo del tiempo, no a un solo accidente."
+        ],
+        [
+          "treating physician",
+          "médico tratante",
+          "El médico que dirige el tratamiento de la lesión de trabajo."
+        ],
+        [
+          "authorized treating physician",
+          "médico tratante autorizado",
+          "Médico aceptado por la aseguradora, la red o la junta para tratar esa lesión."
+        ],
+        [
+          "panel of physicians",
+          "panel de médicos",
+          "Lista de médicos entre los que, en algunos sistemas, se elige al tratante. No diga que todos los estados lo usan."
+        ],
+        [
+          "compensable",
+          "compensable",
+          "Que el sistema considera cubierto por workers' compensation. Lo decide la aseguradora o la junta, no el intérprete."
+        ],
+        [
+          "accepted claim",
+          "reclamo aceptado",
+          "La aseguradora o la agencia aceptó cubrir la lesión, o una parte de ella."
+        ],
+        [
+          "denial",
+          "denegación",
+          "La aseguradora o la agencia dice que no cubre el reclamo o un beneficio. Interprete el motivo; no lo discuta."
+        ],
+        [
+          "lost time",
+          "tiempo perdido",
+          "Días o turnos que la persona no trabajó por la lesión."
+        ],
+        [
+          "causation",
+          "causalidad",
+          "Si la lesión o la enfermedad viene del trabajo. Es una conclusión médica o legal, no del intérprete."
+        ],
+        [
+          "aggravation",
+          "agravación",
+          "Empeoramiento de una condición que ya existía. Mantenga «agravación» y, si hace falta, «aggravation»."
+        ],
+        [
+          "ombudsman",
+          "defensor / ombudsman",
+          "Persona o oficina que orienta al trabajador sin ser su abogado. No todos los estados la llaman igual."
+        ],
+        [
+          "second opinion",
+          "segunda opinión",
+          "Otra evaluación médica, distinta de la del médico tratante."
+        ]
+      ]
+    },
+    {
+      "id": "edd",
+      "chip": "EDD, SDI y PFL",
+      "title": "EDD, SDI y PFL",
+      "sub": "Seguro de incapacidad y licencia familiar.",
+      "heads": [
+        "Inglés",
+        "Español",
+        "Nota"
+      ],
+      "cls": [
+        "",
+        "es",
+        "note"
+      ],
+      "cols": "1.4fr 1.6fr 1.5fr",
+      "rows": [
+        [
+          "State Disability Insurance (SDI)",
+          "Seguro Estatal de Incapacidad",
+          "Nombre oficial del EDD"
+        ],
+        [
+          "Disability Insurance (DI)",
+          "Seguro de Incapacidad",
+          "Enfermedad, lesión, embarazo o parto no laborales"
+        ],
+        [
+          "Paid Family Leave (PFL)",
+          "Permiso Familiar Pagado",
+          "Cuidar a un familiar o vínculo con un hijo nuevo"
+        ],
+        [
+          "bonding with a new child",
+          "establecer un vínculo paternal con un hijo nuevo",
+          "Frase oficial del EDD"
+        ],
+        [
+          "caring for a seriously ill family member",
+          "cuidar a un familiar gravemente enfermo",
+          ""
+        ],
+        [
+          "military deployment (qualifying event)",
+          "despliegue militar de un familiar en el extranjero",
+          ""
+        ],
+        [
+          "SDI Online",
+          "SDI Online",
+          "El EDD no lo traduce"
+        ],
+        [
+          "myEDD account",
+          "cuenta de myEDD",
+          ""
+        ],
+        [
+          "claim",
+          "solicitud / reclamo",
+          "En el EDD suele ser \"solicitud de beneficios\""
+        ],
+        [
+          "file / submit a claim",
+          "presentar una solicitud",
+          ""
+        ],
+        [
+          "claim start date",
+          "fecha de inicio de la solicitud",
+          ""
+        ],
+        [
+          "claimant",
+          "solicitante",
+          ""
+        ],
+        [
+          "initial claim",
+          "solicitud inicial",
+          ""
+        ],
+        [
+          "continued claim / certification",
+          "certificación continua",
+          "Para seguir cobrando"
+        ],
+        [
+          "claim form (DE 2501 for DI)",
+          "formulario de solicitud",
+          "DE 2501 = DI; DE 2500 = PFL"
+        ],
+        [
+          "base period",
+          "período base",
+          "12 meses; sirve para calcular el beneficio"
+        ],
+        [
+          "high quarter wages",
+          "salarios del trimestre más alto",
+          "Base del cálculo del WBA"
+        ],
+        [
+          "weekly benefit amount (WBA)",
+          "monto semanal del beneficio",
+          ""
+        ],
+        [
+          "maximum / minimum weekly benefit",
+          "beneficio semanal máximo / mínimo",
+          "2026: $1,765 / $50"
+        ],
+        [
+          "wage replacement",
+          "reemplazo de salario",
+          "70%–90% en 2026"
+        ],
+        [
+          "Notice of Computation",
+          "Aviso de cálculo",
+          "Muestra el monto semanal estimado"
+        ],
+        [
+          "payment / benefit payment",
+          "pago del beneficio",
+          ""
+        ],
+        [
+          "debit card",
+          "tarjeta de débito",
+          "EDD paga con tarjeta o depósito directo"
+        ],
+        [
+          "direct deposit",
+          "depósito directo",
+          ""
+        ],
+        [
+          "waiting period (7 days, DI only)",
+          "período de espera de 7 días",
+          "El PFL no lo tiene"
+        ],
+        [
+          "medical certification",
+          "certificación médica",
+          "Del médico o profesional que trata"
+        ],
+        [
+          "physician / practitioner",
+          "médico / profesional médico",
+          "EDD usa \"profesional médico\""
+        ],
+        [
+          "disability period",
+          "período de incapacidad",
+          ""
+        ],
+        [
+          "expected recovery date",
+          "fecha prevista de recuperación",
+          ""
+        ],
+        [
+          "eligibility",
+          "elegibilidad",
+          "\"¿Soy elegible?\""
+        ],
+        [
+          "SDI deductions withheld",
+          "deducciones de SDI retenidas",
+          "Aportes del trabajador"
+        ],
+        [
+          "contribution rate",
+          "tasa de contribución",
+          "1.3% en 2026"
+        ],
+        [
+          "self-employed / independent contractor",
+          "persona que trabaja por cuenta propia / contratista independiente",
+          "Solo con cobertura electiva"
+        ],
+        [
+          "voluntary plan",
+          "plan voluntario",
+          ""
+        ],
+        [
+          "overpayment",
+          "pago en exceso",
+          "El EDD puede pedir devolverlo"
+        ],
+        [
+          "offset",
+          "compensación (descuento)",
+          "Descuento de pagos por deudas"
+        ],
+        [
+          "appeal",
+          "apelación",
+          ""
+        ],
+        [
+          "determination",
+          "determinación",
+          "Decisión del EDD sobre elegibilidad"
+        ],
+        [
+          "denial notice",
+          "aviso de denegación",
+          ""
+        ],
+        [
+          "identity verification",
+          "verificación de identidad",
+          "Común en llamadas al EDD"
+        ],
+        [
+          "fraud / identity theft",
+          "fraude / robo de identidad",
+          ""
+        ],
+        [
+          "interest / penalty",
+          "interés / multa",
+          ""
+        ],
+        [
+          "text alerts",
+          "mensajes de texto",
+          "\"Mensajes de texto sobre el DI y PFL\""
+        ]
+      ]
+    },
+    {
+      "id": "embarazo",
+      "chip": "Embarazo y licencias",
+      "title": "Embarazo y licencias",
+      "sub": "PDL, CFRA, FMLA, PWFA y términos del parto.",
+      "heads": [
+        "Inglés",
+        "Español",
+        "Nota"
+      ],
+      "cls": [
+        "",
+        "es",
+        "note"
+      ],
+      "cols": "1.4fr 1.6fr 1.5fr",
+      "rows": [
+        [
+          "pregnancy disability leave (PDL)",
+          "licencia por incapacidad por embarazo",
+          "Hasta 4 meses; sin sueldo"
+        ],
+        [
+          "pregnancy-related disability",
+          "incapacidad relacionada con el embarazo",
+          ""
+        ],
+        [
+          "maternity leave",
+          "licencia de maternidad",
+          "Término informal; la ley no lo usa"
+        ],
+        [
+          "parental leave",
+          "licencia parental",
+          ""
+        ],
+        [
+          "bonding leave",
+          "licencia para el vínculo con el bebé",
+          "CFRA o PFL"
+        ],
+        [
+          "family and medical leave",
+          "licencia familiar y médica",
+          "FMLA"
+        ],
+        [
+          "job-protected leave",
+          "licencia con protección del puesto",
+          ""
+        ],
+        [
+          "unpaid leave",
+          "licencia sin sueldo",
+          ""
+        ],
+        [
+          "paid leave",
+          "licencia pagada / con sueldo",
+          ""
+        ],
+        [
+          "reinstatement",
+          "reinstalación (volver al mismo puesto)",
+          ""
+        ],
+        [
+          "comparable position",
+          "puesto comparable",
+          ""
+        ],
+        [
+          "continuation of health benefits",
+          "continuación del seguro médico",
+          ""
+        ],
+        [
+          "covered employer",
+          "empleador cubierto",
+          "Depende del número de empleados"
+        ],
+        [
+          "eligible employee",
+          "empleado elegible",
+          "12 meses y 1,250 horas"
+        ],
+        [
+          "1,250 hours of service",
+          "1,250 horas trabajadas",
+          "Cuenta solo horas reales"
+        ],
+        [
+          "50 employees within 75 miles",
+          "50 empleados en un radio de 75 millas",
+          "Requisito de la FMLA"
+        ],
+        [
+          "intermittent leave",
+          "licencia intermitente",
+          "En ratos o días sueltos"
+        ],
+        [
+          "reduced schedule",
+          "horario reducido",
+          ""
+        ],
+        [
+          "reasonable accommodation",
+          "acomodo razonable",
+          "PWFA y ADA"
+        ],
+        [
+          "undue hardship",
+          "carga excesiva",
+          "Defensa del empleador"
+        ],
+        [
+          "interactive process",
+          "proceso interactivo",
+          "Diálogo para buscar el acomodo"
+        ],
+        [
+          "known limitation",
+          "limitación conocida",
+          "Término de la PWFA"
+        ],
+        [
+          "pregnancy discrimination",
+          "discriminación por embarazo",
+          ""
+        ],
+        [
+          "lactation accommodation",
+          "acomodo para lactancia",
+          "Tiempo y lugar para extraerse leche"
+        ],
+        [
+          "pumping breast milk",
+          "extraerse leche materna",
+          ""
+        ],
+        [
+          "high-risk pregnancy",
+          "embarazo de alto riesgo",
+          ""
+        ],
+        [
+          "bed rest",
+          "reposo en cama",
+          ""
+        ],
+        [
+          "prenatal care / prenatal appointment",
+          "atención prenatal / cita prenatal",
+          ""
+        ],
+        [
+          "morning sickness / hyperemesis",
+          "náuseas matutinas / hiperémesis",
+          ""
+        ],
+        [
+          "preeclampsia",
+          "preeclampsia",
+          ""
+        ],
+        [
+          "gestational diabetes",
+          "diabetes gestacional",
+          ""
+        ],
+        [
+          "miscarriage",
+          "aborto espontáneo / pérdida del embarazo",
+          "Más suave: \"pérdida\""
+        ],
+        [
+          "stillbirth",
+          "muerte fetal / nacimiento sin vida",
+          ""
+        ],
+        [
+          "due date",
+          "fecha probable de parto",
+          ""
+        ],
+        [
+          "delivery / childbirth",
+          "parto",
+          ""
+        ],
+        [
+          "vaginal delivery",
+          "parto vaginal",
+          "DI: unas 6 semanas posparto"
+        ],
+        [
+          "cesarean section (C-section)",
+          "cesárea",
+          "DI: unas 8 semanas posparto"
+        ],
+        [
+          "postpartum",
+          "posparto",
+          ""
+        ],
+        [
+          "postpartum recovery",
+          "recuperación posparto",
+          ""
+        ],
+        [
+          "newborn / newborn child",
+          "recién nacido",
+          ""
+        ],
+        [
+          "adoption / foster placement",
+          "adopción / colocación en hogar de crianza",
+          "También califican para PFL y CFRA"
+        ],
+        [
+          "proof of birth",
+          "prueba de nacimiento",
+          "Para el PFL de vínculo"
+        ],
+        [
+          "birth certificate",
+          "acta de nacimiento / certificado de nacimiento",
+          "México: \"acta de nacimiento\"; Bolivia y otros países: \"certificado de nacimiento\""
+        ],
+        [
+          "spouse / registered domestic partner",
+          "cónyuge / pareja de hecho registrada",
+          ""
+        ],
+        [
+          "family member (child, parent, sibling…)",
+          "familiar (hijo, padre, hermano…)",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "medico",
+      "chip": "Médicos y lesión",
+      "title": "Términos médicos y de la lesión",
+      "sub": "Del diagnóstico a la evaluación médica.",
+      "heads": [
+        "Inglés",
+        "Español",
+        "Nota"
+      ],
+      "cls": [
+        "",
+        "es",
+        "note"
+      ],
+      "cols": "1.4fr 1.6fr 1.5fr",
+      "rows": [
+        [
+          "primary treating physician (PTP)",
+          "médico tratante principal",
+          "Dirige el tratamiento y las restricciones"
+        ],
+        [
+          "treating doctor",
+          "médico tratante",
+          ""
+        ],
+        [
+          "specialist / referral",
+          "especialista / referencia (remisión)",
+          ""
+        ],
+        [
+          "orthopedist",
+          "ortopedista",
+          ""
+        ],
+        [
+          "chiropractor",
+          "quiropráctico",
+          ""
+        ],
+        [
+          "physical therapy (PT)",
+          "terapia física",
+          ""
+        ],
+        [
+          "occupational therapy (OT)",
+          "terapia ocupacional",
+          ""
+        ],
+        [
+          "pain management",
+          "manejo del dolor",
+          ""
+        ],
+        [
+          "prescription / medication",
+          "receta / medicamento",
+          ""
+        ],
+        [
+          "injection / cortisone shot",
+          "inyección / inyección de cortisona",
+          ""
+        ],
+        [
+          "surgery / surgical authorization",
+          "cirugía / autorización quirúrgica",
+          ""
+        ],
+        [
+          "MRI / X-ray / CT scan",
+          "resonancia magnética / radiografía / tomografía",
+          ""
+        ],
+        [
+          "diagnostic test",
+          "prueba diagnóstica",
+          ""
+        ],
+        [
+          "doctor's note / work status report",
+          "nota del médico / informe del estado laboral",
+          "Dice si puede trabajar o no"
+        ],
+        [
+          "progress report",
+          "informe de evolución",
+          ""
+        ],
+        [
+          "first report of injury (DWC Form 5021)",
+          "primer informe de lesión",
+          "Lo presenta el médico"
+        ],
+        [
+          "employer's first report (Form 5020)",
+          "informe inicial del empleador",
+          "En 5 días tras saber de la lesión"
+        ],
+        [
+          "sprain / strain",
+          "esguince / distensión",
+          "\"Strain\" no es \"tensión\""
+        ],
+        [
+          "fracture / broken bone",
+          "fractura / hueso roto",
+          ""
+        ],
+        [
+          "herniated disc",
+          "hernia discal",
+          ""
+        ],
+        [
+          "carpal tunnel syndrome",
+          "síndrome del túnel carpiano",
+          ""
+        ],
+        [
+          "tendonitis",
+          "tendinitis",
+          ""
+        ],
+        [
+          "rotator cuff tear",
+          "desgarro del manguito rotador",
+          ""
+        ],
+        [
+          "back / neck / shoulder / knee injury",
+          "lesión de espalda / cuello / hombro / rodilla",
+          ""
+        ],
+        [
+          "head injury / concussion",
+          "lesión en la cabeza / conmoción cerebral",
+          ""
+        ],
+        [
+          "burn",
+          "quemadura",
+          ""
+        ],
+        [
+          "hearing loss",
+          "pérdida de la audición",
+          "Frecuente en obreros"
+        ],
+        [
+          "lung disease / respiratory illness",
+          "enfermedad pulmonar / respiratoria",
+          ""
+        ],
+        [
+          "psychiatric injury / stress claim",
+          "lesión psiquiátrica / reclamo por estrés",
+          "Requisitos más estrictos"
+        ],
+        [
+          "aggravation of a pre-existing condition",
+          "agravamiento de una condición preexistente",
+          ""
+        ],
+        [
+          "pre-existing condition",
+          "condición preexistente",
+          ""
+        ],
+        [
+          "apportionment",
+          "prorrateo (apportionment)",
+          "Reparto de causas; el intérprete lo conserva y explica solo si se lo piden"
+        ],
+        [
+          "impairment",
+          "deficiencia / menoscabo funcional",
+          "No es lo mismo que \"disability\""
+        ],
+        [
+          "disability",
+          "incapacidad",
+          "En cambio, ADA: \"discapacidad\""
+        ],
+        [
+          "permanent restrictions",
+          "restricciones permanentes",
+          ""
+        ],
+        [
+          "future medical care",
+          "atención médica futura",
+          ""
+        ],
+        [
+          "range of motion",
+          "rango de movimiento",
+          ""
+        ],
+        [
+          "functional capacity evaluation",
+          "evaluación de la capacidad funcional",
+          ""
+        ],
+        [
+          "independent medical examination (IME)",
+          "examen médico independiente",
+          ""
+        ],
+        [
+          "medical-legal report",
+          "informe médico-legal",
+          "Lo escribe el QME o AME"
+        ],
+        [
+          "work hardening",
+          "acondicionamiento laboral",
+          ""
+        ],
+        [
+          "ergonomic evaluation",
+          "evaluación ergonómica",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "proceso",
+      "chip": "Proceso y disputas",
+      "title": "Proceso y disputas",
+      "sub": "Audiencias, apelaciones y plazos.",
+      "heads": [
+        "Inglés",
+        "Español",
+        "Nota"
+      ],
+      "cls": [
+        "",
+        "es",
+        "note"
+      ],
+      "cols": "1.4fr 1.6fr 1.5fr",
+      "rows": [
+        [
+          "notice of injury",
+          "aviso de lesión",
+          "Por escrito, dentro de 30 días"
+        ],
+        [
+          "statute of limitations",
+          "plazo de prescripción",
+          "Un año para presentar el DWC-1"
+        ],
+        [
+          "deadline",
+          "plazo / fecha límite",
+          ""
+        ],
+        [
+          "application for adjudication of claim",
+          "solicitud para adjudicación del reclamo",
+          "Inicia el caso ante la WCAB"
+        ],
+        [
+          "declaration of readiness to proceed",
+          "declaración de preparación para proceder",
+          "Pide fecha de audiencia"
+        ],
+        [
+          "hearing",
+          "audiencia",
+          ""
+        ],
+        [
+          "mandatory settlement conference (MSC)",
+          "conferencia obligatoria de arreglo",
+          ""
+        ],
+        [
+          "trial",
+          "juicio",
+          ""
+        ],
+        [
+          "workers' compensation judge (WCJ)",
+          "juez de compensación de trabajadores",
+          ""
+        ],
+        [
+          "findings and award",
+          "conclusiones y laudo (decisión)",
+          ""
+        ],
+        [
+          "petition for reconsideration",
+          "petición de reconsideración",
+          ""
+        ],
+        [
+          "appeal",
+          "apelación",
+          ""
+        ],
+        [
+          "applicant's attorney",
+          "abogado del solicitante",
+          "La DWC dice \"abogado de solicitantes\""
+        ],
+        [
+          "defense attorney",
+          "abogado de la defensa",
+          "Representa al empleador o aseguradora"
+        ],
+        [
+          "contingency fee",
+          "honorarios de contingencia",
+          "El abogado cobra solo si se gana"
+        ],
+        [
+          "attorney's fees",
+          "honorarios de abogado",
+          ""
+        ],
+        [
+          "settlement",
+          "arreglo / acuerdo",
+          ""
+        ],
+        [
+          "compromise and release (C&R)",
+          "transacción y liberación",
+          "Cierra todo, incluida la atención médica futura"
+        ],
+        [
+          "stipulated award",
+          "laudo estipulado",
+          "Arreglo que deja abierta la atención médica futura"
+        ],
+        [
+          "commutation",
+          "conmutación",
+          "Pago único de un beneficio"
+        ],
+        [
+          "lien",
+          "gravamen",
+          "También: embargo preventivo; depende del contexto"
+        ],
+        [
+          "subrogation",
+          "subrogación",
+          ""
+        ],
+        [
+          "penalty for late payment",
+          "multa por pago tardío",
+          ""
+        ],
+        [
+          "self-imposed penalty",
+          "multa autoimpuesta",
+          ""
+        ],
+        [
+          "increase in payment (late-payment penalty)",
+          "aumento por pago tardío",
+          "Frase de la hoja C"
+        ],
+        [
+          "discovery",
+          "descubrimiento de pruebas",
+          ""
+        ],
+        [
+          "deposition",
+          "declaración jurada / deposición",
+          ""
+        ],
+        [
+          "subpoena",
+          "citación judicial",
+          ""
+        ],
+        [
+          "medical records",
+          "expedientes médicos",
+          ""
+        ],
+        [
+          "evidence",
+          "pruebas",
+          ""
+        ],
+        [
+          "witness",
+          "testigo",
+          ""
+        ],
+        [
+          "sworn testimony",
+          "testimonio bajo juramento",
+          ""
+        ],
+        [
+          "under penalty of perjury",
+          "bajo pena de perjurio",
+          ""
+        ],
+        [
+          "signature / sign here",
+          "firma / firme aquí",
+          ""
+        ],
+        [
+          "Uninsured Employers Benefits Trust Fund (UEBTF)",
+          "Fondo Fiduciario de Beneficios de Empleadores Sin Seguro",
+          "Si el empleador no tenía seguro"
+        ],
+        [
+          "Subsequent Injuries Benefits Trust Fund",
+          "Fondo Fiduciario de Beneficios por Lesiones Subsiguientes",
+          ""
+        ],
+        [
+          "EDD appeal (hearing before an ALJ)",
+          "apelación ante el EDD (audiencia ante un juez administrativo)",
+          "Oficina de Apelaciones de California"
+        ],
+        [
+          "administrative law judge (ALJ)",
+          "juez de derecho administrativo",
+          ""
+        ],
+        [
+          "ADA / PWFA complaint",
+          "queja bajo la ADA / PWFA",
+          "EEOC o CRD"
+        ],
+        [
+          "charge of discrimination",
+          "cargo de discriminación",
+          "EEOC"
+        ],
+        [
+          "right-to-sue notice",
+          "aviso de derecho a demandar",
+          ""
+        ]
+      ]
+    },
+    {
+      "id": "frases",
+      "chip": "Frases de llamada",
+      "title": "Frases típicas de llamada",
+      "sub": "Inglés a español, tal como suenan en una llamada.",
+      "heads": [
+        "Inglés",
+        "Español"
+      ],
+      "cls": [
+        "",
+        "es"
+      ],
+      "cols": "1fr 1fr",
+      "rows": [
+        [
+          "This call may be recorded for quality purposes.",
+          "Esta llamada puede ser grabada para fines de calidad."
+        ],
+        [
+          "Can I have your claim number?",
+          "¿Me puede dar su número de reclamo?"
+        ],
+        [
+          "Can you verify your date of birth and the last four digits of your Social Security number?",
+          "¿Puede verificar su fecha de nacimiento y los últimos cuatro dígitos de su número de Seguro Social?"
+        ],
+        [
+          "What is the date of your injury?",
+          "¿Cuál es la fecha de su lesión?"
+        ],
+        [
+          "How did the injury happen?",
+          "¿Cómo ocurrió la lesión?"
+        ],
+        [
+          "Did you report it to your employer?",
+          "¿Se lo informó a su empleador?"
+        ],
+        [
+          "Did your employer give you a claim form?",
+          "¿Su empleador le entregó el formulario de reclamo?"
+        ],
+        [
+          "Your claim is under review / is being investigated.",
+          "Su reclamo está en revisión / está siendo investigado."
+        ],
+        [
+          "Your claim has been accepted / denied / delayed.",
+          "Su reclamo ha sido aceptado / negado / demorado."
+        ],
+        [
+          "You have 90 days from the date the claim form was filed for a decision.",
+          "Tiene 90 días desde la fecha en que se presentó el formulario para recibir una decisión."
+        ],
+        [
+          "Are you currently working or off work?",
+          "¿Actualmente está trabajando o está fuera del trabajo?"
+        ],
+        [
+          "Did your doctor give you work restrictions?",
+          "¿Su médico le dio restricciones laborales?"
+        ],
+        [
+          "Can your employer accommodate those restrictions?",
+          "¿Su empleador puede acomodar esas restricciones?"
+        ],
+        [
+          "Your temporary disability payment is issued every two weeks.",
+          "Su pago de incapacidad temporal se emite cada dos semanas."
+        ],
+        [
+          "I'm going to place you on a brief hold.",
+          "Voy a ponerlo(a) en espera por un momento."
+        ],
+        [
+          "Your weekly benefit amount is based on your highest quarter of earnings.",
+          "Su monto semanal se basa en el trimestre en que tuvo mayores ingresos."
+        ],
+        [
+          "You need a medical certification from your doctor.",
+          "Necesita una certificación médica de su médico."
+        ],
+        [
+          "Your doctor needs to complete the physician's section.",
+          "Su médico debe completar la sección del médico."
+        ],
+        [
+          "Your claim begins on the date you were first unable to work.",
+          "Su solicitud comienza en la fecha en que por primera vez no pudo trabajar."
+        ],
+        [
+          "There is a seven-day waiting period for Disability Insurance.",
+          "Hay un período de espera de siete días para el Seguro de Incapacidad."
+        ],
+        [
+          "There is no waiting period for Paid Family Leave.",
+          "No hay período de espera para el Permiso Familiar Pagado."
+        ],
+        [
+          "What is your expected due date?",
+          "¿Cuál es su fecha probable de parto?"
+        ],
+        [
+          "Has your doctor certified that you are unable to work due to your pregnancy?",
+          "¿Su médico certificó que no puede trabajar debido a su embarazo?"
+        ],
+        [
+          "Do you plan to bond with your baby after the delivery?",
+          "¿Planea establecer un vínculo con su bebé después del parto?"
+        ],
+        [
+          "We will mail you a Notice of Computation.",
+          "Le enviaremos por correo un Aviso de cálculo."
+        ],
+        [
+          "Your payment was sent to your debit card / bank account.",
+          "Su pago fue enviado a su tarjeta de débito / cuenta bancaria."
+        ],
+        [
+          "You have the right to appeal this decision.",
+          "Tiene derecho a apelar esta decisión."
+        ],
+        [
+          "Do you have an attorney representing you?",
+          "¿Tiene un abogado que lo represente?"
+        ],
+        [
+          "I cannot give legal advice.",
+          "No puedo dar asesoría legal."
+        ],
+        [
+          "Is there anything else I can help you with today?",
+          "¿Hay algo más en lo que le pueda ayudar hoy?"
+        ],
+        [
+          "Thank you for calling.",
+          "Gracias por llamar."
+        ],
+        [
+          "Please hold while I transfer you.",
+          "Por favor espere mientras lo(a) transfiero."
+        ],
+        [
+          "Could you repeat that, please? (Interpreter)",
+          "El intérprete solicita que se repita lo dicho."
+        ],
+        [
+          "The interpreter needs a clarification.",
+          "El intérprete necesita una aclaración."
+        ]
+      ]
+    },
+    {
+      "id": "notas",
+      "chip": "Notas del intérprete",
+      "title": "Notas para el intérprete",
+      "sub": "Falsos amigos y trampas frecuentes.",
+      "heads": [
+        "Trampa",
+        "Qué pasa",
+        "Cómo manejarla"
+      ],
+      "cls": [
+        "sig",
+        "",
+        "note"
+      ],
+      "cols": "0.8fr 1.7fr 1.6fr",
+      "rows": [
+        [
+          "disability",
+          "El EDD y la DWC dicen \"incapacidad\", no \"discapacidad\". \"Discapacidad\" es el término de la ADA",
+          "Usar \"incapacidad\" en SDI y compensación laboral; \"discapacidad\" solo con la ADA"
+        ],
+        [
+          "SDI vs. SSDI",
+          "Son programas distintos: uno estatal de California y otro federal del Seguro Social",
+          "Decir siempre el nombre completo la primera vez"
+        ],
+        [
+          "TD vs. DI",
+          "Los dos son \"incapacidad\", pero TD es de compensación laboral y DI es del EDD",
+          "Mantener la sigla del hablante y no mezclarlas"
+        ],
+        [
+          "claim",
+          "\"Reclamo\" en compensación laboral; \"solicitud\" en el EDD. En ambos casos significa el trámite",
+          "Seguir el término oficial de cada agencia"
+        ],
+        [
+          "benefits",
+          "Puede ser beneficios de pago, seguro médico o prestaciones del empleador",
+          "Fijarse en el contexto antes de elegir"
+        ],
+        [
+          "leave",
+          "El EDD usa \"permiso\" (Permiso Familiar Pagado); la ley y muchos empleadores dicen \"licencia\"",
+          "Seguir la palabra del EDD; si el cliente usa otra, no corregir"
+        ],
+        [
+          "compensation",
+          "No es \"compensación\" en el sentido de reparar un daño; aquí es pago de beneficios",
+          "Mantener \"compensación de trabajadores\" como nombre propio"
+        ],
+        [
+          "settlement",
+          "\"Arreglo\" o \"acuerdo\", no \"asentamiento\"",
+          ""
+        ],
+        [
+          "notary public",
+          "No es \"notario\" (en Latinoamérica es abogado especializado)",
+          "Dejarlo en inglés y explicar solo si se pide"
+        ],
+        [
+          "attorney / lawyer",
+          "Ambos son \"abogado\"",
+          ""
+        ],
+        [
+          "pregnancy disability",
+          "La clienta no se siente \"discapacitada\"; es una incapacidad temporal certificada por el médico",
+          "Mantener el término oficial, sin suavizarlo"
+        ],
+        [
+          "two-thirds",
+          "\"Dos tercios\", no \"66%\"",
+          "Respetar la forma en que se dijo"
+        ],
+        [
+          "amounts and dates",
+          "Las cifras con coma y punto cambian entre inglés y español",
+          "Decir las cifras en voz alta con claridad, y repetirlas si hay duda"
+        ],
+        [
+          "Rol del intérprete",
+          "El intérprete no explica elegibilidad ni da asesoría legal",
+          "Si hay confusión, pedir aclaración al hablante"
+        ]
+      ]
+    }
+  ]
+}

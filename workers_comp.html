@@ -49,7 +49,7 @@
   <div class="portal-container portal-pagina">
     <p class="portal-sobrelinea">Durante la llamada</p>
     <h1 class="portal-titulo">Ayuda <em>Workers' Comp</em></h1>
-    <p class="wc-lead">Ficha rápida para orientarse en una llamada de accidente laboral en Estados Unidos: agencia del estado, programas federales del Departamento de Trabajo y glosario inglés–español. Todo se consulta en este navegador. No se envía ni se guarda ningún dato de la llamada.</p>
+    <p class="wc-lead">Ficha rápida para orientarse en una llamada de accidente laboral en Estados Unidos: el proceso de California en diez etapas, la comparación con Nueva York, Texas, Puerto Rico y Florida (Miami), la agencia de cada estado, los programas federales del Departamento de Trabajo y el glosario inglés–español. La búsqueda ignora las tildes. Todo se consulta en este navegador. No se envía ni se guarda ningún dato de la llamada.</p>
 
     <div class="wc-aviso" role="note">
       <p><strong>Referencia general, no asesoría legal ni médica.</strong> Los plazos, formularios y reglas cambian y dependen del caso. Confirme cada dato en la fuente oficial enlazada. Si un campo dice «Verificar en el sitio oficial», esta revisión no encontró ese dato en una fuente oficial y no debe inventarse en la llamada.</p>
@@ -57,15 +57,41 @@
     </div>
 
     <nav class="wc-saltos" aria-label="En esta página">
-      <a href="#estado">Estado</a>
+      <a href="#california">California</a>
+      <a href="#otros">Otros estados</a>
+      <a href="#estado">Directorio</a>
       <a href="#federal">Federal</a>
       <a href="#glosario">Glosario</a>
       <a href="#consejos">Consejos</a>
     </nav>
 
+    <section class="wc-seccion" id="california" aria-labelledby="titulo-california">
+      <h2 id="titulo-california">Proceso de California</h2>
+      <p>Un reclamo de workers' comp en California sigue un camino con plazos fijos. Estas son las diez etapas en el orden en que suelen aparecer en una llamada. Abre cada una para ver qué pasa, los términos que vas a oír y frases típicas. No todos los casos pasan por todas las etapas: muchos se resuelven antes de llegar a la corte.</p>
+      <div class="wc-buscar">
+        <input id="wc-filtro-etapas" class="portal-entrada" type="search" autocomplete="off" spellcheck="false" placeholder="Buscar en las etapas…" aria-label="Buscar en las etapas">
+        <p class="wc-estado" id="wc-etapas-cuenta" aria-live="polite"></p>
+      </div>
+      <div id="wc-proceso"><p class="wc-estado">Cargando el proceso de California…</p></div>
+      <p class="wc-vacio" id="wc-proceso-vacio" hidden>No hay resultados que coincidan con esa búsqueda.</p>
+      <div id="wc-ca-fuentes"></div>
+    </section>
+
+    <section class="wc-seccion" id="otros" aria-labelledby="titulo-otros">
+      <h2 id="titulo-otros">Otros estados</h2>
+      <p>Cada estado, y Puerto Rico, tiene su propio sistema de compensación para trabajadores lesionados. Aquí van los cuatro que se piden más allá de California, con la misma estructura: pasos, plazos, términos, frases y qué cambia frente a California. Miami usa el sistema de Florida.</p>
+      <div class="wc-buscar">
+        <input id="wc-filtro-otros" class="portal-entrada" type="search" autocomplete="off" spellcheck="false" placeholder="Buscar en los estados…" aria-label="Buscar en los estados">
+        <p class="wc-estado" id="wc-otros-cuenta" aria-live="polite"></p>
+      </div>
+      <div id="wc-otros-cuerpo"><p class="wc-estado">Cargando la comparación…</p></div>
+      <p class="wc-vacio" id="wc-otros-vacio" hidden>No hay resultados que coincidan con esa búsqueda.</p>
+    </section>
+
     <section class="wc-seccion" id="estado" aria-labelledby="titulo-estado">
       <h2 id="titulo-estado">Sistema estatal</h2>
       <p>La mayoría de los trabajadores de empresas privadas, y muchos empleados de gobiernos estatales o locales, usan el sistema del estado donde se trabaja. El <a class="wc-enlace" href="https://www.dol.gov/agencies/owcp/wc">directorio del U.S. Department of Labor</a> no administra esos sistemas: solo publica el contacto de cada agencia. American Samoa y las Islas Marianas del Norte no aparecen en el directorio consultado el 12 de noviembre de 2026; no hay ficha para no inventar una agencia.</p>
+      <p>California, Nueva York, Texas, Puerto Rico y Florida (Miami) tienen además la guía detallada de más arriba. Elegirlos aquí conserva todos los datos de esta ficha y enlaza con esa guía.</p>
       <div class="wc-controles">
         <label class="portal-campo">Buscar estado o territorio
           <input id="wc-filtro-estado" class="portal-entrada" type="search" autocomplete="off" placeholder="Nombre, sigla o nombre en inglés">
@@ -89,11 +115,14 @@
     <section class="wc-seccion" id="glosario" aria-labelledby="titulo-glosario">
       <h2 id="titulo-glosario">Glosario de la llamada</h2>
       <p>Equivalentes para interpretar. No son definiciones legales. Si la persona usa el término en inglés, puede mantenerlo junto al equivalente.</p>
-      <label class="portal-campo">Filtrar términos
-        <input id="wc-filtro-glosario" class="portal-entrada" type="search" autocomplete="off" placeholder="claim, IME, acuerdo, médico…">
-      </label>
-      <p class="wc-estado" id="wc-glosario-cuenta" aria-live="polite"></p>
-      <div id="wc-glosario"></div>
+      <p>Incluye las siglas, la compensación laboral, el EDD, el SDI y el PFL, el embarazo y las licencias, los términos médicos, el proceso y las disputas, las frases de llamada y las notas del intérprete. La búsqueda ignora las tildes. Los términos que ya estaban en esta página y no figuraban en ese listado se sumaron, sin repetir los que ya existían.</p>
+      <div class="wc-buscar">
+        <input id="wc-filtro-glosario" class="portal-entrada" type="search" autocomplete="off" spellcheck="false" placeholder="Buscar en inglés o español…" aria-label="Buscar en inglés o español">
+        <p class="wc-estado" id="wc-glosario-cuenta" aria-live="polite"></p>
+      </div>
+      <div class="wc-chips" id="wc-glosario-chips" role="group" aria-label="Filtrar por tema"></div>
+      <div id="wc-glosario"><p class="wc-estado">Cargando el glosario…</p></div>
+      <p class="wc-vacio" id="wc-glosario-vacio" hidden>No hay resultados que coincidan con esa búsqueda.</p>
     </section>
 
     <section class="wc-seccion" id="consejos" aria-labelledby="titulo-consejos">
@@ -117,5 +146,6 @@
   </div>
 </footer>
 <script src="workers_comp.js"></script>
+<script src="workers_comp_guia.js"></script>
 </body>
 </html>

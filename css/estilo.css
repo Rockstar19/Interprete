@@ -869,3 +869,535 @@ body.wc .wc-error {
   border-radius: var(--radius-md);
   background: var(--color-paper-raised);
 }
+
+/* ---------- Guía de California, otros estados y glosario ---------- */
+
+body.wc [hidden] {
+  display: none !important;
+}
+
+body.wc .portal-pagina {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+body.wc .wc-dl > div,
+body.wc .wc-cmp-wrap,
+body.wc .wc-bloque,
+body.wc .wc-panel,
+body.wc .wc-tema {
+  min-width: 0;
+  max-width: 100%;
+}
+
+body.wc .wc-seccion,
+body.wc .wc-etapa,
+body.wc .wc-panel,
+body.wc .wc-tema {
+  scroll-margin-top: 0.75rem;
+}
+
+body.wc .wc-buscar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: var(--space-4);
+}
+
+body.wc .wc-buscar .portal-entrada {
+  width: auto;
+  flex: 1 1 16rem;
+  min-width: 0;
+  font-size: 1.0625rem;
+}
+
+body.wc .wc-buscar .wc-estado {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+body.wc .wc-bloque {
+  margin-top: var(--space-6);
+}
+
+body.wc .wc-bloque h3,
+body.wc .wc-tema h3,
+body.wc #wc-ca-fuentes h3 {
+  margin-bottom: var(--space-2);
+}
+
+body.wc .wc-sub {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+
+body.wc .wc-chips,
+body.wc .wc-picker,
+body.wc .wc-masivo,
+body.wc .wc-plazos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+body.wc .wc-chips,
+body.wc .wc-picker,
+body.wc .wc-masivo {
+  margin-top: var(--space-3);
+}
+
+body.wc .wc-chip,
+body.wc .wc-tab,
+body.wc .wc-masivo button {
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-ink);
+  background: var(--color-paper-raised);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-pill);
+  padding: 0.4rem 0.85rem;
+  cursor: pointer;
+}
+
+body.wc .wc-tab {
+  border-radius: var(--radius-md);
+  padding: 0.5rem 1rem;
+}
+
+body.wc .wc-masivo button {
+  color: var(--color-accent);
+  background: transparent;
+  border-radius: var(--radius-md);
+}
+
+body.wc .wc-chip:hover,
+body.wc .wc-tab:hover,
+body.wc .wc-masivo button:hover,
+body.wc .wc-flujo__btn:hover {
+  border-color: var(--color-accent);
+}
+
+body.wc .wc-chip[aria-pressed="true"],
+body.wc .wc-tab[aria-pressed="true"] {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+body.wc .wc-chip:focus-visible,
+body.wc .wc-tab:focus-visible,
+body.wc .wc-masivo button:focus-visible,
+body.wc .wc-flujo__btn:focus-visible,
+body.wc .wc-cmp-wrap:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+body.wc .wc-plazo {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-hover);
+  border-radius: var(--radius-sm);
+  padding: 0.2rem 0.55rem;
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+body.wc .wc-flujo {
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14.5rem, 1fr));
+  gap: 0.625rem;
+}
+
+body.wc .wc-flujo__btn {
+  width: 100%;
+  height: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: var(--color-paper-raised);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.875rem;
+  cursor: pointer;
+  display: grid;
+  gap: 0.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+body.wc .wc-flujo__n,
+body.wc .wc-mini {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+body.wc .wc-flujo__t {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+body.wc .wc-flujo__d,
+body.wc .wc-etapa__en,
+body.wc .wc-panel__agencia {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  font-weight: 400;
+}
+
+body.wc .wc-etapas {
+  display: grid;
+  gap: 0.625rem;
+  margin-top: var(--space-3);
+}
+
+body.wc .wc-etapa {
+  background: var(--color-paper-raised);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+body.wc .wc-etapa > summary {
+  list-style: none;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.875rem;
+  align-items: center;
+  padding: 0.875rem 1rem;
+  font: inherit;
+  color: inherit;
+}
+
+body.wc .wc-etapa > summary::-webkit-details-marker {
+  display: none;
+}
+
+body.wc .wc-etapa > summary::after {
+  content: "+";
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  line-height: 1;
+  color: var(--color-accent);
+}
+
+body.wc .wc-etapa[open] > summary::after {
+  content: "–";
+}
+
+body.wc .wc-etapa > summary:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: -3px;
+  border-radius: var(--radius-md);
+}
+
+body.wc .wc-num {
+  display: grid;
+  place-items: center;
+  width: 2.125rem;
+  height: 2.125rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+body.wc .wc-etapa__titulo {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.0625rem;
+  line-height: 1.25;
+}
+
+body.wc .wc-etapa__en {
+  display: block;
+  font-family: var(--font-body);
+}
+
+body.wc .wc-etapa__cuerpo {
+  display: grid;
+  gap: 1.125rem;
+  padding: 0.35rem 1.125rem 1.25rem;
+  border-top: 1px solid var(--color-line);
+}
+
+body.wc .wc-etapa__cuerpo ul,
+body.wc .wc-vs,
+body.wc .wc-fuentes-lista {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+body.wc .wc-mini {
+  margin-bottom: 0.15rem;
+}
+
+body.wc .wc-par {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.125rem;
+}
+
+body.wc .wc-par > div {
+  min-width: 0;
+}
+
+body.wc .wc-tabla {
+  background: var(--color-paper-raised);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-top: var(--space-2);
+}
+
+body.wc .wc-fila {
+  display: grid;
+  grid-template-columns: var(--cols, 1fr 1fr);
+  gap: 0.25rem 1.125rem;
+  align-items: baseline;
+  padding: 0.7rem 1rem;
+  border-top: 1px solid var(--color-line);
+}
+
+body.wc .wc-fila--cabeza {
+  border-top: 0;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body.wc .wc-celda {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+body.wc .wc-celda--es {
+  color: var(--color-accent-hover);
+  font-weight: 700;
+}
+
+body.wc .wc-celda--note {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+
+body.wc .wc-celda--sig {
+  color: var(--color-accent);
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+body.wc mark.wc-marca {
+  background: #fff0b3;
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 1px;
+}
+
+body.wc .wc-nota-int {
+  background: var(--color-accent-soft);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.875rem;
+}
+
+body.wc .wc-nota-int p {
+  margin: 0;
+}
+
+body.wc #wc-ca-fuentes {
+  margin-top: var(--space-6);
+}
+
+body.wc .wc-vacio {
+  margin: var(--space-5) 0 0;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+body.wc .wc-cmp-wrap {
+  overflow-x: auto;
+  max-width: 100%;
+  margin-top: var(--space-3);
+  background: var(--color-paper-raised);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+}
+
+body.wc table.wc-cmp {
+  width: 100%;
+  min-width: 62rem;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+body.wc table.wc-cmp th,
+body.wc table.wc-cmp td {
+  padding: 0.65rem 0.875rem;
+  border-top: 1px solid var(--color-line);
+  text-align: left;
+  vertical-align: top;
+}
+
+body.wc table.wc-cmp thead th {
+  border-top: 0;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+body.wc table.wc-cmp tbody th {
+  min-width: 8.5rem;
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+}
+
+body.wc table.wc-cmp td.wc-cmp__ca {
+  background: var(--color-accent-soft);
+}
+
+body.wc .wc-panel {
+  display: grid;
+  gap: 1.125rem;
+  margin-top: var(--space-4);
+}
+
+body.wc .wc-panel__nombre {
+  margin: 0;
+  font-size: var(--text-xl);
+}
+
+body.wc .wc-panel__agencia {
+  margin: 0.15rem 0 0.65rem;
+}
+
+body.wc .wc-pasos {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+  counter-reset: paso;
+}
+
+body.wc .wc-pasos > li {
+  counter-increment: paso;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: start;
+}
+
+body.wc .wc-pasos > li::before {
+  content: counter(paso);
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+body.wc .wc-pasos > li > div {
+  min-width: 0;
+}
+
+body.wc .wc-pasos strong {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+body.wc .wc-puente {
+  margin: var(--space-3) 0 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-accent-soft);
+  border-radius: var(--radius-md);
+}
+
+body.wc .wc-tema {
+  margin-top: var(--space-6);
+}
+
+@media (min-width: 48rem) {
+  body.wc .wc-saltos {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    padding-block: var(--space-3);
+    background: var(--color-paper);
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  body.wc .wc-seccion,
+  body.wc .wc-etapa,
+  body.wc .wc-panel,
+  body.wc .wc-tema {
+    scroll-margin-top: 4.75rem;
+  }
+}
+
+@media (max-width: 45rem) {
+  body.wc .wc-par {
+    grid-template-columns: 1fr;
+  }
+
+  body.wc .wc-etapa > summary {
+    gap: 0.625rem;
+    padding: 0.75rem 0.875rem;
+  }
+
+  body.wc .wc-etapa__cuerpo {
+    padding-inline: 0.875rem;
+  }
+
+  body.wc .wc-fila {
+    grid-template-columns: 1fr;
+    padding: 0.75rem 1rem;
+  }
+
+  body.wc .wc-fila--cabeza {
+    display: none;
+  }
+
+  body.wc .wc-celda[data-label]:not(:first-child)::before {
+    content: attr(data-label) ": ";
+    color: var(--color-muted);
+    font-family: var(--font-display);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  body.wc .wc-celda:empty {
+    display: none;
+  }
+}

@@ -1,0 +1,1622 @@
+{
+  "fuente": "Artefacto Glosario Laboral Bilingüe (proceso, estados y fuentes de California). Textos copiados sin cambiar plazos, cifras ni enlaces.",
+  "whoHeads": [
+    "Español",
+    "English",
+    "Qué hace"
+  ],
+  "whoCols": "1.2fr 1.2fr 1.6fr",
+  "whoCls": [
+    "",
+    "",
+    "note"
+  ],
+  "who": [
+    [
+      "Trabajador lesionado / solicitante",
+      "injured worker / applicant",
+      "Quien se lesiona. Ante la WCAB se le llama \"applicant\""
+    ],
+    [
+      "Empleador",
+      "employer",
+      "Debe entregar el DWC-1 en un día hábil y no puede tomar represalias"
+    ],
+    [
+      "Aseguradora / administrador de reclamos",
+      "insurance carrier / claims administrator",
+      "Decide si acepta, demora o niega el reclamo, y paga los beneficios"
+    ],
+    [
+      "Ajustador de reclamos",
+      "claims adjuster",
+      "Persona que maneja el caso y suele llamar al trabajador"
+    ],
+    [
+      "Médico tratante principal",
+      "primary treating physician (PTP)",
+      "Trata la lesión, fija las restricciones y dice si puede trabajar"
+    ],
+    [
+      "Oficial de Información y Asistencia",
+      "DWC Information and Assistance (I&A) officer",
+      "Orienta gratis a trabajadores lesionados"
+    ],
+    [
+      "Abogado del solicitante",
+      "applicant's attorney",
+      "Representa al trabajador"
+    ],
+    [
+      "Abogado de la defensa",
+      "defense attorney",
+      "Representa a la aseguradora o al empleador"
+    ],
+    [
+      "Evaluador médico (QME / AME)",
+      "qualified / agreed medical evaluator",
+      "Médico independiente cuando hay una disputa médica"
+    ],
+    [
+      "Revisión de utilización / IMR",
+      "utilization review / independent medical review",
+      "Revisan si un tratamiento es médicamente necesario"
+    ],
+    [
+      "Juez de compensación / WCAB",
+      "workers' compensation judge / WCAB",
+      "Resuelven las disputas del reclamo"
+    ]
+  ],
+  "stages": [
+    {
+      "title": "Lesión y aviso",
+      "en": "Injury and notice",
+      "tags": [
+        "30 días: aviso por escrito",
+        "5 días: informe del empleador"
+      ],
+      "what": [
+        "El trabajador avisa a su supervisor de inmediato. El aviso por escrito debe darse dentro de 30 días de la lesión.",
+        "En una lesión que se desarrolla con el tiempo (trauma acumulativo), el plazo corre desde que el trabajador supo que era laboral o desde que quedó incapacitado.",
+        "El empleador debe presentar el Informe inicial del empleador (Form 5020) dentro de 5 días de enterarse de la lesión."
+      ],
+      "terms": [
+        [
+          "notice of injury",
+          "aviso de lesión"
+        ],
+        [
+          "date of injury (DOI)",
+          "fecha de la lesión"
+        ],
+        [
+          "cumulative trauma",
+          "trauma acumulativo"
+        ],
+        [
+          "employer's first report (Form 5020)",
+          "informe inicial del empleador"
+        ],
+        [
+          "supervisor",
+          "supervisor"
+        ]
+      ],
+      "phrases": [
+        [
+          "How did the injury happen?",
+          "¿Cómo ocurrió la lesión?"
+        ],
+        [
+          "When did you first report the injury to your employer?",
+          "¿Cuándo informó por primera vez la lesión a su empleador?"
+        ],
+        [
+          "Was your notice verbal or in writing?",
+          "¿Su aviso fue verbal o por escrito?"
+        ]
+      ],
+      "note": "Si el trabajador dice \"ya avisé\", el intérprete no juzga si el aviso fue válido: transmite la fecha y la forma (verbal o escrita) tal como las diga."
+    },
+    {
+      "title": "Formulario de reclamo (DWC-1)",
+      "en": "Claim form",
+      "tags": [
+        "1 día hábil: el empleador entrega el formulario",
+        "1 año: plazo para presentarlo"
+      ],
+      "what": [
+        "El empleador debe entregar el DWC-1 dentro de un día hábil desde que sabe de la lesión. Si no lo hace, el trabajador puede bajarlo del sitio de la DWC o pedirlo a un oficial de I&A.",
+        "El trabajador llena su sección, la firma, la entrega al empleador y se queda con su copia. Conviene dejar constancia: entregarlo en persona o enviarlo por correo certificado.",
+        "El empleador llena su sección y manda el formulario a la aseguradora. El trabajador debe recibir una copia.",
+        "Llenar el DWC-1 abre el caso. Si no se presenta en un año desde la lesión, el trabajador puede perder sus beneficios.",
+        "Es ilegal despedir o castigar a un trabajador por presentar un reclamo."
+      ],
+      "terms": [
+        [
+          "claim form (DWC-1)",
+          "formulario de reclamo (DWC 1)"
+        ],
+        [
+          "file a claim",
+          "presentar un reclamo"
+        ],
+        [
+          "employee section",
+          "sección del empleado"
+        ],
+        [
+          "certified mail",
+          "correo certificado"
+        ],
+        [
+          "retaliation",
+          "represalia"
+        ],
+        [
+          "Notice of Potential Eligibility",
+          "Notificación de posible elegibilidad"
+        ]
+      ],
+      "phrases": [
+        [
+          "Did your employer give you a claim form?",
+          "¿Su empleador le entregó el formulario de reclamo?"
+        ],
+        [
+          "What date did you hand in the claim form?",
+          "¿En qué fecha entregó el formulario de reclamo?"
+        ],
+        [
+          "Please keep the bottom copy for your records.",
+          "Por favor guarde la copia de abajo para sus archivos."
+        ]
+      ],
+      "note": "La fecha de entrega del DWC-1 es el dato clave: de ella se cuentan la autorización médica y los 90 días de la decisión. Decir la fecha despacio y repetirla si hay duda."
+    },
+    {
+      "title": "Atención médica inicial",
+      "en": "Initial medical care",
+      "tags": [
+        "1 día: autorización de tratamiento",
+        "$10,000: tope mientras se investiga",
+        "30 días: el administrador controla la elección del médico"
+      ],
+      "what": [
+        "Dentro de un día de recibir el DWC-1, el empleador debe autorizar el tratamiento médico, hasta $10,000 mientras se investiga el reclamo.",
+        "Durante los primeros 30 días, el administrador del reclamo controla la elección del médico, salvo que el trabajador haya designado de antemano a su médico (formulario DWC 9783).",
+        "Si hay una red de proveedores médicos (MPN), el trabajador puede pedir cambiar de médico. El segundo y el tercer médico deben ser de la red.",
+        "Sin red, pasados los 30 días el trabajador puede elegir un nuevo médico tratante a una distancia razonable de su casa.",
+        "El médico informa el estado laboral: si puede trabajar, con qué restricciones o si debe quedarse fuera del trabajo."
+      ],
+      "terms": [
+        [
+          "primary treating physician (PTP)",
+          "médico tratante principal"
+        ],
+        [
+          "medical provider network (MPN)",
+          "red de proveedores médicos"
+        ],
+        [
+          "predesignated physician",
+          "médico designado de antemano"
+        ],
+        [
+          "work status report",
+          "informe del estado laboral"
+        ],
+        [
+          "work restrictions",
+          "restricciones laborales"
+        ],
+        [
+          "authorization",
+          "autorización"
+        ]
+      ],
+      "phrases": [
+        [
+          "Do you have a doctor you saw before this injury?",
+          "¿Tiene un médico al que veía antes de esta lesión?"
+        ],
+        [
+          "Your treatment has been authorized.",
+          "Su tratamiento ha sido autorizado."
+        ],
+        [
+          "Is this doctor part of the medical provider network?",
+          "¿Este médico forma parte de la red de proveedores médicos?"
+        ],
+        [
+          "Did the doctor take you off work?",
+          "¿El médico lo dejó fuera del trabajo?"
+        ]
+      ],
+      "note": "\"Authorization\" significa que el tratamiento fue autorizado, no que el reclamo fue aceptado. Mantener la distinción."
+    },
+    {
+      "title": "Decisión del reclamo",
+      "en": "Claim decision",
+      "tags": [
+        "14 días: carta de estado",
+        "90 días: tope de la investigación"
+      ],
+      "what": [
+        "Dentro de 14 días, la aseguradora debe enviar al trabajador una carta con el estado del reclamo: aceptado, demorado o negado.",
+        "Aceptado: el trabajador recibe los beneficios que le correspondan.",
+        "Demorado: la investigación puede durar hasta 90 días. Se sigue dando la atención médica; la incapacidad temporal no se paga mientras tanto. El trabajador puede pedir el Seguro de Incapacidad (DI) del EDD como puente.",
+        "Negado: el trabajador puede llamar a un oficial de I&A, consultar a un abogado y presentar una solicitud para adjudicación ante la WCAB.",
+        "Si pasan 90 días sin un aviso final de aceptación o de negación, se presume que el reclamo es cubierto."
+      ],
+      "terms": [
+        [
+          "accept / delay / deny",
+          "aceptar / demorar / negar"
+        ],
+        [
+          "notice of claim status",
+          "aviso del estado del reclamo"
+        ],
+        [
+          "investigation",
+          "investigación"
+        ],
+        [
+          "presumption of compensability",
+          "presunción de cobertura"
+        ],
+        [
+          "denial letter",
+          "carta de negación"
+        ],
+        [
+          "application for adjudication",
+          "solicitud para adjudicación"
+        ]
+      ],
+      "phrases": [
+        [
+          "Have you received a letter about your claim?",
+          "¿Ha recibido una carta sobre su reclamo?"
+        ],
+        [
+          "Your claim is being delayed while we investigate.",
+          "Su reclamo está demorado mientras lo investigamos."
+        ],
+        [
+          "Your claim was denied.",
+          "Su reclamo fue negado."
+        ],
+        [
+          "In the meantime, you may apply for State Disability Insurance.",
+          "Mientras tanto, puede solicitar el Seguro Estatal de Incapacidad."
+        ]
+      ],
+      "note": "\"Delayed\" no es \"denied\". Muchos trabajadores entienden \"demorado\" como \"negado\": traducir el término exacto, sin suavizarlo ni endurecerlo."
+    },
+    {
+      "title": "Incapacidad temporal (TD)",
+      "en": "Temporary disability",
+      "tags": [
+        "Pago cada 2 semanas",
+        "104 semanas en 5 años",
+        "$264.61 a $1,764.11 por semana (lesión en 2026)"
+      ],
+      "what": [
+        "Empieza cuando el médico dice que el trabajador no puede hacer su trabajo habitual por más de tres días, o si lo hospitalizan una noche.",
+        "Se paga cada dos semanas. El monto es dos tercios del salario bruto al momento de la lesión, con mínimo y máximo fijados por ley. Para lesiones en 2026: mínimo $264.61 y máximo $1,764.11 por semana. Es libre de impuestos.",
+        "El salario incluye propinas, comisiones, horas extras, bonos y los ingresos de otros trabajos al momento de la lesión.",
+        "Si el trabajador puede trabajar pero gana menos que antes, recibe incapacidad temporal parcial.",
+        "Dura hasta 104 semanas dentro de 5 años desde la lesión (hasta 240 semanas en ciertos casos graves, como quemaduras severas).",
+        "Termina cuando el trabajador vuelve a trabajar, el médico lo da de alta o dice que la lesión ya no mejorará más.",
+        "Si los pagos se atrasan, puede corresponder un aumento. Si se detienen, el trabajador puede llamar al administrador o a un oficial de I&A."
+      ],
+      "terms": [
+        [
+          "temporary total disability (TTD)",
+          "incapacidad temporal total"
+        ],
+        [
+          "temporary partial disability (TPD)",
+          "incapacidad temporal parcial"
+        ],
+        [
+          "two-thirds of gross wages",
+          "dos tercios del salario bruto"
+        ],
+        [
+          "average weekly wage",
+          "salario semanal promedio"
+        ],
+        [
+          "modified duty",
+          "trabajo modificado"
+        ],
+        [
+          "return to work",
+          "regreso al trabajo"
+        ],
+        [
+          "increase for late payment",
+          "aumento por pago tardío"
+        ]
+      ],
+      "phrases": [
+        [
+          "Your disability payment is issued every two weeks.",
+          "Su pago de incapacidad se emite cada dos semanas."
+        ],
+        [
+          "When was your last payment?",
+          "¿Cuándo fue su último pago?"
+        ],
+        [
+          "Are you earning less than before the injury?",
+          "¿Está ganando menos que antes de la lesión?"
+        ],
+        [
+          "Did you have other jobs when you were injured?",
+          "¿Tenía otros trabajos cuando se lesionó?"
+        ]
+      ],
+      "note": "No confundir con el DI del EDD: son dos programas distintos y no suelen pagarse por la misma lesión. Las cifras se dicen despacio y se repiten."
+    },
+    {
+      "title": "Tratamiento continuo y revisión de utilización",
+      "en": "Ongoing treatment and utilization review",
+      "tags": [
+        "5 días hábiles: decisión de UR",
+        "72 horas: casos urgentes",
+        "30 días: pedir IMR",
+        "30 días: decisión de IMR"
+      ],
+      "what": [
+        "El médico pide autorización para cada tratamiento importante (cirugía, terapia, estudios). A esa petición se le llama solicitud de autorización.",
+        "La aseguradora hace la Revisión de utilización (UR). Decide en 5 días hábiles; hasta 14 días si falta información y hasta 30 si hacen falta exámenes. Los casos urgentes se deciden en 72 horas.",
+        "Si la UR niega o modifica el tratamiento por no ser médicamente necesario, el trabajador recibe una carta con un formulario para pedir la Revisión médica independiente (IMR).",
+        "La solicitud de IMR debe presentarse dentro de 30 días de la fecha en que se notificó la decisión de la UR.",
+        "La IMR decide en 30 días, o en 3 días si es urgente y el tratamiento aún no se dio. Su decisión obliga a todas las partes. Solo se puede apelar ante la WCAB, dentro de 30 días del envío y por causas limitadas, como fraude o un error evidente de hechos.",
+        "La DWC avisó que hay reglas nuevas de UR desde el 1 de abril de 2026. Confirmar con la DWC si los plazos cambiaron."
+      ],
+      "terms": [
+        [
+          "request for authorization (RFA)",
+          "solicitud de autorización"
+        ],
+        [
+          "utilization review (UR)",
+          "revisión de utilización"
+        ],
+        [
+          "medically necessary",
+          "médicamente necesario"
+        ],
+        [
+          "deny / modify",
+          "negar / modificar"
+        ],
+        [
+          "independent medical review (IMR)",
+          "revisión médica independiente"
+        ],
+        [
+          "expedited review",
+          "revisión acelerada"
+        ],
+        [
+          "binding decision",
+          "decisión obligatoria"
+        ]
+      ],
+      "phrases": [
+        [
+          "Your doctor requested surgery. It is under review.",
+          "Su médico solicitó una cirugía. Está en revisión."
+        ],
+        [
+          "The treatment was denied as not medically necessary.",
+          "El tratamiento fue negado por no ser médicamente necesario."
+        ],
+        [
+          "You can request an independent medical review within 30 days.",
+          "Puede solicitar una revisión médica independiente dentro de 30 días."
+        ],
+        [
+          "Did you receive the IMR application with the letter?",
+          "¿Recibió el formulario de IMR junto con la carta?"
+        ]
+      ],
+      "note": "En la UR, \"denied\" se refiere al tratamiento, no a todo el reclamo. Si no queda claro de cuál habla el agente, pedir que lo aclare."
+    },
+    {
+      "title": "Disputas médicas: QME y AME",
+      "en": "Medical disputes: QME and AME",
+      "tags": [
+        "Panel de 3 QME",
+        "10 días: devolver el formulario"
+      ],
+      "what": [
+        "Cuando hay desacuerdo sobre si la lesión es laboral, qué tratamiento hace falta, qué restricciones corresponden o cuánta incapacidad permanente hay, se pide una evaluación médica independiente.",
+        "QME: el trabajador, su abogado o el administrador envían una solicitud a la Unidad Médica de la DWC. La DWC asigna un panel de tres QME de la especialidad pedida, cercanos al domicilio del trabajador.",
+        "Si el empleador envía el formulario de solicitud, el trabajador tiene 10 días para mandarlo a la Unidad Médica de la DWC. Si no, el administrador lo envía por él.",
+        "AME: un médico que el abogado del trabajador y el administrador eligen de común acuerdo, sin pasar por el panel del estado.",
+        "El examen y el informe médico-legal del evaluador definen los puntos en disputa."
+      ],
+      "terms": [
+        [
+          "QME panel",
+          "panel de QME"
+        ],
+        [
+          "agreed medical evaluator (AME)",
+          "evaluador médico acordado"
+        ],
+        [
+          "medical-legal report",
+          "informe médico-legal"
+        ],
+        [
+          "medical evaluation",
+          "evaluación médica"
+        ],
+        [
+          "DWC Medical Unit",
+          "Unidad Médica de la DWC"
+        ],
+        [
+          "dispute",
+          "disputa"
+        ]
+      ],
+      "phrases": [
+        [
+          "You have been scheduled for an independent medical examination.",
+          "Se le ha programado un examen médico independiente."
+        ],
+        [
+          "Please bring a photo ID and your medical records.",
+          "Por favor traiga una identificación con foto y sus expedientes médicos."
+        ],
+        [
+          "The evaluator does not provide treatment.",
+          "El evaluador no da tratamiento."
+        ]
+      ],
+      "note": "El QME no es el médico tratante y no da tratamiento. Si el trabajador pregunta \"¿es mi doctor?\", interpretar la pregunta y la respuesta sin agregar explicaciones."
+    },
+    {
+      "title": "Alta médica y regreso al trabajo",
+      "en": "Medical release and return to work",
+      "tags": [
+        "P&S / MMI: termina la TD",
+        "$6,000: vale (lesiones desde 2013)"
+      ],
+      "what": [
+        "El médico declara al trabajador \"permanente y estacionario\" (P&S) o con \"máxima mejoría médica\" (MMI) cuando ya no espera que mejore más. Con eso termina la incapacidad temporal.",
+        "El médico indica si el trabajador puede volver a su trabajo regular, volver con restricciones o no puede volver.",
+        "El empleador puede ofrecer trabajo modificado o alternativo que respete esas restricciones.",
+        "En lesiones desde 2013, según el caso, el trabajador puede recibir un vale suplementario por pérdida de trabajo de $6,000 para reentrenamiento.",
+        "En esta etapa el médico tratante o el QME fija la calificación de la incapacidad permanente."
+      ],
+      "terms": [
+        [
+          "permanent and stationary (P&S)",
+          "permanente y estacionario"
+        ],
+        [
+          "maximum medical improvement (MMI)",
+          "máxima mejoría médica"
+        ],
+        [
+          "released to full duty",
+          "dado de alta para trabajo completo"
+        ],
+        [
+          "permanent restrictions",
+          "restricciones permanentes"
+        ],
+        [
+          "modified / alternative work",
+          "trabajo modificado / alternativo"
+        ],
+        [
+          "supplemental job displacement voucher",
+          "vale suplementario por pérdida de trabajo"
+        ]
+      ],
+      "phrases": [
+        [
+          "The doctor says you have reached maximum medical improvement.",
+          "El médico dice que usted alcanzó la máxima mejoría médica."
+        ],
+        [
+          "Do you have permanent restrictions?",
+          "¿Tiene restricciones permanentes?"
+        ],
+        [
+          "Your employer offered modified work. Can you do it?",
+          "Su empleador ofreció trabajo modificado. ¿Puede hacerlo?"
+        ]
+      ],
+      "note": "Mantener la sigla (P&S, MMI) y su traducción tal como la dijo el hablante. Si el trabajador no entiende, pedir al hablante que lo aclare."
+    },
+    {
+      "title": "Incapacidad permanente (PD)",
+      "en": "Permanent disability",
+      "tags": [
+        "14 días: inicio de pagos después de la TD",
+        "Pago cada 2 semanas",
+        "85% / 100%: regreso al trabajo"
+      ],
+      "what": [
+        "La PD se calcula con un porcentaje que sale de la deficiencia que fija el médico, la edad del trabajador, su ocupación y la fecha de la lesión. En lesiones desde 2013 ya no se considera la pérdida de ingresos futuros.",
+        "Ese porcentaje equivale a un monto en dólares que depende de la fecha de la lesión y del salario semanal promedio. Las tarifas semanales tienen mínimo y máximo fijados por ley.",
+        "El administrador debe empezar a pagar la PD dentro de 14 días después de que termina la TD, cada dos semanas. Los pagos siguen hasta cubrir el monto estimado y, si queda saldo, se paga después.",
+        "En lesiones desde 2013, la PD no se debe si el trabajador vuelve a trabajo modificado, alternativo o regular con su empleador al 85% de su sueldo, o vuelve a trabajar con cualquier empleador al 100%.",
+        "La incapacidad permanente total (PTD) y la pensión vitalicia se ajustan cada año según el salario semanal promedio estatal."
+      ],
+      "terms": [
+        [
+          "permanent disability (PD)",
+          "incapacidad permanente"
+        ],
+        [
+          "disability rating",
+          "calificación de incapacidad"
+        ],
+        [
+          "impairment",
+          "deficiencia"
+        ],
+        [
+          "permanent total disability (PTD)",
+          "incapacidad permanente total"
+        ],
+        [
+          "life pension",
+          "pensión vitalicia"
+        ],
+        [
+          "weekly rate",
+          "tarifa semanal"
+        ]
+      ],
+      "phrases": [
+        [
+          "What percentage did the doctor assign?",
+          "¿Qué porcentaje le asignó el médico?"
+        ],
+        [
+          "Your permanent disability payments will begin within 14 days after temporary disability ends.",
+          "Sus pagos de incapacidad permanente comenzarán dentro de 14 días después de que termine la incapacidad temporal."
+        ],
+        [
+          "Are you back at work? At what percentage of your old wages?",
+          "¿Volvió a trabajar? ¿A qué porcentaje de su sueldo anterior?"
+        ]
+      ],
+      "note": "Los porcentajes y los plazos son cifras sensibles: decirlos con claridad y confirmar con el hablante si hay duda."
+    },
+    {
+      "title": "Disputas ante la WCAB y arreglo",
+      "en": "WCAB disputes and settlement",
+      "tags": [
+        "Solicitud ante la WCAB",
+        "C&R vs. laudo estipulado"
+      ],
+      "what": [
+        "Si un desacuerdo no se resuelve (reclamo negado, monto, incapacidad), el trabajador presenta una solicitud para adjudicación del reclamo ante la Junta de Apelaciones (WCAB).",
+        "El caso puede pasar por una declaración de preparación, una conferencia obligatoria de arreglo y un juicio ante un juez de compensación de trabajadores. La decisión se puede reconsiderar o apelar.",
+        "Un oficial de I&A orienta gratis. Un abogado del solicitante puede representar al trabajador en las audiencias.",
+        "Muchos casos terminan en un arreglo. La transacción y liberación (C&R) cierra todo, incluida la atención médica futura. El laudo estipulado deja abierta la atención médica futura.",
+        "Si el empleador no tenía seguro, el trabajador puede reclamar al Fondo Fiduciario de Beneficios de Empleadores Sin Seguro (UEBTF).",
+        "Falsear un reclamo, o negar beneficios para engañar, es delito mayor (felonía)."
+      ],
+      "terms": [
+        [
+          "application for adjudication",
+          "solicitud para adjudicación"
+        ],
+        [
+          "hearing",
+          "audiencia"
+        ],
+        [
+          "mandatory settlement conference",
+          "conferencia obligatoria de arreglo"
+        ],
+        [
+          "trial",
+          "juicio"
+        ],
+        [
+          "findings and award",
+          "conclusiones y laudo"
+        ],
+        [
+          "petition for reconsideration",
+          "petición de reconsideración"
+        ],
+        [
+          "compromise and release (C&R)",
+          "transacción y liberación"
+        ],
+        [
+          "stipulated award",
+          "laudo estipulado"
+        ],
+        [
+          "uninsured employer",
+          "empleador sin seguro"
+        ]
+      ],
+      "phrases": [
+        [
+          "Do you have an attorney representing you?",
+          "¿Tiene un abogado que lo represente?"
+        ],
+        [
+          "Your hearing is scheduled for...",
+          "Su audiencia está programada para..."
+        ],
+        [
+          "Do you understand what you are signing?",
+          "¿Entiende lo que está firmando?"
+        ],
+        [
+          "I cannot give legal advice.",
+          "No puedo dar asesoría legal."
+        ]
+      ],
+      "note": "En un arreglo, el intérprete no aconseja si firmar o no: interpreta fielmente lo que se dice, en ambos sentidos."
+    }
+  ],
+  "compare": {
+    "heads": [
+      "Aspecto",
+      "California",
+      "Nueva York",
+      "Texas",
+      "Puerto Rico",
+      "Florida (Miami)"
+    ],
+    "rows": [
+      [
+        "Agencia",
+        "DWC (Departamento de Relaciones Industriales)",
+        "Workers' Compensation Board (WCB)",
+        "TDI, División de Compensación de Trabajadores (DWC)",
+        "Corporación del Fondo del Seguro del Estado (CFSE)",
+        "Departamento de Servicios Financieros, División de Compensación de Trabajadores"
+      ],
+      [
+        "Aviso al empleador",
+        "30 días",
+        "30 días, por escrito",
+        "30 días",
+        "Confirmar con la CFSE",
+        "30 días"
+      ],
+      [
+        "Formulario del trabajador",
+        "DWC-1 (el empleador lo entrega en 1 día hábil)",
+        "C-3, hasta 2 años",
+        "DWC-041, dentro de 1 año",
+        "Reclamo ante el Fondo (confirmar plazo)",
+        "Petition for Benefits, si hay disputa"
+      ],
+      [
+        "Informe del empleador",
+        "Form 5020, 5 días",
+        "C-2, 10 días",
+        "DWC-1, 8 días después de que el trabajador falte más de un día",
+        "Reporte a la CFSE (confirmar plazo)",
+        "Aviso a la aseguradora en 7 días"
+      ],
+      [
+        "Decisión de la aseguradora",
+        "90 días (presunción de que el reclamo es válido)",
+        "Pago a los 18 días; disputa (notice of controversy) en 25 días",
+        "15 días para pagar o disputar; 60 días para impugnar la compensabilidad",
+        "Decide el Administrador del Fondo",
+        "Regla de los 120 días (pagar e investigar)"
+      ],
+      [
+        "Período de espera",
+        "3 días",
+        "Más de 7 días calendario perdidos",
+        "7 días; se paga si la incapacidad dura 14 días o más",
+        "Confirmar con la CFSE",
+        "7 días; se paga desde el primer día si pasa de 21"
+      ],
+      [
+        "Quién elige al médico",
+        "Red de proveedores (MPN) o médico designado de antemano",
+        "Proveedor autorizado por la Junta; PPO del empleador primero, si existe",
+        "Red certificada o lista aprobada por la DWC",
+        "La atención la da el Fondo",
+        "Proveedor autorizado por el empleador o la aseguradora"
+      ],
+      [
+        "Beneficio temporal",
+        "2/3 del salario; $264.61 a $1,764.11 por semana (2026)",
+        "2/3 del salario semanal promedio, con tope (ver WCB)",
+        "70% de la diferencia entre el salario y lo que gana después",
+        "66 2/3% del jornal",
+        "66.67% del salario semanal promedio; tope: 100% del promedio estatal"
+      ],
+      [
+        "Duración máxima",
+        "104 semanas en 5 años",
+        "Confirmar con la WCB",
+        "104 semanas",
+        "Confirmar con la CFSE",
+        "104 semanas"
+      ],
+      [
+        "Disputas",
+        "UR/IMR, QME/AME y WCAB",
+        "Juez (WCLJ), panel de la Junta (30 días), Appellate Division (30 días)",
+        "BRC, CCH, Appeals Panel (15 días), tribunal (45 días)",
+        "Comisión Industrial (30 días), Tribunal de Apelaciones (30 días)",
+        "Mediación, juez (JCC), Primer Tribunal de Apelaciones"
+      ],
+      [
+        "Detalle que cambia todo",
+        "Plazos fijos y revisión de utilización",
+        "Visita al médico al menos cada 45 días",
+        "El seguro es opcional para el empleador (nonsubscriber)",
+        "Un solo asegurador estatal; todo en español",
+        "El empleador o la aseguradora controla al médico"
+      ]
+    ]
+  },
+  "states": [
+    {
+      "id": "ny",
+      "name": "Nueva York",
+      "en": "New York",
+      "agency": "Workers' Compensation Board (WCB)",
+      "tags": [
+        "30 días: aviso por escrito",
+        "2 años: formulario C-3",
+        "Pago después de 7 días perdidos"
+      ],
+      "intro": "La Junta (WCB) recibe los reclamos, vigila a las aseguradoras y decide las disputas con sus propios jueces. El trabajador presenta su propio formulario, el C-3, y puede subir documentos por internet.",
+      "steps": [
+        [
+          "Avisar por escrito",
+          "El trabajador avisa a su empleador por escrito dentro de 30 días. Sirve una carta, un correo electrónico o un documento guardado; un mensaje de texto no."
+        ],
+        [
+          "Informe del empleador",
+          "El empleador presenta el formulario C-2 a la Junta y a su aseguradora dentro de 10 días de enterarse de la lesión."
+        ],
+        [
+          "Reclamo del trabajador",
+          "El trabajador presenta el formulario C-3 (Employee Claim). La ley da hasta 2 años, pero conviene hacerlo de inmediato. Si ya se lesionó la misma parte del cuerpo antes, también el C-3.3, una autorización limitada para ver su historial médico."
+        ],
+        [
+          "Tratamiento",
+          "Se atiende con un proveedor autorizado por la Junta. Si el empleador tiene una PPO, se usa para el primer tratamiento. En una emergencia sirve cualquier proveedor. La atención médica no le cuesta al trabajador, y debe ver a su médico al menos cada 45 días mientras esté sin trabajar para conservar el pago de salario."
+        ],
+        [
+          "La aseguradora actúa",
+          "Dentro de 14 días de recibir el primer informe entrega al trabajador la declaración de derechos (C-430S). En 18 días, o 10 si es mayor, empieza a pagar si el tiempo perdido pasa de 7 días, y luego paga cada 2 semanas. Si quiere disputar el caso, debe presentar el aviso de controversia dentro de 25 días de que la Junta le notifique."
+        ],
+        [
+          "Disputas y apelaciones",
+          "Audiencia ante un Workers' Compensation Law Judge. Si no está de acuerdo, el trabajador pide revisión administrativa (RB-89) dentro de 30 días y la ve un panel de tres miembros. Después se apela a la Appellate Division, Third Department, dentro de 30 días de la decisión del panel."
+        ]
+      ],
+      "deadlines": [
+        [
+          "Aviso al empleador",
+          "30 días, por escrito"
+        ],
+        [
+          "Informe del empleador (C-2)",
+          "10 días"
+        ],
+        [
+          "Reclamo del trabajador (C-3)",
+          "Hasta 2 años"
+        ],
+        [
+          "Declaración de derechos (C-430S)",
+          "14 días"
+        ],
+        [
+          "Primer pago",
+          "18 días (o 10, el mayor), si pasa de 7 días perdidos"
+        ],
+        [
+          "Aviso de controversia",
+          "25 días"
+        ],
+        [
+          "Visita al médico",
+          "Al menos cada 45 días sin trabajar"
+        ],
+        [
+          "Revisión del panel (RB-89)",
+          "30 días"
+        ],
+        [
+          "Apelación a la Appellate Division",
+          "30 días"
+        ]
+      ],
+      "terms": [
+        [
+          "Workers' Compensation Board (WCB)",
+          "Junta de Compensación de Trabajadores"
+        ],
+        [
+          "Employee Claim (Form C-3)",
+          "reclamo del empleado (formulario C-3)"
+        ],
+        [
+          "Employer's Report (Form C-2)",
+          "informe del empleador (formulario C-2)"
+        ],
+        [
+          "Statement of Rights (C-430S)",
+          "declaración de derechos"
+        ],
+        [
+          "notice of controversy",
+          "aviso de controversia"
+        ],
+        [
+          "Board-authorized provider",
+          "proveedor autorizado por la Junta"
+        ],
+        [
+          "Preferred Provider Organization (PPO)",
+          "organización de proveedores preferidos"
+        ],
+        [
+          "lost time",
+          "tiempo perdido"
+        ],
+        [
+          "Workers' Compensation Law Judge (WCLJ)",
+          "juez de compensación de trabajadores"
+        ],
+        [
+          "Request for Administrative Review (RB-89)",
+          "solicitud de revisión administrativa"
+        ],
+        [
+          "Board panel",
+          "panel de la Junta"
+        ],
+        [
+          "independent medical examination (IME)",
+          "examen médico independiente"
+        ],
+        [
+          "schedule loss of use (SLU)",
+          "pérdida de uso según la tabla"
+        ],
+        [
+          "Appellate Division, Third Department",
+          "División de Apelaciones, Tercer Departamento"
+        ]
+      ],
+      "phrases": [
+        [
+          "You have to notify your employer in writing within 30 days.",
+          "Tiene que avisar a su empleador por escrito dentro de 30 días."
+        ],
+        [
+          "A text message is not enough.",
+          "Un mensaje de texto no es suficiente."
+        ],
+        [
+          "Your employer has to file a Form C-2 within 10 days.",
+          "Su empleador tiene que presentar el formulario C-2 dentro de 10 días."
+        ],
+        [
+          "You need to see your doctor at least every 45 days.",
+          "Tiene que ver a su médico al menos cada 45 días."
+        ],
+        [
+          "The insurer is disputing your claim.",
+          "La aseguradora está disputando su reclamo."
+        ],
+        [
+          "You can appeal within 30 days.",
+          "Puede apelar dentro de 30 días."
+        ]
+      ],
+      "vsca": [
+        "En California el empleador entrega el DWC-1 y el trabajador lo presenta. En Nueva York el trabajador presenta el C-3 directamente a la Junta.",
+        "El aviso es de 30 días en ambos, pero en Nueva York debe ser por escrito.",
+        "California espera 3 días para pagar la incapacidad temporal. Nueva York paga cuando el tiempo perdido pasa de 7 días.",
+        "En Nueva York el trabajador debe ir al médico al menos cada 45 días para no perder el salario."
+      ],
+      "note": "Cuidado con las letras: el C-2 es del empleador y el C-3 es del trabajador. \"Controverted\" quiere decir que la aseguradora disputa el caso, no que ya lo negó. Los equivalentes en español de los nombres de las agencias son los de uso común; confírmalos con el glosario del cliente.",
+      "sources": [
+        [
+          "WCB: paquete de información para el trabajador",
+          "https://wcb.ny.gov/content/main/TheBoard/ClaimantInformationPacket.pdf"
+        ],
+        [
+          "WCB: responsabilidades de la aseguradora",
+          "https://www.wcb.ny.gov/content/main/Employers/insurance-carrier-responsibilities.jsp"
+        ],
+        [
+          "Ley de Compensación de Trabajadores de NY, sección 25",
+          "https://nysenate.gov/legislation/laws/WKC/25"
+        ],
+        [
+          "Bufete: el aviso de 30 días y el C-3",
+          "https://www.fightingforyou.com/resources/articles/how-to-file-a-workers-compensation-claim-in-new-york"
+        ],
+        [
+          "Bufete: apelaciones en Nueva York",
+          "https://www.daeryunlaw.com/es/insights/workplace-injury-benefits-appeal-in-new-york"
+        ]
+      ]
+    },
+    {
+      "id": "tx",
+      "name": "Texas",
+      "en": "Texas",
+      "agency": "Texas Department of Insurance, Division of Workers' Compensation (DWC)",
+      "tags": [
+        "30 días: aviso",
+        "1 año: formulario DWC-041",
+        "15 días: decisión de la aseguradora"
+      ],
+      "intro": "Texas es distinto: el seguro de compensación es opcional para los empleadores privados. Los que lo tienen son \"subscribers\" y sus trabajadores entran al sistema de la DWC. Los que no, son \"nonsubscribers\" y el trabajador queda fuera de ese sistema.",
+      "steps": [
+        [
+          "Avisar al empleador",
+          "El trabajador informa la lesión a su empleador a más tardar 30 días después de que ocurre. Conviene hacerlo lo antes posible."
+        ],
+        [
+          "Informe del empleador",
+          "El empleador reporta a su aseguradora dentro de 8 días desde que el trabajador falta más de un día por la lesión (formulario DWC-1). La DWC envía al trabajador una carta de aviso de lesión y el formulario de reclamo."
+        ],
+        [
+          "Reclamo del trabajador",
+          "El trabajador presenta el formulario DWC-041 a la DWC dentro de 1 año de la lesión o de enterarse de la enfermedad ocupacional. También debe enviar al ajustador comprobantes de todo su salario, de todos sus empleadores."
+        ],
+        [
+          "La aseguradora decide",
+          "Tiene 15 días desde que recibe el aviso escrito para empezar a pagar o avisar por escrito que rechaza el caso. Si no impugna la compensabilidad dentro de 60 días, pierde el derecho a hacerlo."
+        ],
+        [
+          "Médico",
+          "Si el empleador contrata una red certificada, el trabajador elige un médico de esa red. Si no, puede ir a cualquier médico de la lista aprobada por la DWC."
+        ],
+        [
+          "Beneficios de ingreso",
+          "Los beneficios temporales se pagan cuando el trabajador pierde salario por más de 7 días. La primera semana se paga solo si la incapacidad dura 14 días o más. Son el 70% de la diferencia entre el salario semanal promedio y lo que el trabajador gana después. Duran hasta 104 semanas o hasta la máxima mejoría médica, lo que ocurra primero."
+        ],
+        [
+          "Disputas",
+          "Primero una conferencia de revisión de beneficios (BRC), que se pide con el formulario DWC-045; si hay acuerdo se firma el DWC-024. Si no, una audiencia de caso en disputa (CCH) ante un juez administrativo. De ahí se apela al Panel de Apelaciones en 15 días, y después se puede pedir revisión judicial en 45 días."
+        ]
+      ],
+      "deadlines": [
+        [
+          "Aviso al empleador",
+          "30 días"
+        ],
+        [
+          "Informe del empleador a la aseguradora",
+          "8 días después de la ausencia de más de un día"
+        ],
+        [
+          "Reclamo del trabajador (DWC-041)",
+          "1 año"
+        ],
+        [
+          "Aseguradora: pagar o disputar",
+          "15 días desde el aviso escrito"
+        ],
+        [
+          "Impugnar la compensabilidad",
+          "60 días; después renuncia al derecho"
+        ],
+        [
+          "Beneficios temporales",
+          "Más de 7 días sin salario; primera semana si dura 14 o más"
+        ],
+        [
+          "Duración máxima",
+          "104 semanas"
+        ],
+        [
+          "Decisión del juez tras la audiencia",
+          "10 días"
+        ],
+        [
+          "Apelación al Panel de Apelaciones",
+          "15 días"
+        ],
+        [
+          "Revisión judicial",
+          "45 días"
+        ]
+      ],
+      "terms": [
+        [
+          "Division of Workers' Compensation (DWC)",
+          "División de Compensación de Trabajadores"
+        ],
+        [
+          "Employer's First Report of Injury (DWC-1)",
+          "informe inicial de lesión del empleador (DWC-1)"
+        ],
+        [
+          "Employee's Claim for Compensation (DWC-041)",
+          "reclamo de compensación del empleado (DWC-041)"
+        ],
+        [
+          "adjuster",
+          "ajustador"
+        ],
+        [
+          "certified network",
+          "red certificada"
+        ],
+        [
+          "designated doctor",
+          "médico designado"
+        ],
+        [
+          "temporary income benefits (TIBs)",
+          "beneficios temporales de ingreso"
+        ],
+        [
+          "impairment income benefits (IIBs)",
+          "beneficios de ingreso por impedimento"
+        ],
+        [
+          "supplemental income benefits",
+          "beneficios de ingreso suplementarios"
+        ],
+        [
+          "maximum medical improvement (MMI)",
+          "máxima mejoría médica"
+        ],
+        [
+          "benefit review conference (BRC)",
+          "conferencia de revisión de beneficios"
+        ],
+        [
+          "benefit review officer",
+          "oficial de revisión de beneficios"
+        ],
+        [
+          "contested case hearing (CCH)",
+          "audiencia de caso en disputa"
+        ],
+        [
+          "administrative law judge (ALJ)",
+          "juez de derecho administrativo"
+        ],
+        [
+          "Appeals Panel",
+          "Panel de Apelaciones"
+        ],
+        [
+          "independent review organization (IRO)",
+          "organización de revisión independiente"
+        ],
+        [
+          "nonsubscriber",
+          "empleador sin seguro de compensación"
+        ],
+        [
+          "compensability",
+          "compensabilidad"
+        ]
+      ],
+      "phrases": [
+        [
+          "You must report your injury to your employer within 30 days.",
+          "Tiene que reportar su lesión a su empleador dentro de 30 días."
+        ],
+        [
+          "You have one year to file Form DWC-041.",
+          "Tiene un año para presentar el formulario DWC-041."
+        ],
+        [
+          "The insurance carrier has 15 days to begin payment or dispute the claim.",
+          "La aseguradora tiene 15 días para empezar a pagar o disputar el reclamo."
+        ],
+        [
+          "Send proof of all your pay to your adjuster.",
+          "Envíe a su ajustador comprobantes de todo su pago."
+        ],
+        [
+          "A benefit review conference has been scheduled.",
+          "Se ha programado una conferencia de revisión de beneficios."
+        ],
+        [
+          "Your employer does not have workers' compensation coverage.",
+          "Su empleador no tiene cobertura de compensación de trabajadores."
+        ],
+        [
+          "The division will never ask you for money to release benefits.",
+          "La división nunca le pedirá dinero para liberar beneficios."
+        ]
+      ],
+      "vsca": [
+        "En California el seguro es obligatorio para casi todos los empleadores. En Texas es opcional.",
+        "El aviso es de 30 días en ambos. El reclamo del trabajador en Texas es el DWC-041, con 1 año de plazo.",
+        "La aseguradora de Texas tiene 15 días para pagar o disputar y 60 para impugnar. En California, la carta de estado llega a los 14 días y el reclamo se presume válido a los 90.",
+        "La incapacidad temporal en Texas es el 70% de la diferencia de salario, no 2/3 del salario como en California.",
+        "En vez de WCAB y revisión de utilización, Texas usa BRC, CCH y Panel de Apelaciones."
+      ],
+      "note": "Ojo con el número: el DWC-1 de Texas es el informe del empleador, mientras que el DWC-1 de California es el formulario del trabajador. Cuando la persona dice \"nonsubscriber\", el empleador no tiene seguro de compensación y el caso no sigue este camino. No des consejos legales: solo interpreta.",
+      "sources": [
+        [
+          "TDI: información para empleados lesionados",
+          "https://www.tdi.texas.gov/wc/employee/index.html"
+        ],
+        [
+          "TDI: hoja informativa del formulario DWC-041",
+          "https://www.tdi.texas.gov/wc/employee/documents/cs41e.pdf"
+        ],
+        [
+          "TDI: entender las disputas",
+          "https://tdi.texas.gov/wc/events/documents/understanding-disputes.pdf"
+        ],
+        [
+          "TDI: beneficios temporales de ingreso",
+          "https://agate.tdi.texas.gov/wc/employee/tempben.html"
+        ],
+        [
+          "Código Laboral de Texas, capítulo 409",
+          "https://statutes.capitol.texas.gov/Docs/LA/htm/LA.409.htm"
+        ],
+        [
+          "Nolo: cómo presentar un reclamo en Texas",
+          "https://www.nolo.com/legal-encyclopedia/file-workers-compensation-claim-texas.html"
+        ],
+        [
+          "Bufete: empleadores nonsubscribers",
+          "https://www.terrybryant.com/texas-non-subscriber-workers-comp"
+        ]
+      ]
+    },
+    {
+      "id": "pr",
+      "name": "Puerto Rico",
+      "en": "Puerto Rico",
+      "agency": "Corporación del Fondo del Seguro del Estado (CFSE)",
+      "tags": [
+        "Un solo asegurador: el Fondo",
+        "Apelación: 30 días",
+        "Comisión Industrial"
+      ],
+      "intro": "Puerto Rico no funciona con aseguradoras privadas. La Ley 45 de 1935 creó la CFSE, una corporación del Gobierno que asegura a todos los patronos con uno o más trabajadores, atiende al obrero lesionado y le paga la compensación. Las disputas van a la Comisión Industrial. El trámite es en español, así que en esta jurisdicción vas a oír el vocabulario original.",
+      "steps": [
+        [
+          "Aviso y reporte",
+          "El obrero informa el accidente a su patrono y este lo reporta a la CFSE. Las fuentes que consulté no dan el plazo exacto de ninguno de los dos, así que confírmalo con la CFSE antes de citar un número."
+        ],
+        [
+          "Servicios del Fondo",
+          "La CFSE ofrece atención médica (tratamiento ambulatorio, rehabilitación física, hospitalización y cirugías), trabajo social, rehabilitación vocacional y compensación económica mientras dure la incapacidad total temporal."
+        ],
+        [
+          "Compensación",
+          "Durante la incapacidad para trabajar se paga el 66 2/3 por ciento del jornal, por semanas vencidas (Artículo 3(b)). Para la incapacidad parcial permanente hay una escala según el miembro perdido (3(c)), y la incapacidad total permanente tiene su propia regla (3(d)). Los topes en dólares han cambiado con enmiendas; no cites ninguno sin confirmarlo."
+        ],
+        [
+          "Decisión del Administrador",
+          "Las decisiones las toma el Administrador de la CFSE. Si el obrero o el patrono no está de acuerdo, puede apelar ante la Comisión Industrial dentro de 30 días de la notificación. Ese plazo es jurisdiccional: no se puede extender. El obrero también puede apelar si el Administrador decide descontinuar los servicios médicos."
+        ],
+        [
+          "Comisión Industrial",
+          "Si la controversia es médica, hay una vista médica: un médico asesor de la Comisión y uno del asegurador examinan al apelante. Si alguna parte no está conforme, puede pedir una vista pública en 30 días, donde comparecen con sus abogados. Un oficial examinador toma el juramento, recibe la prueba y recomienda la decisión. La Comisión resuelve dentro de 90 días de la vista pública."
+        ],
+        [
+          "Reconsideración y revisión",
+          "Se puede pedir reconsideración dentro de 20 días, y la Comisión la considera en 15. Después se puede pedir revisión ante el Tribunal de Apelaciones dentro de 30 días de la resolución en reconsideración."
+        ]
+      ],
+      "deadlines": [
+        [
+          "Apelación a la Comisión Industrial",
+          "30 días de la notificación (jurisdiccional)"
+        ],
+        [
+          "Pedir vista pública tras la vista médica",
+          "30 días"
+        ],
+        [
+          "Resolución de la Comisión",
+          "90 días después de la vista pública"
+        ],
+        [
+          "Reconsideración",
+          "20 días; la Comisión la considera en 15"
+        ],
+        [
+          "Revisión ante el Tribunal de Apelaciones",
+          "30 días de la resolución en reconsideración"
+        ],
+        [
+          "Aviso del obrero y reporte del patrono",
+          "Confirmar con la CFSE"
+        ],
+        [
+          "Período de espera y topes semanales",
+          "Confirmar con la CFSE"
+        ]
+      ],
+      "terms": [
+        [
+          "State Insurance Fund Corporation",
+          "Corporación del Fondo del Seguro del Estado (CFSE)"
+        ],
+        [
+          "Workers' Compensation Act (Law 45 of 1935)",
+          "Ley del Sistema de Compensaciones por Accidentes del Trabajo (Ley 45)"
+        ],
+        [
+          "injured worker",
+          "obrero lesionado"
+        ],
+        [
+          "employer",
+          "patrono"
+        ],
+        [
+          "wage",
+          "jornal"
+        ],
+        [
+          "Administrator",
+          "Administrador"
+        ],
+        [
+          "Industrial Commission",
+          "Comisión Industrial"
+        ],
+        [
+          "hearing officer",
+          "oficial examinador"
+        ],
+        [
+          "medical hearing",
+          "vista médica"
+        ],
+        [
+          "public hearing",
+          "vista pública"
+        ],
+        [
+          "appeal",
+          "apelación"
+        ],
+        [
+          "motion for reconsideration",
+          "moción de reconsideración"
+        ],
+        [
+          "Court of Appeals",
+          "Tribunal de Apelaciones"
+        ],
+        [
+          "temporary total disability",
+          "incapacidad total temporal"
+        ],
+        [
+          "partial permanent disability",
+          "incapacidad parcial permanente"
+        ],
+        [
+          "total permanent disability",
+          "incapacidad total permanente"
+        ],
+        [
+          "vocational rehabilitation",
+          "rehabilitación vocacional"
+        ]
+      ],
+      "phrases": [
+        [
+          "Your employer has to report the accident to the State Insurance Fund.",
+          "Su patrono tiene que reportar el accidente al Fondo del Seguro del Estado."
+        ],
+        [
+          "The Fund will cover your medical treatment.",
+          "El Fondo cubrirá su tratamiento médico."
+        ],
+        [
+          "You can appeal the Administrator's decision within 30 days.",
+          "Puede apelar la decisión del Administrador dentro de 30 días."
+        ],
+        [
+          "A medical hearing has been scheduled.",
+          "Se ha señalado una vista médica."
+        ],
+        [
+          "The Commission will issue its decision after the public hearing.",
+          "La Comisión emitirá su decisión después de la vista pública."
+        ],
+        [
+          "You have 30 days to request judicial review.",
+          "Tiene 30 días para solicitar revisión judicial."
+        ]
+      ],
+      "vsca": [
+        "En California hay muchas aseguradoras privadas y un ajustador por caso. En Puerto Rico el asegurador es el propio Fondo.",
+        "Las disputas de California pasan por revisión de utilización, IMR, QME y la WCAB. En Puerto Rico van a la Comisión Industrial, con una vista médica cuando el problema es médico.",
+        "Los plazos de apelación en Puerto Rico son de 30 días en casi todas las etapas.",
+        "Todo el trámite es en español, así que muchas llamadas serán con el Fondo o con un obrero que habla español."
+      ],
+      "note": "Aquí \"patrono\" es el empleador y \"obrero\" es el trabajador; no los traduzcas como \"boss\" o \"laborer\". \"Jornal\" es el salario por día o semana. En esta jurisdicción las cifras en dólares y los plazos de aviso cambian con las enmiendas: si el cliente te da un número, úsalo tal cual y no lo completes de memoria.",
+      "sources": [
+        [
+          "Ley 45 de 1935 (texto oficial)",
+          "https://bvirtualogp.pr.gov/ogp/Bvirtual/leyesreferencia/PDF/Trabajo/45-1935/45-1935.pdf"
+        ],
+        [
+          "Reglas de Procedimiento de la Comisión Industrial",
+          "https://docs.pr.gov/files/CIPR/ReglasVigentes/Reglas%20de%20Procedimiento%20de%20la%20Comisi%C3%B3n%20Industrial%20de%20Puerto%20Rico.pdf"
+        ],
+        [
+          "Ley 94 de 2003 (reorganización de la Comisión Industrial)",
+          "https://www.lexjuris.com/lexlex/leyes2003/lexl2003094.htm"
+        ],
+        [
+          "CFSE: presupuesto recomendado 2017-2018",
+          "https://presupuesto.pr.gov:443/PresupuestoRecomendado2017-2018/PresupuestosAgencias/Corporacion%20del%20Fondo%20del%20Seguro%20del%20Estado.pdf"
+        ]
+      ]
+    },
+    {
+      "id": "fl",
+      "name": "Florida (Miami)",
+      "en": "Florida",
+      "agency": "Departamento de Servicios Financieros de Florida, División de Compensación de Trabajadores",
+      "tags": [
+        "30 días: aviso",
+        "7 días: el empleador avisa a la aseguradora",
+        "Hasta 104 semanas de incapacidad temporal"
+      ],
+      "intro": "Miami está en Florida, así que se aplica el sistema del estado. Lo más distintivo es que el empleador o la aseguradora, que en inglés se juntan como \"E/C\", elige y autoriza al médico. Los desacuerdos se presentan ante un juez de reclamos de compensación con una petición de beneficios.",
+      "steps": [
+        [
+          "Avisar al empleador",
+          "El trabajador avisa dentro de 30 días de la fecha del accidente o del diagnóstico."
+        ],
+        [
+          "Aviso a la aseguradora",
+          "El empleador debe comunicarse con su aseguradora dentro de 7 días de que el trabajador le avisó."
+        ],
+        [
+          "Médico autorizado",
+          "Se espera que el trabajador use al proveedor médico autorizado por su empleador o la aseguradora. Si se atiende con otro sin autorización, el costo puede no quedar cubierto."
+        ],
+        [
+          "Beneficios",
+          "No se paga compensación por los primeros 7 días de incapacidad, salvo la atención médica. Si la incapacidad pasa de 21 días, se paga desde el primer día. La incapacidad total temporal es el 66.67% del salario semanal promedio, con un tope del 100% del salario semanal promedio del estado, y dura como máximo 104 semanas."
+        ],
+        [
+          "Si hay disputa",
+          "El trabajador presenta una Petition for Benefits ante la Oficina de Jueces de Reclamos de Compensación. La aseguradora puede pagar e investigar hasta 120 días antes de aceptar o negar (regla de los 120 días). El plazo para presentar la petición es generalmente de 2 años."
+        ],
+        [
+          "Mediación y audiencia",
+          "Primero una mediación con el juez. Si no hay acuerdo, una audiencia previa y una audiencia final. La apelación va al Primer Tribunal de Apelaciones del Distrito (First District Court of Appeal)."
+        ]
+      ],
+      "deadlines": [
+        [
+          "Aviso al empleador",
+          "30 días"
+        ],
+        [
+          "Empleador avisa a la aseguradora",
+          "7 días"
+        ],
+        [
+          "Período de espera",
+          "7 días; se paga desde el primer día si pasa de 21"
+        ],
+        [
+          "Incapacidad temporal total o parcial",
+          "Hasta 104 semanas"
+        ],
+        [
+          "Aseguradora: pagar e investigar",
+          "Regla de los 120 días"
+        ],
+        [
+          "Petition for Benefits",
+          "Generalmente 2 años"
+        ]
+      ],
+      "terms": [
+        [
+          "Division of Workers' Compensation",
+          "División de Compensación de Trabajadores"
+        ],
+        [
+          "Employee Assistance and Ombudsman Office",
+          "Oficina de Asistencia al Empleado y del Ombudsman"
+        ],
+        [
+          "employer/carrier (E/C)",
+          "empleador y aseguradora (E/C)"
+        ],
+        [
+          "authorized provider",
+          "proveedor autorizado"
+        ],
+        [
+          "Petition for Benefits (PFB)",
+          "petición de beneficios"
+        ],
+        [
+          "Judge of Compensation Claims (JCC)",
+          "juez de reclamos de compensación"
+        ],
+        [
+          "mediation",
+          "mediación"
+        ],
+        [
+          "pre-trial hearing",
+          "audiencia previa al juicio"
+        ],
+        [
+          "final hearing",
+          "audiencia final"
+        ],
+        [
+          "temporary total disability (TTD)",
+          "incapacidad total temporal"
+        ],
+        [
+          "temporary partial disability (TPD)",
+          "incapacidad parcial temporal"
+        ],
+        [
+          "average weekly wage (AWW)",
+          "salario semanal promedio"
+        ],
+        [
+          "maximum medical improvement (MMI)",
+          "máxima mejoría médica"
+        ],
+        [
+          "120-day rule",
+          "regla de los 120 días"
+        ],
+        [
+          "pay and investigate",
+          "pagar e investigar"
+        ],
+        [
+          "denial",
+          "negación"
+        ],
+        [
+          "First District Court of Appeal",
+          "Primer Tribunal de Apelaciones del Distrito"
+        ]
+      ],
+      "phrases": [
+        [
+          "You must notify your employer within 30 days.",
+          "Tiene que avisar a su empleador dentro de 30 días."
+        ],
+        [
+          "The carrier has to authorize your doctor.",
+          "La aseguradora tiene que autorizar a su médico."
+        ],
+        [
+          "There is a seven-day waiting period.",
+          "Hay un período de espera de siete días."
+        ],
+        [
+          "Your claim has been denied. You can file a Petition for Benefits.",
+          "Su reclamo fue negado. Puede presentar una petición de beneficios."
+        ],
+        [
+          "A mediation has been scheduled with the judge.",
+          "Se ha programado una mediación con el juez."
+        ],
+        [
+          "You can call the Employee Assistance Office for free.",
+          "Puede llamar gratis a la Oficina de Asistencia al Empleado."
+        ]
+      ],
+      "vsca": [
+        "En California el trabajador tiene reglas para cambiar de médico dentro de una red. En Florida el E/C autoriza al médico.",
+        "California espera 3 días; Florida espera 7, y paga desde el primer día solo si la incapacidad pasa de 21.",
+        "California presume válido el reclamo a los 90 días; Florida permite pagar e investigar hasta 120.",
+        "Las disputas de Florida van a un juez (JCC) y no pasan por revisión de utilización ni IMR como en California."
+      ],
+      "note": "En inglés \"E/C\" se pronuncia letra por letra. Florida ofrece materiales para empleados en inglés y español, y la oficina de asistencia atiende gratis al (800) 342-1741. En Miami muchas llamadas serán con hispanohablantes. Aquí \"authorized\" suele querer decir que el E/C aceptó pagar esa atención, así que no lo cambies por \"approved\".",
+      "sources": [
+        [
+          "DFS Florida: información para empleados",
+          "https://www.myfloridacfo.com/division/wc/employee"
+        ],
+        [
+          "Estatuto de Florida 440.12 (período de espera y tope)",
+          "https://www.flsenate.gov/Laws/Statutes/2024/440.12"
+        ],
+        [
+          "Workplace Fairness: reclamos en Florida",
+          "https://www.workplacefairness.org/file-workers-comp-florida/"
+        ]
+      ]
+    }
+  ],
+  "notaFuentes": "La terminología en español sigue los textos oficiales; el resto son equivalentes habituales de interpretación y conviene confirmarlos con el glosario de cada cliente. Cifras de 2026. Las fuentes de Nueva York, Texas, Puerto Rico y Florida están al final de cada una en la pestaña \"Otros estados\". Los plazos de revisión de utilización pueden haber cambiado con las regulaciones nuevas que la DWC anunció para el 1.º de abril de 2026; confírmalos antes de citarlos. Esto es una ayuda de vocabulario, no asesoría legal.",
+  "fuentes": [
+    {
+      "texto": "EDD: Seguro Estatal de Incapacidad (en español)",
+      "url": "https://edd.ca.gov/es/disability/"
+    },
+    {
+      "texto": "EDD: Quick Statistics, SDI 2026",
+      "url": "https://edd.ca.gov/en/About_EDD/Quick_Statistics"
+    },
+    {
+      "texto": "DWC: hoja informativa para empleados (español)",
+      "url": "https://www.dir.ca.gov/dwc/FactSheets/Spanish/Employee_FactSheetSpanish.pdf"
+    },
+    {
+      "texto": "DWC: hoja informativa C, incapacidad temporal (español)",
+      "url": "https://www.dir.ca.gov/dwc/FactSheets_spanish/FactSheet_c_spanish.pdf"
+    },
+    {
+      "texto": "DWC: hojas informativas y guías para trabajadores lesionados",
+      "url": "https://dir.ca.gov/DWC/iwguides_Spanish.html"
+    },
+    {
+      "texto": "DWC: formulario DWC-1 bilingüe",
+      "url": "https://www.dir.ca.gov/dwc/forms/claimform2010.pdf"
+    },
+    {
+      "texto": "DIR: tasas de TD 2026",
+      "url": "https://dir.ca.gov/DIRNews/2025/2025-116.html"
+    },
+    {
+      "texto": "DWC: el proceso de un reclamo (Claims Process)",
+      "url": "https://www.dir.ca.gov/DwC/InjuredWorkerInfo/Claimsprocess.pdf"
+    },
+    {
+      "texto": "DWC: cómo presentar un reclamo (File a Claim)",
+      "url": "https://www.dir.ca.gov/dwc/FileAClaim.htm"
+    },
+    {
+      "texto": "DWC: revisión de utilización, preguntas frecuentes",
+      "url": "https://www.dir.ca.gov/dwc/UtilizationReview/UR_FAQ_InjuredWorker.htm"
+    },
+    {
+      "texto": "DWC: revisión médica independiente (IMR), preguntas frecuentes",
+      "url": "https://dir.ca.gov/DWC/IMR/IMR_FAQs.htm"
+    },
+    {
+      "texto": "DWC: hoja informativa D, incapacidad permanente",
+      "url": "https://www.dir.ca.gov/DwC/FactSheets/FactSheet_D.pdf"
+    },
+    {
+      "texto": "Nolo: cambio de médico tratante en California",
+      "url": "https://www.nolo.com/legal-encyclopedia/how-change-treating-doctors-your-california-workers-comp-case.html"
+    },
+    {
+      "texto": "Ciudad de Fresno: AME y QME",
+      "url": "https://www.fresno.gov/personnel/risk-management/ames-and-qmes/"
+    }
+  ]
+}
