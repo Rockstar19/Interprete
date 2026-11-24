@@ -833,7 +833,7 @@
         "tipo": "fijo",
         "min": 0,
         "real": 0,
-        "surge": "no",
+        "surge": "bronce",
         "surgeMin": 0
       },
       {
