@@ -854,7 +854,7 @@
         "tipo": "fijo",
         "min": 62,
         "real": 0,
-        "surge": "no",
+        "surge": "bronce",
         "surgeMin": 0
       },
       {
@@ -882,7 +882,7 @@
         "tipo": "fijo",
         "min": 20,
         "real": 0,
-        "surge": "bronce",
+        "surge": "no",
         "surgeMin": 0
       },
       {
