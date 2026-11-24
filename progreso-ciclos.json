@@ -852,7 +852,7 @@
       },
       {
         "tipo": "fijo",
-        "min": 0,
+        "min": 62,
         "real": 0,
         "surge": "no",
         "surgeMin": 0
