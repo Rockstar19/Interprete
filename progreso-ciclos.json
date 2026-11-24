@@ -816,7 +816,7 @@
     ],
     "24": [
       {
-        "tipo": "auto",
+        "tipo": "libre",
         "min": 0,
         "real": 0,
         "surge": "no",
