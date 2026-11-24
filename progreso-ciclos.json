@@ -831,10 +831,10 @@
       },
       {
         "tipo": "fijo",
-        "min": 0,
+        "min": 13,
         "real": 0,
         "surge": "bronce",
-        "surgeMin": 0
+        "surgeMin": 13
       },
       {
         "tipo": "libre",
