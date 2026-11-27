@@ -900,8 +900,8 @@
         "surgeMin": 0
       },
       {
-        "tipo": "auto",
-        "min": 0,
+        "tipo": "fijo",
+        "min": 97,
         "real": 0,
         "surge": "no",
         "surgeMin": 0
