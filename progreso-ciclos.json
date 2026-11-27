@@ -901,7 +901,7 @@
       },
       {
         "tipo": "fijo",
-        "min": 97,
+        "min": 115,
         "real": 0,
         "surge": "no",
         "surgeMin": 0
